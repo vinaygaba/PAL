@@ -20,7 +20,7 @@ rule token = parse
     | '/'                             { DIVOP }
     | '+'                             { ADDOP }
     | '-'                             { SUBOP }
-    | '%'                             { MOD }
+    | '%'                             { MODOP }
     | "<>"                            { SWAP }
     | "<="                            { LEQ }
     | ">="                            { GEQ }
@@ -40,6 +40,8 @@ rule token = parse
     | "while"                         { WHILE }
     | "if"                            { IF }
     | digit+ as num                   { LITERAL(int_of_string num) }
+    | digit+ as int                   { INT(int_of_string int) }
+    | digit+'.'digit+ as float        { FLOAT(float_of_string float) }
     | "boolean"                       { BOOL }
     | "true"                          { TRUE }
     | "false"                         { FALSE }
@@ -59,5 +61,5 @@ rule token = parse
     | _ as char { raise (Failure("illegal character " ^ Char.escaped char)) }
 
 and comment = parse
-    | '/n'                            {token lexbuf}
+    | '\n'                            {token lexbuf}
     | _                               {comment lexbuf}
