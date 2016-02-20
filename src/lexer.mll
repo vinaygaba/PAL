@@ -44,6 +44,7 @@ rule token = parse
     | "true"                          { TRUE }
     | "false"                         { FALSE }
     | "int"                           { INT }
+    | "byte"                          { BYTE }
     | "char"                          { CHAR }
     | "string"                        { STRING }
     | "float"                         { FLOAT }
