@@ -16,13 +16,21 @@ rule token = parse
     | '#'                             {comment lexbuf}
     | '='                             { ASSIGN }
     | '#'                             { COMMENT }
-    | '+'                             { ADDOP }
-    | '-'                             { SUBOP }
     | '*'                             { MULOP }
     | '/'                             { DIVOP }
+    | '+'                             { ADDOP }
+    | '-'                             { SUBOP }
     | '%'                             { MOD }
+    | "<>"                            { SWAP }
+    | "<="                            { LEQ }
+    | ">="                            { GEQ }
     | '<'                             { LT }
     | '>'                             { GT }
+    | "=="                            { EQ }
+    | "!="                            { NEQ }
+    | "&&"                            { AND }
+    | "||"                            { OR }
+    | "!"                             { NOT }
     | ','                             { COMMA }
     | ';'                             { SEMICOLON }
     | ':'                             { TYPEASSIGNMENT }
@@ -33,6 +41,8 @@ rule token = parse
     | "if"                            { IF }
     | digit+ as num                   { LITERAL(int_of_string num) }
     | "boolean"                       { BOOL }
+    | "true"                          { TRUE }
+    | "false"                         { FALSE }
     | "int"                           { INT }
     | "char"                          { CHAR }
     | "string"                        { STRING }
@@ -42,7 +52,10 @@ rule token = parse
     | "dataset"                       { DATASET }
     | "page"                          { PAGE }
     | "list"                          { LIST }
+    | "return"                        { RETURN }
+    | id                              { ID(id) }
     | eof                             { EOF }
+    | _ as char { raise (Failure("illegal character " ^ Char.escaped char)) }
 
 and comment = parse
     | '/n'                            {token lexbuf}
