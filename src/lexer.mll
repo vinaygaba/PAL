@@ -4,7 +4,7 @@ open Parser
 
 }
 
-
+(*test*)
 
 let digit = ['0'-'9']
 let id = ['a'-'z'] ['a'-'z' 'A'-'Z' '0'-'9' '_']* ['?']?
@@ -14,14 +14,14 @@ let ws = [' ' '\r' '\t' '\n']
 rule token = parse
     | ws                              {token lexbuf}
     | '#'                             {comment lexbuf}
-    | '='                             { ASSIGN }
-    | '#'                             { COMMENT }
+    (*| '='                             { ASSIGN }
+    | '#'                             { COMMENT }*)
     | '*'                             { MULOP }
     | '/'                             { DIVOP }
     | '+'                             { ADDOP }
     | '-'                             { SUBOP }
     | '%'                             { MODOP }
-    | "<>"                            { SWAP }
+    (*| "<>"                            { SWAP }
     | "<="                            { LEQ }
     | ">="                            { GEQ }
     | '<'                             { LT }
@@ -38,25 +38,26 @@ rule token = parse
     | '}'                             { RIGHTPAREN }
     | "+="                            { APPEND }
     | "while"                         { WHILE }
-    | "if"                            { IF }
+    | "if"                            { IF }*)
     | digit+ as num                   { LITERAL(int_of_string num) }
-    | digit+ as int                   { INT(int_of_string int) }
-    | digit+'.'digit+ as float        { FLOAT(float_of_string float) }
-    | "boolean"                       { BOOL }
+    (*| digit+ as int                   { INT(int_of_string int) }
+    | digit+'.'digit+ as float        { FLOAT(float_of_string float) }*)
+    | '"'('\\'_|[^'"'])*'"' as str    { STRING(str) }
+    (*| "boolean"                       { BOOL }
     | "true"                          { TRUE }
     | "false"                         { FALSE }
-    | "int"                           { INT }
-    | "byte"                          { BYTE }
-    | "char"                          { CHAR }
-    | "string"                        { STRING }
-    | "float"                         { FLOAT }
+    | "int"                           { INTD }
+    | "byte"                          { BYTED }
+    | "char"                          { CHARD }
+    | "string"                        { STRINGD }
+    | "float"                         { FLOATD }
     | "pdf"                           { PDF }
     | "blob"                          { BLOB }
     | "dataset"                       { DATASET }
     | "page"                          { PAGE }
     | "list"                          { LIST }
     | "return"                        { RETURN }
-    | id                              { ID(id) }
+    | id                              { ID(id) }*)
     | eof                             { EOF }
     | _ as char { raise (Failure("illegal character " ^ Char.escaped char)) }
 

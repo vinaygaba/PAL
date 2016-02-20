@@ -1,21 +1,15 @@
-type op = Add | Sub | Mult | Div | Mod | Equal | Neq | Less | Leq | Greater | Geq |
+type binop = Add | Sub | Mul | Div | Mod | Equal | Neq | Less | Leq | Greater | Geq |
           And | Or | Swap | Append
 
 type uop = Neg | Not
 
-type data_type = Int | Boolean | Float | Byte | Char | String |
+type data_type = Int | Boolean | Float | Byte | Char
 
 type var_decl = {
   dtype: data_type;
   vname: string;
 }
 
-type func_decl = {
-  rtype : data_type;
-  name : string;
-  formals : var_decl list;
-  body : statement list;
-}
 
 type expression =
   Int of int
@@ -23,7 +17,8 @@ type expression =
   | Float of float
   | Stock of string
   | Var of string
-  | Unop of unop * expression
+  | Lit of int
+  | Uop of uop * expression
   | Binop of expression * binop * expression
   | Assign of string * expression
   | Call of string * expression list
@@ -37,7 +32,14 @@ type expression =
     | Vdecl of var_decl
     | Ret of expression
     | Print of expression
-    | Fdecl of func_decl
+
+
+    type func_decl = {
+      rtype : data_type;
+      name : string;
+      formals : var_decl list;
+      body : statement list;
+    }
 
   type program = {
         statements : statement list;
