@@ -1,10 +1,14 @@
 open Ast
 let rec eval = function
 String(x) -> x
+| Int(x) -> x
 | Binop(e1, op, e2) ->
 let v1 = eval e1 and v2 = eval e2 in
 (match op with
-| Add -> v1 ^ v2
+| Add -> ( match v1 with
+| int ->  string_of_int ((int_of_string v1) + (int_of_string v2))
+| string -> v1 ^ v2
+)
 | _ -> v1 ^ v2
 )
 

@@ -5,9 +5,8 @@ type token =
   | DIVOP
   | MODOP
   | EOF
-  | LITERAL of (int)
-  | VARIABLE of (int)
   | STRING of (string)
+  | INT of (int)
 
 val expr :
   (Lexing.lexbuf  -> token) -> Lexing.lexbuf -> Ast.expression

@@ -143,36 +143,36 @@ and __ocaml_lex_token_rec lexbuf __ocaml_lex_state =
 
   | 7 ->
 let
-# 42 "lexer.mll"
-                num
+# 60 "lexer.mll"
+                int
 # 149 "lexer.ml"
 = Lexing.sub_lexeme lexbuf lexbuf.Lexing.lex_start_pos lexbuf.Lexing.lex_curr_pos in
-# 42 "lexer.mll"
-                                      ( LITERAL(int_of_string num) )
+# 60 "lexer.mll"
+                                      ( INT(int_of_string int) )
 # 153 "lexer.ml"
 
   | 8 ->
 let
-# 45 "lexer.mll"
+# 61 "lexer.mll"
                                str
 # 159 "lexer.ml"
 = Lexing.sub_lexeme lexbuf lexbuf.Lexing.lex_start_pos lexbuf.Lexing.lex_curr_pos in
-# 45 "lexer.mll"
+# 61 "lexer.mll"
                                       ( STRING(str) )
 # 163 "lexer.ml"
 
   | 9 ->
-# 61 "lexer.mll"
+# 62 "lexer.mll"
                                       ( EOF )
 # 168 "lexer.ml"
 
   | 10 ->
 let
-# 62 "lexer.mll"
+# 63 "lexer.mll"
            char
 # 174 "lexer.ml"
 = Lexing.sub_lexeme_char lexbuf lexbuf.Lexing.lex_start_pos in
-# 62 "lexer.mll"
+# 63 "lexer.mll"
                 ( raise (Failure("illegal character " ^ Char.escaped char)) )
 # 178 "lexer.ml"
 
@@ -184,12 +184,12 @@ and comment lexbuf =
 and __ocaml_lex_comment_rec lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 65 "lexer.mll"
+# 66 "lexer.mll"
                                       (token lexbuf)
 # 190 "lexer.ml"
 
   | 1 ->
-# 66 "lexer.mll"
+# 67 "lexer.mll"
                                       (comment lexbuf)
 # 195 "lexer.ml"
 

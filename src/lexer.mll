@@ -14,14 +14,14 @@ let ws = [' ' '\r' '\t' '\n']
 rule token = parse
     | ws                              {token lexbuf}
     | '#'                             {comment lexbuf}
-    (*| '='                             { ASSIGN }
-    | '#'                             { COMMENT }*)
+    | '='                             { ASSIGN }
+    | '#'                             { COMMENT }
     | '*'                             { MULOP }
     | '/'                             { DIVOP }
     | '+'                             { ADDOP }
     | '-'                             { SUBOP }
     | '%'                             { MODOP }
-    (*| "<>"                            { SWAP }
+    | "<>"                            { SWAP }
     | "<="                            { LEQ }
     | ">="                            { GEQ }
     | '<'                             { LT }
@@ -34,30 +34,50 @@ rule token = parse
     | ','                             { COMMA }
     | ';'                             { SEMICOLON }
     | ':'                             { TYPEASSIGNMENT }
+    | "::"                            { LINEBUFFER }
     | '{'                             { LEFTPAREN }
     | '}'                             { RIGHTPAREN }
     | "+="                            { APPEND }
     | "while"                         { WHILE }
-    | "if"                            { IF }*)
     | digit+ as num                   { LITERAL(int_of_string num) }
-    (*| digit+ as int                   { INT(int_of_string int) }
-    | digit+'.'digit+ as float        { FLOAT(float_of_string float) }*)
-    | '"'('\\'_|[^'"'])*'"' as str    { STRING(str) }
-    (*| "boolean"                       { BOOL }
+    | digit+ as int                   { INT(int_of_string int) }
+    | digit+'.'digit+ as float        { FLOAT(float_of_string float) }
+    | "bool"                          { BOOL }
     | "true"                          { TRUE }
     | "false"                         { FALSE }
     | "int"                           { INTD }
-    | "byte"                          { BYTED }
-    | "char"                          { CHARD }
-    | "string"                        { STRINGD }
     | "float"                         { FLOATD }
+    | "string"                        { STRINGD }
     | "pdf"                           { PDF }
-    | "blob"                          { BLOB }
-    | "dataset"                       { DATASET }
     | "page"                          { PAGE }
+    | "line"                          { LINE }
     | "list"                          { LIST }
-    | "return"                        { RETURN }
-    | id                              { ID(id) }*)
+    | "map"                           { MAP }
+    | "paragraph"                     { PARAGRAPH }
+    | "if"                            { IF }
+    | "elif"                          { ELIF }
+    | "else"                          { ELSE }
+    | "while"                         { WHILELOOP }
+    | "for"                           { FORLOOP }
+    | "break"                         { BREAK }
+    | "continue"                      { CONTINUE }
+    | "import"                        { IMPORT }
+    | "split"                         { SPLIT }
+    | "watermark"                     { WATERMARK }
+    | "protect"                       { PROTECT }
+    | "loadText"                      { LOADTEXT }
+    | "loadImage"                     { LOADIMAGE }
+    | "loadPDF"                       { LOADPDF  }
+    | "loadCSV"                       { LOADCSV }
+    | "renderPDF"                     { RENDER }
+    | "print"                         { PRINT }
+    | "scan"                          { SCAN }
+    | "sizeof"                        { SIZE }
+    | "void"                          { VOID }
+    | "null"                          { NULL }
+    | id                              { ID(id) }
+    | digit+ as int                   { INT(int_of_string int) }
+    | '"'('\\'_|[^'"'])*'"' as str    { STRING(str) }
     | eof                             { EOF }
     | _ as char { raise (Failure("illegal character " ^ Char.escaped char)) }
 

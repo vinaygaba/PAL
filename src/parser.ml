@@ -5,15 +5,14 @@ type token =
   | DIVOP
   | MODOP
   | EOF
-  | LITERAL of (int)
-  | VARIABLE of (int)
   | STRING of (string)
+  | INT of (int)
 
 open Parsing;;
 let _ = parse_error;;
 # 1 "parser.mly"
  open Ast 
-# 17 "parser.ml"
+# 16 "parser.ml"
 let yytransl_const = [|
   257 (* ADDOP *);
   258 (* SUBOP *);
@@ -24,9 +23,8 @@ let yytransl_const = [|
     0|]
 
 let yytransl_block = [|
-  262 (* LITERAL *);
-  263 (* VARIABLE *);
-  264 (* STRING *);
+  262 (* STRING *);
+  263 (* INT *);
     0|]
 
 let yylhs = "\255\255\
@@ -43,8 +41,8 @@ let yydgoto = "\002\000\
 \005\000"
 
 let yysindex = "\255\255\
-\005\255\000\000\000\000\000\000\003\255\005\255\005\255\005\255\
-\005\255\011\255\011\255\000\000\000\000"
+\006\255\000\000\000\000\000\000\003\255\006\255\006\255\006\255\
+\006\255\011\255\011\255\000\000\000\000"
 
 let yyrindex = "\000\000\
 \000\000\000\000\000\000\000\000\016\000\000\000\000\000\000\000\
@@ -91,7 +89,7 @@ let yytable = "\001\000\
 
 let yycheck = "\001\000\
 \000\000\255\255\000\000\001\001\002\001\003\001\004\001\006\000\
-\007\000\008\000\009\000\007\001\008\001\003\001\004\001\000\000\
+\007\000\008\000\009\000\006\001\007\001\003\001\004\001\000\000\
 \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
 \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
 \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
@@ -134,9 +132,8 @@ let yynames_const = "\
   "
 
 let yynames_block = "\
-  LITERAL\000\
-  VARIABLE\000\
   STRING\000\
+  INT\000\
   "
 
 let yyact = [|
@@ -145,47 +142,47 @@ let yyact = [|
     let _1 = (Parsing.peek_val __caml_parser_env 2 : Ast.expression) in
     let _3 = (Parsing.peek_val __caml_parser_env 0 : Ast.expression) in
     Obj.repr(
-# 12 "parser.mly"
+# 11 "parser.mly"
                 ( Binop(_1, Add, _3) )
-# 151 "parser.ml"
+# 148 "parser.ml"
+               : Ast.expression))
+; (fun __caml_parser_env ->
+    let _1 = (Parsing.peek_val __caml_parser_env 2 : Ast.expression) in
+    let _3 = (Parsing.peek_val __caml_parser_env 0 : Ast.expression) in
+    Obj.repr(
+# 12 "parser.mly"
+                  ( Binop(_1, Sub, _3) )
+# 156 "parser.ml"
                : Ast.expression))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 2 : Ast.expression) in
     let _3 = (Parsing.peek_val __caml_parser_env 0 : Ast.expression) in
     Obj.repr(
 # 13 "parser.mly"
-                  ( Binop(_1, Sub, _3) )
-# 159 "parser.ml"
+                  ( Binop(_1, Mul, _3) )
+# 164 "parser.ml"
                : Ast.expression))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 2 : Ast.expression) in
     let _3 = (Parsing.peek_val __caml_parser_env 0 : Ast.expression) in
     Obj.repr(
 # 14 "parser.mly"
-                  ( Binop(_1, Mul, _3) )
-# 167 "parser.ml"
+                  ( Binop(_1, Div, _3) )
+# 172 "parser.ml"
                : Ast.expression))
 ; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 2 : Ast.expression) in
-    let _3 = (Parsing.peek_val __caml_parser_env 0 : Ast.expression) in
+    let _1 = (Parsing.peek_val __caml_parser_env 0 : string) in
     Obj.repr(
 # 15 "parser.mly"
-                  ( Binop(_1, Div, _3) )
-# 175 "parser.ml"
+         ( String(_1) )
+# 179 "parser.ml"
                : Ast.expression))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 0 : int) in
     Obj.repr(
 # 16 "parser.mly"
-           ( Var(string_of_int _1))
-# 182 "parser.ml"
-               : Ast.expression))
-; (fun __caml_parser_env ->
-    let _1 = (Parsing.peek_val __caml_parser_env 0 : string) in
-    Obj.repr(
-# 17 "parser.mly"
-         ( String(_1) )
-# 189 "parser.ml"
+      ( Int(_1) )
+# 186 "parser.ml"
                : Ast.expression))
 (* Entry expr *)
 ; (fun __caml_parser_env -> raise (Parsing.YYexit (Parsing.peek_val __caml_parser_env 0)))

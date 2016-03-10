@@ -15,9 +15,6 @@ type expression =
   Int of int
   | String of string
   | Float of float
-  | Stock of string
-  | Var of string
-  | Lit of int
   | Uop of uop * expression
   | Binop of expression * binop * expression
   | Assign of string * expression
@@ -27,7 +24,6 @@ type expression =
   type statement =
     Expr of expression
     | While of expression * statement list
-    | When of (expression * binop * expression) * statement list
     | If of expression * statement list * statement list
     | Vdecl of var_decl
     | Ret of expression
