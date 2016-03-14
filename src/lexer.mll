@@ -13,9 +13,19 @@ let ws = [' ' '\r' '\t' '\n']
 
 rule token = parse
     | ws                              {token lexbuf}
-    | '#'                             {comment lexbuf}
-    | '='                             { ASSIGN }
-    | '#'                             { COMMENT }
+    | ','                             { COMMA }
+    | ';'                             { SEMICOLON }
+    | ':'                             { TYPEASSIGNMENT }
+    | "::"                            { LINEBUFFER }
+    | eof                             { EOF }
+    (* Scoping *)
+    | '{'                             { LEFTBRACE }
+    | '}'                             { RIGHTBRACE }
+    | '('                             { LEFTPAREN }
+    | ')'                             { RIGHTPAREN }
+    | '['                             { LEFTBRAC }
+    | ']'                             { RIGHTBRAC }
+    (* Operators *)
     | '*'                             { MULOP }
     | '/'                             { DIVOP }
     | '+'                             { ADDOP }
@@ -31,29 +41,19 @@ rule token = parse
     | "&&"                            { AND }
     | "||"                            { OR }
     | "!"                             { NOT }
-    | ','                             { COMMA }
-    | ';'                             { SEMICOLON }
-    | ':'                             { TYPEASSIGNMENT }
-    | "::"                            { LINEBUFFER }
-    | '{'                             { LEFTPAREN }
-    | '}'                             { RIGHTPAREN }
+    | '='                             { ASSIGN }
     | "+="                            { APPEND }
-    | "while"                         { WHILE }
-    | digit+ as num                   { LITERAL(int_of_string num) }
-    | digit+ as int                   { INT(int_of_string int) }
-    | digit+'.'digit+ as float        { FLOAT(float_of_string float) }
-    | "bool"                          { BOOL }
-    | "true"                          { TRUE }
-    | "false"                         { FALSE }
+    | '.'                             { CONCAT }
+    (* Keywords *)
+    | "bool"                          { BOOLD }
+    | "true"                          { BOOL(true) }
+    | "false"                         { BOOL(false) }
     | "int"                           { INTD }
     | "float"                         { FLOATD }
     | "string"                        { STRINGD }
     | "pdf"                           { PDF }
     | "page"                          { PAGE }
     | "line"                          { LINE }
-    | "list"                          { LIST }
-    | "map"                           { MAP }
-    | "paragraph"                     { PARAGRAPH }
     | "if"                            { IF }
     | "elif"                          { ELIF }
     | "else"                          { ELSE }
@@ -62,24 +62,18 @@ rule token = parse
     | "break"                         { BREAK }
     | "continue"                      { CONTINUE }
     | "import"                        { IMPORT }
-    | "split"                         { SPLIT }
-    | "watermark"                     { WATERMARK }
-    | "protect"                       { PROTECT }
-    | "loadText"                      { LOADTEXT }
-    | "loadImage"                     { LOADIMAGE }
-    | "loadPDF"                       { LOADPDF  }
-    | "loadCSV"                       { LOADCSV }
-    | "renderPDF"                     { RENDER }
-    | "print"                         { PRINT }
-    | "scan"                          { SCAN }
-    | "sizeof"                        { SIZE }
     | "void"                          { VOID }
     | "null"                          { NULL }
-    | id                              { ID(id) }
+    | "function"                      { FUNCTION }
+    (* Literals *)
     | digit+ as int                   { INT(int_of_string int) }
+    | digit+'.'digit+ as float        { FLOAT(float_of_string float) }
     | '"'('\\'_|[^'"'])*'"' as str    { STRING(str) }
-    | eof                             { EOF }
-    | _ as char { raise (Failure("illegal character " ^ Char.escaped char)) }
+    (* Identifier *)
+    | id                              { ID(id) }
+    (* Comment *)
+    | '#'                             {comment lexbuf}
+    | _ as char { raise (Failure("Illegal character " ^ Char.escaped char)) }
 
 and comment = parse
     | '\n'                            {token lexbuf}
