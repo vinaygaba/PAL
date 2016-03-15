@@ -30,7 +30,7 @@ expr:
 STRING               { String($1) }
 | INT                { Int($1) }
 | FLOAT              { Float($1) }
-| BOOL               { BOOL($1) }
+| BOOL               { Bool($1) }
 | expr ADDOP expr    { Binop($1, Add, $3) }
 | expr SUBOP expr    { Binop($1, Sub, $3) }
 | expr MULOP expr    { Binop($1, Mul, $3) }
