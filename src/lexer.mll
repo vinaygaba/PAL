@@ -42,7 +42,6 @@ rule token = parse
     | "||"                            { OR }
     | "!"                             { NOT }
     | '='                             { ASSIGN }
-    | "+="                            { APPEND }
     | '.'                             { CONCAT }
     (* Keywords *)
     | "bool"                          { BOOLD }
@@ -51,9 +50,9 @@ rule token = parse
     | "int"                           { INTD }
     | "float"                         { FLOATD }
     | "string"                        { STRINGD }
-    | "pdf"                           { PDF }
-    | "page"                          { PAGE }
-    | "line"                          { LINE }
+    | "pdf"                           { PDFD }
+    | "page"                          { PAGED }
+    | "line"                          { LINED }
     | "if"                            { IF }
     | "elif"                          { ELIF }
     | "else"                          { ELSE }
@@ -70,7 +69,7 @@ rule token = parse
     | digit+'.'digit+ as float        { FLOAT(float_of_string float) }
     | '"'('\\'_|[^'"'])*'"' as str    { STRING(str) }
     (* Identifier *)
-    | id                              { ID(id) }
+    | id as i                              { ID(i) }
     (* Comment *)
     | '#'                             {comment lexbuf}
     | _ as char { raise (Failure("Illegal character " ^ Char.escaped char)) }

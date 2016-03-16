@@ -1,7 +1,6 @@
 open Ast
 let rec eval = function
-String(x) -> x
-| Int(x) -> x
+LitString(x) -> x
 | Binop(e1, op, e2) ->
 let v1 = eval e1 and v2 = eval e2 in
 (match op with
@@ -14,6 +13,6 @@ let v1 = eval e1 and v2 = eval e2 in
 
 let _ =
 let lexbuf = Lexing.from_channel stdin in
-let expr = Parser.expr Lexer.token lexbuf in
+let expr = Parser.program Lexer.token lexbuf in
 let result = eval expr in
 print_endline (result);;
