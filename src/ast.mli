@@ -26,7 +26,7 @@ type expression =
 
   type statement =
     | While of expression * statement list
-(*    | If of expression * statement list * statement list *)
+    | If of conditional list * stmt list option
     | Vdecl of var_decl
     | Assign of id * expression
     | InitAssign of id * data_type * expression

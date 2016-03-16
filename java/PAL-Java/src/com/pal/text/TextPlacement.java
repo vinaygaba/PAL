@@ -36,6 +36,7 @@ public class TextPlacement {
 		content.drawString("Still some more text.");
 		
 		content.close();
+		int a = 5;
 		
 		document.save("test.pdf");
 		document.close();
