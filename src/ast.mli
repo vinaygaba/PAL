@@ -21,7 +21,7 @@ type expression =
   | LitBool of bool
   | Uop of uop * expression
   | Binop of expression * binop * expression
-  | Call of string * expression list
+  | CallExpr of expression * expression list
   | Noexpr
 
   type statement =
@@ -33,6 +33,7 @@ type expression =
     | ObjectCreate of id * sp_data_type * expression
     | For of statement * expression * statement * statement list
     | Ret of expression
+    | CallStmt of expression * expression list
 
 
     type func_decl = {
