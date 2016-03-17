@@ -40,6 +40,8 @@ type expression =
       condition : expression;
       body : statement list;
     }
+  type import_stmt = 
+    | Import of string
 
     type func_decl = {
       rtype : data_type;
@@ -48,4 +50,4 @@ type expression =
       body : statement list;
     }
 
- type program = statement list
+ type program = import_stmt list * func_decl
