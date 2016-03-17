@@ -50,4 +50,4 @@ type expression =
       body : statement list;
     }
 
- type program = import_stmt list * func_decl
+ type program = import_stmt list * func_decl list
