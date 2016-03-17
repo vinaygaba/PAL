@@ -52,5 +52,5 @@ type token =
   | PAGED
   | LINED
 
-val expr :
-  (Lexing.lexbuf  -> token) -> Lexing.lexbuf -> Ast.expr
+val program :
+  (Lexing.lexbuf  -> token) -> Lexing.lexbuf -> Ast.program

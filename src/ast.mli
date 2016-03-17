@@ -21,20 +21,25 @@ type expression =
   | LitBool of bool
   | Uop of uop * expression
   | Binop of expression * binop * expression
-  | CallExpr of expression * expression list
+  | CallExpr of string * expression list
   | Noexpr
+
 
   type statement =
     | While of expression * statement list
-    | If of conditional list * stmt list option
+    | If of conditional list * statement list option
     | Vdecl of var_decl
     | Assign of id * expression
     | InitAssign of id * data_type * expression
     | ObjectCreate of id * sp_data_type * expression
     | For of statement * expression * statement * statement list
     | Ret of expression
-    | CallStmt of expression * expression list
+    | CallStmt of string * expression list
 
+    and conditional = {
+      condition : expression;
+      body : statement list;
+    }
 
     type func_decl = {
       rtype : data_type;

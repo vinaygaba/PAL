@@ -42,7 +42,7 @@ stmt_list:
 
 expr_list:
    /* nothing */  { [] }
-  | expr_list expr COMMA {$2 :: $1 } 
+  | expr_list expr COMMA {$2 :: $1 }
   | expr_list expr {$2 :: $1}
 
 
@@ -50,7 +50,7 @@ body:
    LEFTBRACE stmt_list RIGHTBRACE { List.rev $2 }
 
 function_call:
-     ID LEFTPAREN expr_list RIGHTPAREN SEMICOLON                    {($1,$3)} 
+     ID LEFTPAREN expr_list RIGHTPAREN SEMICOLON                    {($1,$3)}
 
 
 stmt:
@@ -61,8 +61,8 @@ stmt:
   | ID TYPEASSIGNMENT sp_data_type LEFTPAREN expr RIGHTPAREN   { ObjectCreate($1, $3, $5) }
   | FORLOOP LEFTPAREN assign_stmt SEMICOLON expr_stmt SEMICOLON assign_stmt RIGHTPAREN body { For($3, $5, $7, $9) }
   | RETURN expr SEMICOLON                                           { Ret($2) }
-  | function_call                                                    {CallStmt($1,$3)}
-  
+  | function_call                                                    {CallStmt(fst $1,snd $1)}
+
 assign_stmt:
   ID ASSIGN expr                                                    { Assign($1, $3) }
 | ID TYPEASSIGNMENT data_type ASSIGN expr                           { InitAssign($1,$3,$5) }
@@ -102,7 +102,7 @@ STRING               { LitString($1) }
 | expr AND    expr   { Binop($1, And,     $3) }
 | expr OR     expr   { Binop($1, Or,      $3) }
 | NOT  expr         { Uop(Not,$2) }
-| function_call     {CallExpr($1,$3)}
+| function_call     {CallExpr(fst $1,snd $1)}
 
 
 
