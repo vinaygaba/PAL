@@ -1,46 +1,54 @@
 type binop = Add | Sub | Mul | Div | Mod | Equal | Neq | Less | Leq | Greater | Geq |
-          And | Or | Swap | Append
+          And | Or | Swap | Append | Concat
 
 type uop = Neg | Not
 
-type data_type = Int | Boolean | Float | Byte | Char
+type data_type = Int | Bool | Float | String | Pdf | Page
 
-type var_decl = {
-  dtype: data_type;
-  vname: string;
-}
+type sp_data_type = Line
+
+type id = string
+
+type var_decl = id * data_type
+
 
 
 type expression =
-  Int of int
-  | String of string
-  | Float of float
-  | Stock of string
-  | Var of string
-  | Lit of int
+  LitInt of int
+  | LitString of string
+  | Iden of id
+  | LitFloat of float
+  | LitBool of bool
   | Uop of uop * expression
   | Binop of expression * binop * expression
-  | Assign of string * expression
-  | Call of string * expression list
+  | CallExpr of string * expression list
   | Noexpr
 
-  type statement =
-    Expr of expression
-    | While of expression * statement list
-    | When of (expression * binop * expression) * statement list
-    | If of expression * statement list * statement list
-    | Vdecl of var_decl
-    | Ret of expression
-    | Print of expression
 
+type statement =
+  | While of expression * statement list
+  | If of conditional list * statement list option
+  | Vdecl of var_decl
+  | Assign of id * expression
+  | InitAssign of id * data_type * expression
+  | ObjectCreate of id * sp_data_type * expression
+  | For of statement * expression * statement * statement list
+  | Ret of expression
+  | CallStmt of string * expression list
 
-    type func_decl = {
-      rtype : data_type;
-      name : string;
-      formals : var_decl list;
-      body : statement list;
-    }
+  and conditional = {
+    condition : expression;
+    body : statement list;
+  }
+  
+type import_stmt = 
+  | Import of string
 
-  type program = {
-        statements : statement list;
-    }
+  type func_decl = {
+    rtype : data_type;
+    name : string;
+    formals : var_decl list;
+    body : statement list;
+  }
+
+ type program = Program of import_stmt list * func_decl list
