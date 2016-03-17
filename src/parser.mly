@@ -32,7 +32,23 @@
 %%
 
 program:
-  stmt_list { List.rev $1 }
+  import_decl_list func_decl_list EOF  { Program(List.rev $1, List.rev $2) }
+
+import_decl_list:
+                                   { [] }
+  | import_decl_list import_decl { $2::$1 }
+
+func_decl_list:
+                                    { [] }
+  | func_decl_list func_decl        { $2::$1 }
+
+func_decl : 
+  ID LEFTPAREN expr_list RIGHTPAREN TYPEASSIGNMENT data_type body { rtype : $6; name : $1; formals : $3 ; body : $7; } 
+  
+
+import_decl:
+	IMPORT LEFTPAREN STRING RIGHTPAREN SEMICOLON { Import($3) }
+
 
 stmt_list:
    /* nothing */  { [] }
@@ -106,8 +122,3 @@ STRING               { LitString($1) }
 
 
 
-/*Remove the swap operator.
-+Allows you to add only objects of similar type
-. lets you add objects of different types
-. had higher precedence than +
-Eg. pdf1 . page1 + pad2.page2*/
