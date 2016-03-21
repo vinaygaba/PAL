@@ -41,11 +41,10 @@ type expression =
       body : statement list;
     }
 
-    type func_decl = {
-      rtype : data_type;
-      name : string;
-      formals : var_decl list;
-      body : statement list;
-    }
 
- type program = statement list
+    type func_decl =
+    FuncDeclaration of data_type * string * var_decl list * statement list
+
+type import_stmt = Import of string
+
+ type program = Program of import_stmt list * func_decl list
