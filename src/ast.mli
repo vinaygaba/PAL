@@ -25,6 +25,7 @@ type expression =
   | Noexpr
 
 
+<<<<<<< HEAD
   type statement =
     | While of expression * statement list
     | If of conditional list * statement list option
@@ -46,5 +47,32 @@ type expression =
     FuncDeclaration of data_type * string * var_decl list * statement list
 
 type import_stmt = Import of string
+=======
+type statement =
+  | While of expression * statement list
+  | If of conditional list * statement list option
+  | Vdecl of var_decl
+  | Assign of id * expression
+  | InitAssign of id * data_type * expression
+  | ObjectCreate of id * sp_data_type * expression
+  | For of statement * expression * statement * statement list
+  | Ret of expression
+  | CallStmt of string * expression list
+
+  and conditional = {
+    condition : expression;
+    body : statement list;
+  }
+  
+type import_stmt = 
+  | Import of string
+
+  type func_decl = {
+    rtype : data_type;
+    name : string;
+    formals : var_decl list;
+    body : statement list;
+  }
+>>>>>>> 806fbcecf3c9ba682ff9503796ee8b86bc362525
 
  type program = Program of import_stmt list * func_decl list

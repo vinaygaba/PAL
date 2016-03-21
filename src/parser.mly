@@ -31,9 +31,30 @@
 %type <Ast.program> program
 %%
 
+<<<<<<< HEAD
 func_decl_list:
                           {[]}
   | func_decl_list func_decl {$2 :: $1}
+=======
+program:
+  import_decl_list func_decl_list EOF  { Program(List.rev $1, List.rev $2) }
+
+import_decl_list:
+                                   { [] }
+  | import_decl_list import_decl { $2::$1 }
+
+func_decl_list:
+                                    { [] }
+  | func_decl_list func_decl        { $2::$1 }
+
+func_decl : 
+  ID LEFTPAREN expr_list RIGHTPAREN TYPEASSIGNMENT data_type body { rtype : $6; name : $1; formals : $3 ; body : $7; } 
+  
+
+import_decl:
+	IMPORT LEFTPAREN STRING RIGHTPAREN SEMICOLON { Import($3) }
+
+>>>>>>> 806fbcecf3c9ba682ff9503796ee8b86bc362525
 
 
   import_decl_list:
@@ -118,6 +139,7 @@ expr_list:
   | expr GEQ    expr                                                { Binop($1, Geq,     $3) }
 
 
+<<<<<<< HEAD
   function_call:
        ID LEFTPAREN expr_list RIGHTPAREN SEMICOLON                    {($1,$3)}
 /*Remove the swap operator.
@@ -125,3 +147,5 @@ expr_list:
 . lets you add objects of different types
 . had higher precedence than +
 Eg. pdf1 . page1 + pad2.page2*/
+=======
+>>>>>>> 806fbcecf3c9ba682ff9503796ee8b86bc362525
