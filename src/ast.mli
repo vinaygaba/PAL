@@ -9,7 +9,7 @@ type sp_data_type = Line
 
 type id = string
 
-type var_decl = id * data_type
+type var_decl =  id * data_type
 
 
 
@@ -25,28 +25,32 @@ type expression =
   | Noexpr
 
 
-  type statement =
-    | While of expression * statement list
-    | If of conditional list * statement list option
-    | Vdecl of var_decl
-    | Assign of id * expression
-    | InitAssign of id * data_type * expression
-    | ObjectCreate of id * sp_data_type * expression
-    | For of statement * expression * statement * statement list
-    | Ret of expression
-    | CallStmt of string * expression list
+type statement =
+  | Ret of expression
+  | While of expression * statement list
+  | If of conditional list * statement list option
+  | Assign of id * expression
+  | Vdecl of var_decl
+  | InitAssign of id * data_type * expression
+  | ObjectCreate of id * sp_data_type * expression list
+  | For of statement * expression * statement * statement list
+  | CallStmt of string * expression list
 
-    and conditional = {
-      condition : expression;
-      body : statement list;
-    }
+  and conditional = {
+    condition : expression;
+    body : statement list;
+  }
+  
+type import_stmt = 
+  | Import of string
 
+type func_decl = {
+  rtype : data_type;
+  name : string;
+  formals : statement list;
+  body : statement list;
+}
 
-    type func_decl =
-    FuncDeclaration of data_type * string * var_decl list * statement list
+type program = Program of import_stmt list 
 
-type import_stmt = Import of string
-
-
-
- type program = Program of import_stmt list * func_decl list
+ 
