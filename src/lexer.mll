@@ -53,6 +53,7 @@ rule token = parse
     | "pdf"                           { PDFD }
     | "page"                          { PAGED }
     | "line"                          { LINED }
+    | "list"                          { LISTD }
     | "if"                            { IF }
     | "elif"                          { ELIF }
     | "else"                          { ELSE }
