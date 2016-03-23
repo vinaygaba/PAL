@@ -51,6 +51,6 @@ type func_decl = {
   body : statement list;
 }
 
-type program = Program of import_stmt list 
+type program = Program of import_stmt list * func_decl list
 
  

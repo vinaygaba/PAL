@@ -1,0 +1,1701 @@
+   0  $accept : %entry% $end
+
+   1  program : import_decl_list func_decl_list EOF
+
+   2  import_decl_list :
+   3                   | import_decl_list import_decl
+
+   4  func_decl_list :
+   5                 | func_decl_list func_decl
+
+   6  func_decl : ID LEFTPAREN stmt_list RIGHTPAREN TYPEASSIGNMENT data_type body
+
+   7  import_decl : IMPORT LEFTPAREN STRING RIGHTPAREN SEMICOLON
+
+   8  stmt_list :
+   9            | stmt_list stmt
+
+  10  expr_list :
+  11            | expr_list expr COMMA
+  12            | expr_list expr
+
+  13  body : LEFTBRACE stmt_list RIGHTBRACE
+
+  14  function_call : ID LEFTPAREN expr_list RIGHTPAREN SEMICOLON
+
+  15  stmt : assign_stmt SEMICOLON
+  16       | FORLOOP LEFTPAREN assign_stmt SEMICOLON expr_stmt SEMICOLON assign_stmt RIGHTPAREN body
+  17       | RETURN expr SEMICOLON
+  18       | function_call
+  19       | WHILELOOP LEFTPAREN expr_stmt RIGHTPAREN body
+  20       | ID TYPEASSIGNMENT sp_data_type LEFTPAREN expr_list RIGHTPAREN SEMICOLON
+
+  21  v_decl : ID TYPEASSIGNMENT data_type SEMICOLON
+
+  22  assign_stmt : ID ASSIGN expr
+  23              | ID TYPEASSIGNMENT data_type ASSIGN expr
+
+  24  expr_stmt : expr EQ expr
+  25            | expr NEQ expr
+  26            | expr LT expr
+  27            | expr LEQ expr
+  28            | expr GT expr
+  29            | expr GEQ expr
+
+  30  data_type : STRINGD
+  31            | INTD
+  32            | FLOATD
+  33            | BOOLD
+
+  34  sp_data_type : LINED
+
+  35  expr : STRING
+  36       | INT
+  37       | FLOAT
+  38       | BOOL
+  39       | ID
+  40       | expr ADDOP expr
+  41       | expr SUBOP expr
+  42       | expr MULOP expr
+  43       | expr DIVOP expr
+  44       | expr CONCAT expr
+  45       | expr MODOP expr
+  46       | expr_stmt
+  47       | expr AND expr
+  48       | expr OR expr
+  49       | NOT expr
+  50       | function_call
+
+  51  %entry% : '\001' program
+
+state 0
+	$accept : . %entry% $end  (0)
+
+	'\001'  shift 1
+	.  error
+
+	%entry%  goto 2
+
+
+state 1
+	%entry% : '\001' . program  (51)
+	import_decl_list : .  (2)
+
+	.  reduce 2
+
+	program  goto 3
+	import_decl_list  goto 4
+
+
+state 2
+	$accept : %entry% . $end  (0)
+
+	$end  accept
+
+
+state 3
+	%entry% : '\001' program .  (51)
+
+	.  reduce 51
+
+
+state 4
+	program : import_decl_list . func_decl_list EOF  (1)
+	import_decl_list : import_decl_list . import_decl  (3)
+	func_decl_list : .  (4)
+
+	IMPORT  shift 5
+	EOF  reduce 4
+	ID  reduce 4
+
+	func_decl_list  goto 6
+	import_decl  goto 7
+
+
+state 5
+	import_decl : IMPORT . LEFTPAREN STRING RIGHTPAREN SEMICOLON  (7)
+
+	LEFTPAREN  shift 8
+	.  error
+
+
+state 6
+	program : import_decl_list func_decl_list . EOF  (1)
+	func_decl_list : func_decl_list . func_decl  (5)
+
+	EOF  shift 9
+	ID  shift 10
+	.  error
+
+	func_decl  goto 11
+
+
+state 7
+	import_decl_list : import_decl_list import_decl .  (3)
+
+	.  reduce 3
+
+
+state 8
+	import_decl : IMPORT LEFTPAREN . STRING RIGHTPAREN SEMICOLON  (7)
+
+	STRING  shift 12
+	.  error
+
+
+state 9
+	program : import_decl_list func_decl_list EOF .  (1)
+
+	.  reduce 1
+
+
+state 10
+	func_decl : ID . LEFTPAREN stmt_list RIGHTPAREN TYPEASSIGNMENT data_type body  (6)
+
+	LEFTPAREN  shift 13
+	.  error
+
+
+state 11
+	func_decl_list : func_decl_list func_decl .  (5)
+
+	.  reduce 5
+
+
+state 12
+	import_decl : IMPORT LEFTPAREN STRING . RIGHTPAREN SEMICOLON  (7)
+
+	RIGHTPAREN  shift 14
+	.  error
+
+
+state 13
+	func_decl : ID LEFTPAREN . stmt_list RIGHTPAREN TYPEASSIGNMENT data_type body  (6)
+	stmt_list : .  (8)
+
+	.  reduce 8
+
+	stmt_list  goto 15
+
+
+state 14
+	import_decl : IMPORT LEFTPAREN STRING RIGHTPAREN . SEMICOLON  (7)
+
+	SEMICOLON  shift 16
+	.  error
+
+
+state 15
+	func_decl : ID LEFTPAREN stmt_list . RIGHTPAREN TYPEASSIGNMENT data_type body  (6)
+	stmt_list : stmt_list . stmt  (9)
+
+	RIGHTPAREN  shift 17
+	WHILELOOP  shift 18
+	FORLOOP  shift 19
+	RETURN  shift 20
+	ID  shift 21
+	.  error
+
+	stmt  goto 22
+	function_call  goto 23
+	assign_stmt  goto 24
+
+
+state 16
+	import_decl : IMPORT LEFTPAREN STRING RIGHTPAREN SEMICOLON .  (7)
+
+	.  reduce 7
+
+
+state 17
+	func_decl : ID LEFTPAREN stmt_list RIGHTPAREN . TYPEASSIGNMENT data_type body  (6)
+
+	TYPEASSIGNMENT  shift 25
+	.  error
+
+
+state 18
+	stmt : WHILELOOP . LEFTPAREN expr_stmt RIGHTPAREN body  (19)
+
+	LEFTPAREN  shift 26
+	.  error
+
+
+state 19
+	stmt : FORLOOP . LEFTPAREN assign_stmt SEMICOLON expr_stmt SEMICOLON assign_stmt RIGHTPAREN body  (16)
+
+	LEFTPAREN  shift 27
+	.  error
+
+
+state 20
+	stmt : RETURN . expr SEMICOLON  (17)
+
+	NOT  shift 28
+	ID  shift 29
+	STRING  shift 30
+	INT  shift 31
+	FLOAT  shift 32
+	BOOL  shift 33
+	.  error
+
+	expr  goto 34
+	function_call  goto 35
+	expr_stmt  goto 36
+
+
+state 21
+	function_call : ID . LEFTPAREN expr_list RIGHTPAREN SEMICOLON  (14)
+	stmt : ID . TYPEASSIGNMENT sp_data_type LEFTPAREN expr_list RIGHTPAREN SEMICOLON  (20)
+	assign_stmt : ID . ASSIGN expr  (22)
+	assign_stmt : ID . TYPEASSIGNMENT data_type ASSIGN expr  (23)
+
+	LEFTPAREN  shift 37
+	TYPEASSIGNMENT  shift 38
+	ASSIGN  shift 39
+	.  error
+
+
+state 22
+	stmt_list : stmt_list stmt .  (9)
+
+	.  reduce 9
+
+
+state 23
+	stmt : function_call .  (18)
+
+	.  reduce 18
+
+
+state 24
+	stmt : assign_stmt . SEMICOLON  (15)
+
+	SEMICOLON  shift 40
+	.  error
+
+
+state 25
+	func_decl : ID LEFTPAREN stmt_list RIGHTPAREN TYPEASSIGNMENT . data_type body  (6)
+
+	INTD  shift 41
+	BOOLD  shift 42
+	STRINGD  shift 43
+	FLOATD  shift 44
+	.  error
+
+	data_type  goto 45
+
+
+state 26
+	stmt : WHILELOOP LEFTPAREN . expr_stmt RIGHTPAREN body  (19)
+
+	NOT  shift 28
+	ID  shift 29
+	STRING  shift 30
+	INT  shift 31
+	FLOAT  shift 32
+	BOOL  shift 33
+	.  error
+
+	expr  goto 46
+	function_call  goto 35
+	expr_stmt  goto 47
+
+
+state 27
+	stmt : FORLOOP LEFTPAREN . assign_stmt SEMICOLON expr_stmt SEMICOLON assign_stmt RIGHTPAREN body  (16)
+
+	ID  shift 48
+	.  error
+
+	assign_stmt  goto 49
+
+
+state 28
+	expr : NOT . expr  (49)
+
+	NOT  shift 28
+	ID  shift 29
+	STRING  shift 30
+	INT  shift 31
+	FLOAT  shift 32
+	BOOL  shift 33
+	.  error
+
+	expr  goto 50
+	function_call  goto 35
+	expr_stmt  goto 36
+
+
+state 29
+	function_call : ID . LEFTPAREN expr_list RIGHTPAREN SEMICOLON  (14)
+	expr : ID .  (39)
+
+	LEFTPAREN  shift 37
+	SEMICOLON  reduce 39
+	RIGHTPAREN  reduce 39
+	COMMA  reduce 39
+	ADDOP  reduce 39
+	SUBOP  reduce 39
+	MULOP  reduce 39
+	DIVOP  reduce 39
+	MODOP  reduce 39
+	CONCAT  reduce 39
+	EQ  reduce 39
+	NEQ  reduce 39
+	LT  reduce 39
+	GT  reduce 39
+	LEQ  reduce 39
+	GEQ  reduce 39
+	NOT  reduce 39
+	AND  reduce 39
+	OR  reduce 39
+	ID  reduce 39
+	STRING  reduce 39
+	INT  reduce 39
+	FLOAT  reduce 39
+	BOOL  reduce 39
+
+
+state 30
+	expr : STRING .  (35)
+
+	.  reduce 35
+
+
+state 31
+	expr : INT .  (36)
+
+	.  reduce 36
+
+
+state 32
+	expr : FLOAT .  (37)
+
+	.  reduce 37
+
+
+state 33
+	expr : BOOL .  (38)
+
+	.  reduce 38
+
+
+state 34
+	stmt : RETURN expr . SEMICOLON  (17)
+	expr_stmt : expr . EQ expr  (24)
+	expr_stmt : expr . NEQ expr  (25)
+	expr_stmt : expr . LT expr  (26)
+	expr_stmt : expr . LEQ expr  (27)
+	expr_stmt : expr . GT expr  (28)
+	expr_stmt : expr . GEQ expr  (29)
+	expr : expr . ADDOP expr  (40)
+	expr : expr . SUBOP expr  (41)
+	expr : expr . MULOP expr  (42)
+	expr : expr . DIVOP expr  (43)
+	expr : expr . CONCAT expr  (44)
+	expr : expr . MODOP expr  (45)
+	expr : expr . AND expr  (47)
+	expr : expr . OR expr  (48)
+
+	SEMICOLON  shift 51
+	ADDOP  shift 52
+	SUBOP  shift 53
+	MULOP  shift 54
+	DIVOP  shift 55
+	MODOP  shift 56
+	CONCAT  shift 57
+	EQ  shift 58
+	NEQ  shift 59
+	LT  shift 60
+	GT  shift 61
+	LEQ  shift 62
+	GEQ  shift 63
+	AND  shift 64
+	OR  shift 65
+	.  error
+
+
+state 35
+	expr : function_call .  (50)
+
+	.  reduce 50
+
+
+state 36
+	expr : expr_stmt .  (46)
+
+	.  reduce 46
+
+
+state 37
+	function_call : ID LEFTPAREN . expr_list RIGHTPAREN SEMICOLON  (14)
+	expr_list : .  (10)
+
+	.  reduce 10
+
+	expr_list  goto 66
+
+
+state 38
+	stmt : ID TYPEASSIGNMENT . sp_data_type LEFTPAREN expr_list RIGHTPAREN SEMICOLON  (20)
+	assign_stmt : ID TYPEASSIGNMENT . data_type ASSIGN expr  (23)
+
+	INTD  shift 41
+	BOOLD  shift 42
+	STRINGD  shift 43
+	FLOATD  shift 44
+	LINED  shift 67
+	.  error
+
+	data_type  goto 68
+	sp_data_type  goto 69
+
+
+state 39
+	assign_stmt : ID ASSIGN . expr  (22)
+
+	NOT  shift 28
+	ID  shift 29
+	STRING  shift 30
+	INT  shift 31
+	FLOAT  shift 32
+	BOOL  shift 33
+	.  error
+
+	expr  goto 70
+	function_call  goto 35
+	expr_stmt  goto 36
+
+
+state 40
+	stmt : assign_stmt SEMICOLON .  (15)
+
+	.  reduce 15
+
+
+state 41
+	data_type : INTD .  (31)
+
+	.  reduce 31
+
+
+state 42
+	data_type : BOOLD .  (33)
+
+	.  reduce 33
+
+
+state 43
+	data_type : STRINGD .  (30)
+
+	.  reduce 30
+
+
+state 44
+	data_type : FLOATD .  (32)
+
+	.  reduce 32
+
+
+state 45
+	func_decl : ID LEFTPAREN stmt_list RIGHTPAREN TYPEASSIGNMENT data_type . body  (6)
+
+	LEFTBRACE  shift 71
+	.  error
+
+	body  goto 72
+
+
+state 46
+	expr_stmt : expr . EQ expr  (24)
+	expr_stmt : expr . NEQ expr  (25)
+	expr_stmt : expr . LT expr  (26)
+	expr_stmt : expr . LEQ expr  (27)
+	expr_stmt : expr . GT expr  (28)
+	expr_stmt : expr . GEQ expr  (29)
+	expr : expr . ADDOP expr  (40)
+	expr : expr . SUBOP expr  (41)
+	expr : expr . MULOP expr  (42)
+	expr : expr . DIVOP expr  (43)
+	expr : expr . CONCAT expr  (44)
+	expr : expr . MODOP expr  (45)
+	expr : expr . AND expr  (47)
+	expr : expr . OR expr  (48)
+
+	ADDOP  shift 52
+	SUBOP  shift 53
+	MULOP  shift 54
+	DIVOP  shift 55
+	MODOP  shift 56
+	CONCAT  shift 57
+	EQ  shift 58
+	NEQ  shift 59
+	LT  shift 60
+	GT  shift 61
+	LEQ  shift 62
+	GEQ  shift 63
+	AND  shift 64
+	OR  shift 65
+	.  error
+
+
+state 47
+	stmt : WHILELOOP LEFTPAREN expr_stmt . RIGHTPAREN body  (19)
+	expr : expr_stmt .  (46)
+
+	RIGHTPAREN  shift 73
+	ADDOP  reduce 46
+	SUBOP  reduce 46
+	MULOP  reduce 46
+	DIVOP  reduce 46
+	MODOP  reduce 46
+	CONCAT  reduce 46
+	EQ  reduce 46
+	NEQ  reduce 46
+	LT  reduce 46
+	GT  reduce 46
+	LEQ  reduce 46
+	GEQ  reduce 46
+	AND  reduce 46
+	OR  reduce 46
+
+
+state 48
+	assign_stmt : ID . ASSIGN expr  (22)
+	assign_stmt : ID . TYPEASSIGNMENT data_type ASSIGN expr  (23)
+
+	TYPEASSIGNMENT  shift 74
+	ASSIGN  shift 39
+	.  error
+
+
+state 49
+	stmt : FORLOOP LEFTPAREN assign_stmt . SEMICOLON expr_stmt SEMICOLON assign_stmt RIGHTPAREN body  (16)
+
+	SEMICOLON  shift 75
+	.  error
+
+
+state 50
+	expr_stmt : expr . EQ expr  (24)
+	expr_stmt : expr . NEQ expr  (25)
+	expr_stmt : expr . LT expr  (26)
+	expr_stmt : expr . LEQ expr  (27)
+	expr_stmt : expr . GT expr  (28)
+	expr_stmt : expr . GEQ expr  (29)
+	expr : expr . ADDOP expr  (40)
+	expr : expr . SUBOP expr  (41)
+	expr : expr . MULOP expr  (42)
+	expr : expr . DIVOP expr  (43)
+	expr : expr . CONCAT expr  (44)
+	expr : expr . MODOP expr  (45)
+	expr : expr . AND expr  (47)
+	expr : expr . OR expr  (48)
+	expr : NOT expr .  (49)
+
+	.  reduce 49
+
+
+state 51
+	stmt : RETURN expr SEMICOLON .  (17)
+
+	.  reduce 17
+
+
+state 52
+	expr : expr ADDOP . expr  (40)
+
+	NOT  shift 28
+	ID  shift 29
+	STRING  shift 30
+	INT  shift 31
+	FLOAT  shift 32
+	BOOL  shift 33
+	.  error
+
+	expr  goto 76
+	function_call  goto 35
+	expr_stmt  goto 36
+
+
+state 53
+	expr : expr SUBOP . expr  (41)
+
+	NOT  shift 28
+	ID  shift 29
+	STRING  shift 30
+	INT  shift 31
+	FLOAT  shift 32
+	BOOL  shift 33
+	.  error
+
+	expr  goto 77
+	function_call  goto 35
+	expr_stmt  goto 36
+
+
+state 54
+	expr : expr MULOP . expr  (42)
+
+	NOT  shift 28
+	ID  shift 29
+	STRING  shift 30
+	INT  shift 31
+	FLOAT  shift 32
+	BOOL  shift 33
+	.  error
+
+	expr  goto 78
+	function_call  goto 35
+	expr_stmt  goto 36
+
+
+state 55
+	expr : expr DIVOP . expr  (43)
+
+	NOT  shift 28
+	ID  shift 29
+	STRING  shift 30
+	INT  shift 31
+	FLOAT  shift 32
+	BOOL  shift 33
+	.  error
+
+	expr  goto 79
+	function_call  goto 35
+	expr_stmt  goto 36
+
+
+state 56
+	expr : expr MODOP . expr  (45)
+
+	NOT  shift 28
+	ID  shift 29
+	STRING  shift 30
+	INT  shift 31
+	FLOAT  shift 32
+	BOOL  shift 33
+	.  error
+
+	expr  goto 80
+	function_call  goto 35
+	expr_stmt  goto 36
+
+
+state 57
+	expr : expr CONCAT . expr  (44)
+
+	NOT  shift 28
+	ID  shift 29
+	STRING  shift 30
+	INT  shift 31
+	FLOAT  shift 32
+	BOOL  shift 33
+	.  error
+
+	expr  goto 81
+	function_call  goto 35
+	expr_stmt  goto 36
+
+
+state 58
+	expr_stmt : expr EQ . expr  (24)
+
+	NOT  shift 28
+	ID  shift 29
+	STRING  shift 30
+	INT  shift 31
+	FLOAT  shift 32
+	BOOL  shift 33
+	.  error
+
+	expr  goto 82
+	function_call  goto 35
+	expr_stmt  goto 36
+
+
+state 59
+	expr_stmt : expr NEQ . expr  (25)
+
+	NOT  shift 28
+	ID  shift 29
+	STRING  shift 30
+	INT  shift 31
+	FLOAT  shift 32
+	BOOL  shift 33
+	.  error
+
+	expr  goto 83
+	function_call  goto 35
+	expr_stmt  goto 36
+
+
+state 60
+	expr_stmt : expr LT . expr  (26)
+
+	NOT  shift 28
+	ID  shift 29
+	STRING  shift 30
+	INT  shift 31
+	FLOAT  shift 32
+	BOOL  shift 33
+	.  error
+
+	expr  goto 84
+	function_call  goto 35
+	expr_stmt  goto 36
+
+
+state 61
+	expr_stmt : expr GT . expr  (28)
+
+	NOT  shift 28
+	ID  shift 29
+	STRING  shift 30
+	INT  shift 31
+	FLOAT  shift 32
+	BOOL  shift 33
+	.  error
+
+	expr  goto 85
+	function_call  goto 35
+	expr_stmt  goto 36
+
+
+state 62
+	expr_stmt : expr LEQ . expr  (27)
+
+	NOT  shift 28
+	ID  shift 29
+	STRING  shift 30
+	INT  shift 31
+	FLOAT  shift 32
+	BOOL  shift 33
+	.  error
+
+	expr  goto 86
+	function_call  goto 35
+	expr_stmt  goto 36
+
+
+state 63
+	expr_stmt : expr GEQ . expr  (29)
+
+	NOT  shift 28
+	ID  shift 29
+	STRING  shift 30
+	INT  shift 31
+	FLOAT  shift 32
+	BOOL  shift 33
+	.  error
+
+	expr  goto 87
+	function_call  goto 35
+	expr_stmt  goto 36
+
+
+state 64
+	expr : expr AND . expr  (47)
+
+	NOT  shift 28
+	ID  shift 29
+	STRING  shift 30
+	INT  shift 31
+	FLOAT  shift 32
+	BOOL  shift 33
+	.  error
+
+	expr  goto 88
+	function_call  goto 35
+	expr_stmt  goto 36
+
+
+state 65
+	expr : expr OR . expr  (48)
+
+	NOT  shift 28
+	ID  shift 29
+	STRING  shift 30
+	INT  shift 31
+	FLOAT  shift 32
+	BOOL  shift 33
+	.  error
+
+	expr  goto 89
+	function_call  goto 35
+	expr_stmt  goto 36
+
+
+state 66
+	expr_list : expr_list . expr COMMA  (11)
+	expr_list : expr_list . expr  (12)
+	function_call : ID LEFTPAREN expr_list . RIGHTPAREN SEMICOLON  (14)
+
+	RIGHTPAREN  shift 90
+	NOT  shift 28
+	ID  shift 29
+	STRING  shift 30
+	INT  shift 31
+	FLOAT  shift 32
+	BOOL  shift 33
+	.  error
+
+	expr  goto 91
+	function_call  goto 35
+	expr_stmt  goto 36
+
+
+state 67
+	sp_data_type : LINED .  (34)
+
+	.  reduce 34
+
+
+state 68
+	assign_stmt : ID TYPEASSIGNMENT data_type . ASSIGN expr  (23)
+
+	ASSIGN  shift 92
+	.  error
+
+
+state 69
+	stmt : ID TYPEASSIGNMENT sp_data_type . LEFTPAREN expr_list RIGHTPAREN SEMICOLON  (20)
+
+	LEFTPAREN  shift 93
+	.  error
+
+
+state 70
+	assign_stmt : ID ASSIGN expr .  (22)
+	expr_stmt : expr . EQ expr  (24)
+	expr_stmt : expr . NEQ expr  (25)
+	expr_stmt : expr . LT expr  (26)
+	expr_stmt : expr . LEQ expr  (27)
+	expr_stmt : expr . GT expr  (28)
+	expr_stmt : expr . GEQ expr  (29)
+	expr : expr . ADDOP expr  (40)
+	expr : expr . SUBOP expr  (41)
+	expr : expr . MULOP expr  (42)
+	expr : expr . DIVOP expr  (43)
+	expr : expr . CONCAT expr  (44)
+	expr : expr . MODOP expr  (45)
+	expr : expr . AND expr  (47)
+	expr : expr . OR expr  (48)
+
+	ADDOP  shift 52
+	SUBOP  shift 53
+	MULOP  shift 54
+	DIVOP  shift 55
+	MODOP  shift 56
+	CONCAT  shift 57
+	EQ  shift 58
+	NEQ  shift 59
+	LT  shift 60
+	GT  shift 61
+	LEQ  shift 62
+	GEQ  shift 63
+	AND  shift 64
+	OR  shift 65
+	SEMICOLON  reduce 22
+	RIGHTPAREN  reduce 22
+
+
+state 71
+	body : LEFTBRACE . stmt_list RIGHTBRACE  (13)
+	stmt_list : .  (8)
+
+	.  reduce 8
+
+	stmt_list  goto 94
+
+
+state 72
+	func_decl : ID LEFTPAREN stmt_list RIGHTPAREN TYPEASSIGNMENT data_type body .  (6)
+
+	.  reduce 6
+
+
+state 73
+	stmt : WHILELOOP LEFTPAREN expr_stmt RIGHTPAREN . body  (19)
+
+	LEFTBRACE  shift 71
+	.  error
+
+	body  goto 95
+
+
+state 74
+	assign_stmt : ID TYPEASSIGNMENT . data_type ASSIGN expr  (23)
+
+	INTD  shift 41
+	BOOLD  shift 42
+	STRINGD  shift 43
+	FLOATD  shift 44
+	.  error
+
+	data_type  goto 68
+
+
+state 75
+	stmt : FORLOOP LEFTPAREN assign_stmt SEMICOLON . expr_stmt SEMICOLON assign_stmt RIGHTPAREN body  (16)
+
+	NOT  shift 28
+	ID  shift 29
+	STRING  shift 30
+	INT  shift 31
+	FLOAT  shift 32
+	BOOL  shift 33
+	.  error
+
+	expr  goto 46
+	function_call  goto 35
+	expr_stmt  goto 96
+
+
+state 76
+	expr_stmt : expr . EQ expr  (24)
+	expr_stmt : expr . NEQ expr  (25)
+	expr_stmt : expr . LT expr  (26)
+	expr_stmt : expr . LEQ expr  (27)
+	expr_stmt : expr . GT expr  (28)
+	expr_stmt : expr . GEQ expr  (29)
+	expr : expr . ADDOP expr  (40)
+	expr : expr ADDOP expr .  (40)
+	expr : expr . SUBOP expr  (41)
+	expr : expr . MULOP expr  (42)
+	expr : expr . DIVOP expr  (43)
+	expr : expr . CONCAT expr  (44)
+	expr : expr . MODOP expr  (45)
+	expr : expr . AND expr  (47)
+	expr : expr . OR expr  (48)
+
+	MULOP  shift 54
+	DIVOP  shift 55
+	MODOP  shift 56
+	CONCAT  shift 57
+	SEMICOLON  reduce 40
+	RIGHTPAREN  reduce 40
+	COMMA  reduce 40
+	ADDOP  reduce 40
+	SUBOP  reduce 40
+	EQ  reduce 40
+	NEQ  reduce 40
+	LT  reduce 40
+	GT  reduce 40
+	LEQ  reduce 40
+	GEQ  reduce 40
+	NOT  reduce 40
+	AND  reduce 40
+	OR  reduce 40
+	ID  reduce 40
+	STRING  reduce 40
+	INT  reduce 40
+	FLOAT  reduce 40
+	BOOL  reduce 40
+
+
+state 77
+	expr_stmt : expr . EQ expr  (24)
+	expr_stmt : expr . NEQ expr  (25)
+	expr_stmt : expr . LT expr  (26)
+	expr_stmt : expr . LEQ expr  (27)
+	expr_stmt : expr . GT expr  (28)
+	expr_stmt : expr . GEQ expr  (29)
+	expr : expr . ADDOP expr  (40)
+	expr : expr . SUBOP expr  (41)
+	expr : expr SUBOP expr .  (41)
+	expr : expr . MULOP expr  (42)
+	expr : expr . DIVOP expr  (43)
+	expr : expr . CONCAT expr  (44)
+	expr : expr . MODOP expr  (45)
+	expr : expr . AND expr  (47)
+	expr : expr . OR expr  (48)
+
+	MULOP  shift 54
+	DIVOP  shift 55
+	MODOP  shift 56
+	CONCAT  shift 57
+	SEMICOLON  reduce 41
+	RIGHTPAREN  reduce 41
+	COMMA  reduce 41
+	ADDOP  reduce 41
+	SUBOP  reduce 41
+	EQ  reduce 41
+	NEQ  reduce 41
+	LT  reduce 41
+	GT  reduce 41
+	LEQ  reduce 41
+	GEQ  reduce 41
+	NOT  reduce 41
+	AND  reduce 41
+	OR  reduce 41
+	ID  reduce 41
+	STRING  reduce 41
+	INT  reduce 41
+	FLOAT  reduce 41
+	BOOL  reduce 41
+
+
+state 78
+	expr_stmt : expr . EQ expr  (24)
+	expr_stmt : expr . NEQ expr  (25)
+	expr_stmt : expr . LT expr  (26)
+	expr_stmt : expr . LEQ expr  (27)
+	expr_stmt : expr . GT expr  (28)
+	expr_stmt : expr . GEQ expr  (29)
+	expr : expr . ADDOP expr  (40)
+	expr : expr . SUBOP expr  (41)
+	expr : expr . MULOP expr  (42)
+	expr : expr MULOP expr .  (42)
+	expr : expr . DIVOP expr  (43)
+	expr : expr . CONCAT expr  (44)
+	expr : expr . MODOP expr  (45)
+	expr : expr . AND expr  (47)
+	expr : expr . OR expr  (48)
+
+	.  reduce 42
+
+
+state 79
+	expr_stmt : expr . EQ expr  (24)
+	expr_stmt : expr . NEQ expr  (25)
+	expr_stmt : expr . LT expr  (26)
+	expr_stmt : expr . LEQ expr  (27)
+	expr_stmt : expr . GT expr  (28)
+	expr_stmt : expr . GEQ expr  (29)
+	expr : expr . ADDOP expr  (40)
+	expr : expr . SUBOP expr  (41)
+	expr : expr . MULOP expr  (42)
+	expr : expr . DIVOP expr  (43)
+	expr : expr DIVOP expr .  (43)
+	expr : expr . CONCAT expr  (44)
+	expr : expr . MODOP expr  (45)
+	expr : expr . AND expr  (47)
+	expr : expr . OR expr  (48)
+
+	.  reduce 43
+
+
+state 80
+	expr_stmt : expr . EQ expr  (24)
+	expr_stmt : expr . NEQ expr  (25)
+	expr_stmt : expr . LT expr  (26)
+	expr_stmt : expr . LEQ expr  (27)
+	expr_stmt : expr . GT expr  (28)
+	expr_stmt : expr . GEQ expr  (29)
+	expr : expr . ADDOP expr  (40)
+	expr : expr . SUBOP expr  (41)
+	expr : expr . MULOP expr  (42)
+	expr : expr . DIVOP expr  (43)
+	expr : expr . CONCAT expr  (44)
+	expr : expr . MODOP expr  (45)
+	expr : expr MODOP expr .  (45)
+	expr : expr . AND expr  (47)
+	expr : expr . OR expr  (48)
+
+	.  reduce 45
+
+
+state 81
+	expr_stmt : expr . EQ expr  (24)
+	expr_stmt : expr . NEQ expr  (25)
+	expr_stmt : expr . LT expr  (26)
+	expr_stmt : expr . LEQ expr  (27)
+	expr_stmt : expr . GT expr  (28)
+	expr_stmt : expr . GEQ expr  (29)
+	expr : expr . ADDOP expr  (40)
+	expr : expr . SUBOP expr  (41)
+	expr : expr . MULOP expr  (42)
+	expr : expr . DIVOP expr  (43)
+	expr : expr . CONCAT expr  (44)
+	expr : expr CONCAT expr .  (44)
+	expr : expr . MODOP expr  (45)
+	expr : expr . AND expr  (47)
+	expr : expr . OR expr  (48)
+
+	MULOP  shift 54
+	DIVOP  shift 55
+	MODOP  shift 56
+	SEMICOLON  reduce 44
+	RIGHTPAREN  reduce 44
+	COMMA  reduce 44
+	ADDOP  reduce 44
+	SUBOP  reduce 44
+	CONCAT  reduce 44
+	EQ  reduce 44
+	NEQ  reduce 44
+	LT  reduce 44
+	GT  reduce 44
+	LEQ  reduce 44
+	GEQ  reduce 44
+	NOT  reduce 44
+	AND  reduce 44
+	OR  reduce 44
+	ID  reduce 44
+	STRING  reduce 44
+	INT  reduce 44
+	FLOAT  reduce 44
+	BOOL  reduce 44
+
+
+state 82
+	expr_stmt : expr . EQ expr  (24)
+	expr_stmt : expr EQ expr .  (24)
+	expr_stmt : expr . NEQ expr  (25)
+	expr_stmt : expr . LT expr  (26)
+	expr_stmt : expr . LEQ expr  (27)
+	expr_stmt : expr . GT expr  (28)
+	expr_stmt : expr . GEQ expr  (29)
+	expr : expr . ADDOP expr  (40)
+	expr : expr . SUBOP expr  (41)
+	expr : expr . MULOP expr  (42)
+	expr : expr . DIVOP expr  (43)
+	expr : expr . CONCAT expr  (44)
+	expr : expr . MODOP expr  (45)
+	expr : expr . AND expr  (47)
+	expr : expr . OR expr  (48)
+
+	ADDOP  shift 52
+	SUBOP  shift 53
+	MULOP  shift 54
+	DIVOP  shift 55
+	MODOP  shift 56
+	CONCAT  shift 57
+	LT  shift 60
+	GT  shift 61
+	LEQ  shift 62
+	GEQ  shift 63
+	SEMICOLON  reduce 24
+	RIGHTPAREN  reduce 24
+	COMMA  reduce 24
+	EQ  reduce 24
+	NEQ  reduce 24
+	NOT  reduce 24
+	AND  reduce 24
+	OR  reduce 24
+	ID  reduce 24
+	STRING  reduce 24
+	INT  reduce 24
+	FLOAT  reduce 24
+	BOOL  reduce 24
+
+
+state 83
+	expr_stmt : expr . EQ expr  (24)
+	expr_stmt : expr . NEQ expr  (25)
+	expr_stmt : expr NEQ expr .  (25)
+	expr_stmt : expr . LT expr  (26)
+	expr_stmt : expr . LEQ expr  (27)
+	expr_stmt : expr . GT expr  (28)
+	expr_stmt : expr . GEQ expr  (29)
+	expr : expr . ADDOP expr  (40)
+	expr : expr . SUBOP expr  (41)
+	expr : expr . MULOP expr  (42)
+	expr : expr . DIVOP expr  (43)
+	expr : expr . CONCAT expr  (44)
+	expr : expr . MODOP expr  (45)
+	expr : expr . AND expr  (47)
+	expr : expr . OR expr  (48)
+
+	ADDOP  shift 52
+	SUBOP  shift 53
+	MULOP  shift 54
+	DIVOP  shift 55
+	MODOP  shift 56
+	CONCAT  shift 57
+	LT  shift 60
+	GT  shift 61
+	LEQ  shift 62
+	GEQ  shift 63
+	SEMICOLON  reduce 25
+	RIGHTPAREN  reduce 25
+	COMMA  reduce 25
+	EQ  reduce 25
+	NEQ  reduce 25
+	NOT  reduce 25
+	AND  reduce 25
+	OR  reduce 25
+	ID  reduce 25
+	STRING  reduce 25
+	INT  reduce 25
+	FLOAT  reduce 25
+	BOOL  reduce 25
+
+
+state 84
+	expr_stmt : expr . EQ expr  (24)
+	expr_stmt : expr . NEQ expr  (25)
+	expr_stmt : expr . LT expr  (26)
+	expr_stmt : expr LT expr .  (26)
+	expr_stmt : expr . LEQ expr  (27)
+	expr_stmt : expr . GT expr  (28)
+	expr_stmt : expr . GEQ expr  (29)
+	expr : expr . ADDOP expr  (40)
+	expr : expr . SUBOP expr  (41)
+	expr : expr . MULOP expr  (42)
+	expr : expr . DIVOP expr  (43)
+	expr : expr . CONCAT expr  (44)
+	expr : expr . MODOP expr  (45)
+	expr : expr . AND expr  (47)
+	expr : expr . OR expr  (48)
+
+	ADDOP  shift 52
+	SUBOP  shift 53
+	MULOP  shift 54
+	DIVOP  shift 55
+	MODOP  shift 56
+	CONCAT  shift 57
+	SEMICOLON  reduce 26
+	RIGHTPAREN  reduce 26
+	COMMA  reduce 26
+	EQ  reduce 26
+	NEQ  reduce 26
+	NOT  reduce 26
+	AND  reduce 26
+	OR  reduce 26
+	ID  reduce 26
+	STRING  reduce 26
+	INT  reduce 26
+	FLOAT  reduce 26
+	BOOL  reduce 26
+
+
+state 85
+	expr_stmt : expr . EQ expr  (24)
+	expr_stmt : expr . NEQ expr  (25)
+	expr_stmt : expr . LT expr  (26)
+	expr_stmt : expr . LEQ expr  (27)
+	expr_stmt : expr . GT expr  (28)
+	expr_stmt : expr GT expr .  (28)
+	expr_stmt : expr . GEQ expr  (29)
+	expr : expr . ADDOP expr  (40)
+	expr : expr . SUBOP expr  (41)
+	expr : expr . MULOP expr  (42)
+	expr : expr . DIVOP expr  (43)
+	expr : expr . CONCAT expr  (44)
+	expr : expr . MODOP expr  (45)
+	expr : expr . AND expr  (47)
+	expr : expr . OR expr  (48)
+
+	ADDOP  shift 52
+	SUBOP  shift 53
+	MULOP  shift 54
+	DIVOP  shift 55
+	MODOP  shift 56
+	CONCAT  shift 57
+	SEMICOLON  reduce 28
+	RIGHTPAREN  reduce 28
+	COMMA  reduce 28
+	EQ  reduce 28
+	NEQ  reduce 28
+	NOT  reduce 28
+	AND  reduce 28
+	OR  reduce 28
+	ID  reduce 28
+	STRING  reduce 28
+	INT  reduce 28
+	FLOAT  reduce 28
+	BOOL  reduce 28
+
+
+state 86
+	expr_stmt : expr . EQ expr  (24)
+	expr_stmt : expr . NEQ expr  (25)
+	expr_stmt : expr . LT expr  (26)
+	expr_stmt : expr . LEQ expr  (27)
+	expr_stmt : expr LEQ expr .  (27)
+	expr_stmt : expr . GT expr  (28)
+	expr_stmt : expr . GEQ expr  (29)
+	expr : expr . ADDOP expr  (40)
+	expr : expr . SUBOP expr  (41)
+	expr : expr . MULOP expr  (42)
+	expr : expr . DIVOP expr  (43)
+	expr : expr . CONCAT expr  (44)
+	expr : expr . MODOP expr  (45)
+	expr : expr . AND expr  (47)
+	expr : expr . OR expr  (48)
+
+	ADDOP  shift 52
+	SUBOP  shift 53
+	MULOP  shift 54
+	DIVOP  shift 55
+	MODOP  shift 56
+	CONCAT  shift 57
+	SEMICOLON  reduce 27
+	RIGHTPAREN  reduce 27
+	COMMA  reduce 27
+	EQ  reduce 27
+	NEQ  reduce 27
+	NOT  reduce 27
+	AND  reduce 27
+	OR  reduce 27
+	ID  reduce 27
+	STRING  reduce 27
+	INT  reduce 27
+	FLOAT  reduce 27
+	BOOL  reduce 27
+
+
+state 87
+	expr_stmt : expr . EQ expr  (24)
+	expr_stmt : expr . NEQ expr  (25)
+	expr_stmt : expr . LT expr  (26)
+	expr_stmt : expr . LEQ expr  (27)
+	expr_stmt : expr . GT expr  (28)
+	expr_stmt : expr . GEQ expr  (29)
+	expr_stmt : expr GEQ expr .  (29)
+	expr : expr . ADDOP expr  (40)
+	expr : expr . SUBOP expr  (41)
+	expr : expr . MULOP expr  (42)
+	expr : expr . DIVOP expr  (43)
+	expr : expr . CONCAT expr  (44)
+	expr : expr . MODOP expr  (45)
+	expr : expr . AND expr  (47)
+	expr : expr . OR expr  (48)
+
+	ADDOP  shift 52
+	SUBOP  shift 53
+	MULOP  shift 54
+	DIVOP  shift 55
+	MODOP  shift 56
+	CONCAT  shift 57
+	SEMICOLON  reduce 29
+	RIGHTPAREN  reduce 29
+	COMMA  reduce 29
+	EQ  reduce 29
+	NEQ  reduce 29
+	NOT  reduce 29
+	AND  reduce 29
+	OR  reduce 29
+	ID  reduce 29
+	STRING  reduce 29
+	INT  reduce 29
+	FLOAT  reduce 29
+	BOOL  reduce 29
+
+
+state 88
+	expr_stmt : expr . EQ expr  (24)
+	expr_stmt : expr . NEQ expr  (25)
+	expr_stmt : expr . LT expr  (26)
+	expr_stmt : expr . LEQ expr  (27)
+	expr_stmt : expr . GT expr  (28)
+	expr_stmt : expr . GEQ expr  (29)
+	expr : expr . ADDOP expr  (40)
+	expr : expr . SUBOP expr  (41)
+	expr : expr . MULOP expr  (42)
+	expr : expr . DIVOP expr  (43)
+	expr : expr . CONCAT expr  (44)
+	expr : expr . MODOP expr  (45)
+	expr : expr . AND expr  (47)
+	expr : expr AND expr .  (47)
+	expr : expr . OR expr  (48)
+
+	ADDOP  shift 52
+	SUBOP  shift 53
+	MULOP  shift 54
+	DIVOP  shift 55
+	MODOP  shift 56
+	CONCAT  shift 57
+	EQ  shift 58
+	NEQ  shift 59
+	LT  shift 60
+	GT  shift 61
+	LEQ  shift 62
+	GEQ  shift 63
+	SEMICOLON  reduce 47
+	RIGHTPAREN  reduce 47
+	COMMA  reduce 47
+	NOT  reduce 47
+	AND  reduce 47
+	OR  reduce 47
+	ID  reduce 47
+	STRING  reduce 47
+	INT  reduce 47
+	FLOAT  reduce 47
+	BOOL  reduce 47
+
+
+state 89
+	expr_stmt : expr . EQ expr  (24)
+	expr_stmt : expr . NEQ expr  (25)
+	expr_stmt : expr . LT expr  (26)
+	expr_stmt : expr . LEQ expr  (27)
+	expr_stmt : expr . GT expr  (28)
+	expr_stmt : expr . GEQ expr  (29)
+	expr : expr . ADDOP expr  (40)
+	expr : expr . SUBOP expr  (41)
+	expr : expr . MULOP expr  (42)
+	expr : expr . DIVOP expr  (43)
+	expr : expr . CONCAT expr  (44)
+	expr : expr . MODOP expr  (45)
+	expr : expr . AND expr  (47)
+	expr : expr . OR expr  (48)
+	expr : expr OR expr .  (48)
+
+	ADDOP  shift 52
+	SUBOP  shift 53
+	MULOP  shift 54
+	DIVOP  shift 55
+	MODOP  shift 56
+	CONCAT  shift 57
+	EQ  shift 58
+	NEQ  shift 59
+	LT  shift 60
+	GT  shift 61
+	LEQ  shift 62
+	GEQ  shift 63
+	AND  shift 64
+	SEMICOLON  reduce 48
+	RIGHTPAREN  reduce 48
+	COMMA  reduce 48
+	NOT  reduce 48
+	OR  reduce 48
+	ID  reduce 48
+	STRING  reduce 48
+	INT  reduce 48
+	FLOAT  reduce 48
+	BOOL  reduce 48
+
+
+state 90
+	function_call : ID LEFTPAREN expr_list RIGHTPAREN . SEMICOLON  (14)
+
+	SEMICOLON  shift 97
+	.  error
+
+
+state 91
+	expr_list : expr_list expr . COMMA  (11)
+	expr_list : expr_list expr .  (12)
+	expr_stmt : expr . EQ expr  (24)
+	expr_stmt : expr . NEQ expr  (25)
+	expr_stmt : expr . LT expr  (26)
+	expr_stmt : expr . LEQ expr  (27)
+	expr_stmt : expr . GT expr  (28)
+	expr_stmt : expr . GEQ expr  (29)
+	expr : expr . ADDOP expr  (40)
+	expr : expr . SUBOP expr  (41)
+	expr : expr . MULOP expr  (42)
+	expr : expr . DIVOP expr  (43)
+	expr : expr . CONCAT expr  (44)
+	expr : expr . MODOP expr  (45)
+	expr : expr . AND expr  (47)
+	expr : expr . OR expr  (48)
+
+	COMMA  shift 98
+	ADDOP  shift 52
+	SUBOP  shift 53
+	MULOP  shift 54
+	DIVOP  shift 55
+	MODOP  shift 56
+	CONCAT  shift 57
+	EQ  shift 58
+	NEQ  shift 59
+	LT  shift 60
+	GT  shift 61
+	LEQ  shift 62
+	GEQ  shift 63
+	AND  shift 64
+	OR  shift 65
+	RIGHTPAREN  reduce 12
+	NOT  reduce 12
+	ID  reduce 12
+	STRING  reduce 12
+	INT  reduce 12
+	FLOAT  reduce 12
+	BOOL  reduce 12
+
+
+state 92
+	assign_stmt : ID TYPEASSIGNMENT data_type ASSIGN . expr  (23)
+
+	NOT  shift 28
+	ID  shift 29
+	STRING  shift 30
+	INT  shift 31
+	FLOAT  shift 32
+	BOOL  shift 33
+	.  error
+
+	expr  goto 99
+	function_call  goto 35
+	expr_stmt  goto 36
+
+
+state 93
+	stmt : ID TYPEASSIGNMENT sp_data_type LEFTPAREN . expr_list RIGHTPAREN SEMICOLON  (20)
+	expr_list : .  (10)
+
+	.  reduce 10
+
+	expr_list  goto 100
+
+
+state 94
+	stmt_list : stmt_list . stmt  (9)
+	body : LEFTBRACE stmt_list . RIGHTBRACE  (13)
+
+	RIGHTBRACE  shift 101
+	WHILELOOP  shift 18
+	FORLOOP  shift 19
+	RETURN  shift 20
+	ID  shift 21
+	.  error
+
+	stmt  goto 22
+	function_call  goto 23
+	assign_stmt  goto 24
+
+
+state 95
+	stmt : WHILELOOP LEFTPAREN expr_stmt RIGHTPAREN body .  (19)
+
+	.  reduce 19
+
+
+state 96
+	stmt : FORLOOP LEFTPAREN assign_stmt SEMICOLON expr_stmt . SEMICOLON assign_stmt RIGHTPAREN body  (16)
+	expr : expr_stmt .  (46)
+
+	SEMICOLON  shift 102
+	ADDOP  reduce 46
+	SUBOP  reduce 46
+	MULOP  reduce 46
+	DIVOP  reduce 46
+	MODOP  reduce 46
+	CONCAT  reduce 46
+	EQ  reduce 46
+	NEQ  reduce 46
+	LT  reduce 46
+	GT  reduce 46
+	LEQ  reduce 46
+	GEQ  reduce 46
+	AND  reduce 46
+	OR  reduce 46
+
+
+state 97
+	function_call : ID LEFTPAREN expr_list RIGHTPAREN SEMICOLON .  (14)
+
+	.  reduce 14
+
+
+state 98
+	expr_list : expr_list expr COMMA .  (11)
+
+	.  reduce 11
+
+
+state 99
+	assign_stmt : ID TYPEASSIGNMENT data_type ASSIGN expr .  (23)
+	expr_stmt : expr . EQ expr  (24)
+	expr_stmt : expr . NEQ expr  (25)
+	expr_stmt : expr . LT expr  (26)
+	expr_stmt : expr . LEQ expr  (27)
+	expr_stmt : expr . GT expr  (28)
+	expr_stmt : expr . GEQ expr  (29)
+	expr : expr . ADDOP expr  (40)
+	expr : expr . SUBOP expr  (41)
+	expr : expr . MULOP expr  (42)
+	expr : expr . DIVOP expr  (43)
+	expr : expr . CONCAT expr  (44)
+	expr : expr . MODOP expr  (45)
+	expr : expr . AND expr  (47)
+	expr : expr . OR expr  (48)
+
+	ADDOP  shift 52
+	SUBOP  shift 53
+	MULOP  shift 54
+	DIVOP  shift 55
+	MODOP  shift 56
+	CONCAT  shift 57
+	EQ  shift 58
+	NEQ  shift 59
+	LT  shift 60
+	GT  shift 61
+	LEQ  shift 62
+	GEQ  shift 63
+	AND  shift 64
+	OR  shift 65
+	SEMICOLON  reduce 23
+	RIGHTPAREN  reduce 23
+
+
+state 100
+	expr_list : expr_list . expr COMMA  (11)
+	expr_list : expr_list . expr  (12)
+	stmt : ID TYPEASSIGNMENT sp_data_type LEFTPAREN expr_list . RIGHTPAREN SEMICOLON  (20)
+
+	RIGHTPAREN  shift 103
+	NOT  shift 28
+	ID  shift 29
+	STRING  shift 30
+	INT  shift 31
+	FLOAT  shift 32
+	BOOL  shift 33
+	.  error
+
+	expr  goto 91
+	function_call  goto 35
+	expr_stmt  goto 36
+
+
+state 101
+	body : LEFTBRACE stmt_list RIGHTBRACE .  (13)
+
+	.  reduce 13
+
+
+state 102
+	stmt : FORLOOP LEFTPAREN assign_stmt SEMICOLON expr_stmt SEMICOLON . assign_stmt RIGHTPAREN body  (16)
+
+	ID  shift 48
+	.  error
+
+	assign_stmt  goto 104
+
+
+state 103
+	stmt : ID TYPEASSIGNMENT sp_data_type LEFTPAREN expr_list RIGHTPAREN . SEMICOLON  (20)
+
+	SEMICOLON  shift 105
+	.  error
+
+
+state 104
+	stmt : FORLOOP LEFTPAREN assign_stmt SEMICOLON expr_stmt SEMICOLON assign_stmt . RIGHTPAREN body  (16)
+
+	RIGHTPAREN  shift 106
+	.  error
+
+
+state 105
+	stmt : ID TYPEASSIGNMENT sp_data_type LEFTPAREN expr_list RIGHTPAREN SEMICOLON .  (20)
+
+	.  reduce 20
+
+
+state 106
+	stmt : FORLOOP LEFTPAREN assign_stmt SEMICOLON expr_stmt SEMICOLON assign_stmt RIGHTPAREN . body  (16)
+
+	LEFTBRACE  shift 71
+	.  error
+
+	body  goto 107
+
+
+state 107
+	stmt : FORLOOP LEFTPAREN assign_stmt SEMICOLON expr_stmt SEMICOLON assign_stmt RIGHTPAREN body .  (16)
+
+	.  reduce 16
+
+
+Rules never reduced:
+	v_decl : ID TYPEASSIGNMENT data_type SEMICOLON  (21)
+
+
+56 terminals, 18 nonterminals
+52 grammar rules, 108 states

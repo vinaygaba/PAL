@@ -32,7 +32,7 @@
 %%
 
 program:
-  import_decl_list func_decl_list EOF  { Program(List.rev $1) }
+  import_decl_list func_decl_list EOF  { Program(List.rev $1, List.rev $2) }
 
 import_decl_list:
                                    { [] }

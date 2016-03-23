@@ -1,7 +1,7 @@
 .PHONY : make
 make :
 	#javac -cp ../YahooFinanceAPI-2.0.0.jar bin/*
-	ocamlc -c ast.ml
+	ocamlc -c ast.mli
 	#ocamlc -c sast.ml
 	ocamlyacc -v parser.mly
 	ocamlc -c parser.mli
@@ -10,8 +10,8 @@ make :
 	ocamlc -c lexer.ml
 	#ocamlc -c semantics.ml
 	#ocamlc -c compile.ml
-	ocamlc -c pal.ml
-	ocamlc -o pal ast.cmo sast.cmo parser.cmo lexer.cmo compile.cmo semantics.cmo pal.cmo
+	#ocamlc -c pal.ml
+	#ocamlc -o pal ast.cmo sast.cmo parser.cmo lexer.cmo compile.cmo semantics.cmo pal.cmo
 
 .PHONY : clean
 clean :
