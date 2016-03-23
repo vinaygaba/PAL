@@ -31,49 +31,69 @@
 %type <Ast.program> program
 %%
 
+program:
+  import_decl_list func_decl_list EOF  { Program(List.rev $1) }
+
+import_decl_list:
+                                   { [] }
+  | import_decl_list import_decl { $2::$1 }
 
 func_decl_list:
-                          {[]}
-  | func_decl_list func_decl {$2 :: $1}
+                                   { [] }
+  | func_decl_list func_decl { $2::$1 }
 
 
-
-  import_decl_list:
-                            {[]}
-    | import_decl_list import_decl {$2 :: $1}
-
-func_decl:
-  ID LEFTPAREN expr_list RIGHTPAREN TYPEASSIGNMENT data_type body {FuncDeclaration($6, $1, $3, $7)}
+func_decl : 
+  ID LEFTPAREN stmt_list RIGHTPAREN TYPEASSIGNMENT data_type body { 
+    { rtype = $6 ; name = $1; formals = $3 ; body = $7; } 
+  }
+  
 
 import_decl:
-  IMPORT LEFTPAREN STRING RIGHTPAREN SEMICOLON    {Import($3)}
+	IMPORT LEFTPAREN STRING RIGHTPAREN SEMICOLON { Import($3) }
 
-program:
-  import_decl_list func_decl_list EOF {Program(List.rev $1, List.rev $2)}
-
-
-  stmt:
-    | WHILELOOP LEFTPAREN expr RIGHTPAREN body                        { While($3, $5) }
-  /*| IF LPAREN expr RPAREN body elifs else_opt                       { If({condition=$3;body=$5} :: $6, $7) } */
-    | ID TYPEASSIGNMENT data_type SEMICOLON                           { Vdecl($1, $3) }
-    | assign_stmt SEMICOLON                                           { $1 }
-    | ID TYPEASSIGNMENT sp_data_type LEFTPAREN expr RIGHTPAREN   { ObjectCreate($1, $3, $5) }
-    | FORLOOP LEFTPAREN assign_stmt SEMICOLON expr_stmt SEMICOLON assign_stmt RIGHTPAREN body { For($3, $5, $7, $9) }
-    | RETURN expr SEMICOLON                                           { Ret($2) }
-    | function_call                                                    {CallStmt(fst $1,snd $1)}
 
 stmt_list:
    /* nothing */  { [] }
  | stmt_list stmt { $2 :: $1 }
 
 
+
+expr_list:
+   /* nothing */  { [] }
+  | expr_list expr COMMA {$2 :: $1 }
+  | expr_list expr {$2 :: $1}
+
+
 body:
    LEFTBRACE stmt_list RIGHTBRACE { List.rev $2 }
 
+function_call:
+     ID LEFTPAREN expr_list RIGHTPAREN SEMICOLON                    {($1,$3)}
+
+
+stmt:     
+  | assign_stmt SEMICOLON                                           { $1 }
+  | FORLOOP LEFTPAREN assign_stmt SEMICOLON expr_stmt SEMICOLON assign_stmt RIGHTPAREN body { For($3, $5, $7, $9) }
+  | RETURN expr SEMICOLON                                           { Ret($2) }
+  | function_call                                                   {CallStmt(fst $1,snd $1)}          
+  | WHILELOOP LEFTPAREN expr_stmt RIGHTPAREN body                   { While($3, $5) }          
+  | ID TYPEASSIGNMENT sp_data_type LEFTPAREN expr_list RIGHTPAREN SEMICOLON  { ObjectCreate($1, $3, $5) }                       
+
+v_decl : 
+| ID TYPEASSIGNMENT data_type SEMICOLON                           { Vdecl($1,$3) }
 
 assign_stmt:
-  ID ASSIGN expr                                                    { Assign($1, $3) }
-| ID TYPEASSIGNMENT data_type ASSIGN expr                           { InitAssign($1,$3,$5) }
+  ID ASSIGN expr                                                  { Assign($1, $3) }
+| ID TYPEASSIGNMENT data_type ASSIGN expr                         { InitAssign($1,$3,$5) }
+
+expr_stmt:
+  expr EQ     expr                                                { Binop($1, Equal,   $3) }
+| expr NEQ    expr                                                { Binop($1, Neq,     $3) }
+| expr LT     expr                                                { Binop($1, Less,    $3) }
+| expr LEQ    expr                                                { Binop($1, Leq,     $3) }
+| expr GT     expr                                                { Binop($1, Greater, $3) }
+| expr GEQ    expr                                                { Binop($1, Geq,     $3) }
 
 
 data_type:
@@ -105,27 +125,4 @@ STRING               { LitString($1) }
 | function_call     {CallExpr(fst $1,snd $1)}
 
 
-expr_list:
-   /* nothing */  { [] }
-  | expr_list expr COMMA {$2 :: $1 }
-  | expr_list expr {$2 :: $1}
-
-
-  expr_stmt:
-    expr EQ     expr                                                { Binop($1, Equal,   $3) }
-  | expr NEQ    expr                                                { Binop($1, Neq,     $3) }
-  | expr LT     expr                                                { Binop($1, Less,    $3) }
-  | expr LEQ    expr                                                { Binop($1, Leq,     $3) }
-  | expr GT     expr                                                { Binop($1, Greater, $3) }
-  | expr GEQ    expr                                                { Binop($1, Geq,     $3) }
-
-
-<<<<<<< HEAD
-  function_call:
-       ID LEFTPAREN expr_list RIGHTPAREN SEMICOLON                    {($1,$3)}
-/*Remove the swap operator.
-+Allows you to add only objects of similar type
-. lets you add objects of different types
-. had higher precedence than +
-Eg. pdf1 . page1 + pad2.page2*/
 
