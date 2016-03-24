@@ -14,7 +14,7 @@
 %token <int> INT
 %token <float> FLOAT
 %token <bool> BOOL
-%token INTD BOOLD STRINGD FLOATD PDFD PAGED LINED
+%token INTD BOOLD STRINGD FLOATD PDFD PAGED LINED LISTD
 %left ASSIGN
 %left OR
 %left AND
@@ -78,7 +78,8 @@ stmt:
   | RETURN expr SEMICOLON                                           { Ret($2) }
   | function_call                                                   {CallStmt(fst $1,snd $1)}          
   | WHILELOOP LEFTPAREN expr_stmt RIGHTPAREN body                   { While($3, $5) }          
-  | ID TYPEASSIGNMENT sp_data_type LEFTPAREN expr_list RIGHTPAREN SEMICOLON  { ObjectCreate($1, $3, $5) }                       
+  | ID TYPEASSIGNMENT sp_data_type LEFTPAREN expr_list RIGHTPAREN SEMICOLON  { ObjectCreate($1, $3, $5) }   
+  | ID TYPEASSIGNMENT list_data_type data_type { ListDecl($1, $3, $4)}                    
 
 v_decl : 
 | ID TYPEASSIGNMENT data_type SEMICOLON                           { Vdecl($1,$3) }
@@ -101,6 +102,10 @@ STRINGD                                                             { String }
 | INTD                                                              { Int }
 | FLOATD                                                            { Float }
 | BOOLD                                                             { Bool }
+
+
+list_data_type:
+LISTD { List }
 
 sp_data_type:
 LINED { Line }

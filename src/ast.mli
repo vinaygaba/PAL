@@ -5,6 +5,8 @@ type uop = Neg | Not
 
 type data_type = Int | Bool | Float | String | Pdf | Page
 
+type list_data_type = List
+
 type sp_data_type = Line
 
 type id = string
@@ -12,6 +14,13 @@ type id = string
 type var_decl =  id * data_type
 
 
+(*type recur_list_decl = list_data_type * recur_list_decl 
+| data_type*)
+
+
+(*type list_var_decl = id * recur_list_decl * data_type*)
+
+type list_var_decl = id * list_data_type * data_type
 
 type expression =
   LitInt of int
@@ -31,6 +40,7 @@ type statement =
   | If of conditional list * statement list option
   | Assign of id * expression
   | Vdecl of var_decl
+  | ListDecl of list_var_decl
   | InitAssign of id * data_type * expression
   | ObjectCreate of id * sp_data_type * expression list
   | For of statement * expression * statement * statement list
