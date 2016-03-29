@@ -17,7 +17,6 @@ type var_decl =  id * data_type
 (*type recur_list_decl = list_data_type * recur_list_decl 
 | data_type*)
 
-
 (*type list_var_decl = id * recur_list_decl * data_type*)
 
 type list_var_decl = id * list_data_type * data_type

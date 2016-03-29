@@ -51,6 +51,7 @@ type token =
   | PDFD
   | PAGED
   | LINED
+  | LISTD
 
 val program :
   (Lexing.lexbuf  -> token) -> Lexing.lexbuf -> Ast.program
