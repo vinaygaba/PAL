@@ -7,18 +7,26 @@ import java.util.List;
 import org.apache.pdfbox.multipdf.Splitter;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PageLayout;
 
 public class CreatePDFFromExistingPDF {
 	
-	public static void createPDFFromExistingPDF(File file) throws IOException{
+	/**
+	 * Method to create a pdf file from an exiting pdf file
+	 * @param filename Name of file that needs to be loaded
+	 * @param filepath The file path where the output pdf should be saved to
+	 * @throws IOException
+	 */
+	public static void createPDFFromExistingPDF(String filename,String filepath) throws IOException{
+		
+		File file = new File(filename);
 		
 		// Create a new empty document
-		PDDocument document = PDDocument.load(new File("test.pdf"));
-				
-				
+		PDDocument document = PDDocument.load(file);
+		
 				
 		// Save the newly created document
-		document.save("BlankPage.pdf");
+		document.save(filepath);
 
 		// finally make sure that the document is properly
 		// closed.
