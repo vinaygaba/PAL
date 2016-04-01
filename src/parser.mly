@@ -39,6 +39,13 @@ import_decl_list:
   | import_decl_list import_decl { $2::$1 }
 
 func_decl_list:
+<<<<<<< HEAD
+                                    { [] }
+  | func_decl_list func_decl        { $2::$1 }
+
+func_decl : 
+  ID LEFTPAREN expr_list RIGHTPAREN TYPEASSIGNMENT data_type body { rtype : $6; name : $1; formals : $3 ; body : $7; } 
+=======
                                    { [] }
   | func_decl_list func_decl { $2::$1 }
 
@@ -47,6 +54,7 @@ func_decl :
   ID LEFTPAREN stmt_list RIGHTPAREN TYPEASSIGNMENT data_type body { 
     { rtype = $6 ; name = $1; formals = $3 ; body = $7; } 
   }
+>>>>>>> 289084094e0f4e167744e9ce314e4f68f4a5dc69
   
 
 import_decl:
@@ -72,6 +80,7 @@ function_call:
      ID LEFTPAREN expr_list RIGHTPAREN SEMICOLON                    {($1,$3)}
 
 
+
 stmt:     
   | assign_stmt SEMICOLON                                           { $1 }
   | FORLOOP LEFTPAREN assign_stmt SEMICOLON expr_stmt SEMICOLON assign_stmt RIGHTPAREN body { For($3, $5, $7, $9) }
@@ -88,6 +97,7 @@ assign_stmt:
   ID ASSIGN expr                                                  { Assign($1, $3) }
 | ID TYPEASSIGNMENT data_type ASSIGN expr                         { InitAssign($1,$3,$5) }
 
+
 expr_stmt:
   expr EQ     expr                                                { Binop($1, Equal,   $3) }
 | expr NEQ    expr                                                { Binop($1, Neq,     $3) }
@@ -102,6 +112,7 @@ STRINGD                                                             { String }
 | INTD                                                              { Int }
 | FLOATD                                                            { Float }
 | BOOLD                                                             { Bool }
+
 
 
 list_data_type:
