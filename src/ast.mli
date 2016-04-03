@@ -9,12 +9,15 @@ type list_data_type = List
 
 type sp_data_type = Line | Tuple
 
-type id = string
+type id = IdTest of string
 
-type var_decl =  id * data_type
+type t = Int | Bool | Float | String | Pdf | Page
 
 
-(*type recur_list_decl = list_data_type * recur_list_decl
+type var_decl =  id * t
+
+
+(*type recur_list_decl = list_data_type * recur_list_decl 
 | data_type*)
 
 (*type list_var_decl = id * recur_list_decl * data_type*)
@@ -56,7 +59,7 @@ type import_stmt =
 
 
 type func_decl = {
-  rtype : data_type;
+  rtype : t;
   name : string;
   formals : statement list;
   body : statement list;

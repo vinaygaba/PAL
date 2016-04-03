@@ -1,13 +1,5 @@
 open Ast
 
-type dataType = Int | Float
-
-type t =
-  TData of Ast.data_type
-  | TList of Ast.list_data_type
-  | TSpecial of Ast.sp_data_type
-
-
 type texpression =
   TLitInt of int * t
   | TLitString of string * t
@@ -41,7 +33,7 @@ type timport_stmt =
   | TImport of string
 
 type tfunc_decl = {
-  rtype : Ast.data_type;
+  rtype : Ast.t;
   name : string;
   tformals : tstatement list;
   tbody : tstatement list;
@@ -52,7 +44,7 @@ type tmain_func_decl = {
 }
 
 type tprogram = {
-  tilist : timport_stmt list option;
-  tmainf : tmain_func_decl option;
-  tdeclf : tfunc_decl list option;
+  tilist : timport_stmt list;
+  tmainf : tmain_func_decl;
+  tdeclf : tfunc_decl list;
 }

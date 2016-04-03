@@ -8,6 +8,7 @@ make :
 	ocamlc -c parser.ml
 	ocamllex lexer.mll
 	ocamlc -c lexer.ml
+	ocamlc -c sast.ml
 	#ocamlc -c semantics.ml
 	#ocamlc -c compile.ml
 	#ocamlc -c pal.ml
