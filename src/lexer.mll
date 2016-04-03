@@ -65,6 +65,7 @@ rule token = parse
     | "import"                        { IMPORT }
     | "void"                          { VOID }
     | "null"                          { NULL }
+    | "main"                          { MAIN }
     | "function"                      { FUNCTION }
     (* Literals *)
     | digit+ as int                   { INT(int_of_string int) }
