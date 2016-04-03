@@ -1,3 +1,4 @@
+open Sast
 
 type symbol_table = {
 	parent : symbol_table option;
@@ -42,9 +43,6 @@ let type_of (ae : Sast.texpression) : Sast.t =
 
 let rec annotate_expr (e : Ast.expression) (env : environment) : Sast.texpression =
   match e with
-  | LitInt(n) -> TLitInt(n, Int)
-  | LitFloat(n) -> TLitFloat(n, Float)
-  | LitBool(b) -> TLitBool(b,Bool)
   | Iden(s) ->
       let typ = find_variable env.scope s in
       (match typ with
@@ -67,23 +65,23 @@ and annotate_assign (e1 : Ast.expression) (e2 : Ast.expression) (env : environme
       let typ = find_variable env.scope x in
       (match typ with
       | Some(t) ->
-          TIden(x,t), ae2)
-      | None -> failwith "Invalid assignment."
+          TIden(x,t), ae2
+      | None -> failwith "Invalid assignment.")
   | _ -> failwith "Invalid assignment."
 
-and add_scope_variable (e : Ast.expression) (d : Ast.data_type) (env : environment) : Sast.expression =
+and add_scope_variable (e : Ast.expression) (d : Ast.data_type) (env : environment) : Sast.texpression =
   match e with
   | Iden(x) ->
       if is_keyword x
       then failwith "Cannot assign keyword."
       else
       let typ = find_variable env.scope x in
-			(match typ with
-				None -> env.scope.variables <- (x, d) :: env.scope.variables;
-      	| Some(t) -> failwith "Invalid assignment, already exists.";)
-	| _ -> failwith "Not an identifier";
-
-
+      (match typ with
+      | Some(t) ->
+	      failwith "Invalid assignment, already exists."
+	  | None ->
+		  env.scope.variables <- (x, d) :: env.scope.variables)
+  | _ -> failwith "Invalid assignment."
 
 and annotate_stmt (s : Ast.statement) (env : environment) : Sast.statement =
   match s with
@@ -112,6 +110,7 @@ and annotate_func_decl (fdecl : Ast.func_decl) (env : environment) : Sast.tfunc_
   let aes = annotate_exprs fdecl.formals fenv in
   let asts = annotate_stmts fdecl.body fenv in
   {rtype = fdecl.rtype; name = fdecl.name; tformals = aes; tbody = asts}
+
 
 and annotate_main_func_decl (mdecl : Ast.main_func_decl) (env : environment) : Sast.tmain_func_decl =
   let asts = annotate_stmts mdecl.body env in

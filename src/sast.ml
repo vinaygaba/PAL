@@ -3,11 +3,9 @@ open Ast
 type dataType = Int | Float
 
 type t =
-  TData of dataType
+  TData of Ast.data_type
   | TList of Ast.list_data_type
   | TSpecial of Ast.sp_data_type
-
-
 
 
 type texpression =
