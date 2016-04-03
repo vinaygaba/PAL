@@ -11,7 +11,7 @@ type sp_data_type = Line | Tuple
 
 type id = IdTest of string
 
-type t = Int | Bool | Float | String | Pdf | Page
+type t = Int | Bool | Float | String | Pdf | Page | Line | Tuple
 
 
 type var_decl =  id * t

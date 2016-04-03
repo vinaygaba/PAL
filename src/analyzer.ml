@@ -44,6 +44,9 @@ let type_of (ae : Sast.texpression) : Ast.t =
 let rec annotate_expr (e : Ast.expression) (env : environment) : Sast.texpression =
   match e with
   | LitInt(n) -> TLitInt(n, Int)
+  | LitBool(n) -> TLitBool(n, Bool)
+  | LitFloat(n) -> TLitFloat(n, Float)
+  | LitString(n) -> TLitString(n, String)
   | Iden(s) ->
 	  (match s with 
 	  | IdTest(w) -> 
@@ -55,21 +58,23 @@ let rec annotate_expr (e : Ast.expression) (env : environment) : Sast.texpressio
   | Binop(e1,o,e2) ->
 	  let ae1 = annotate_expr e1 env in
 	  let ae2 = annotate_expr e2 env in
-	  let ao = o in
-	  let at = type_of ae1 in
-	  TBinop(ae1,ao,ae2,at)
+	  let t1 = type_of ae1 in
+	  let t2 = type_of ae2 in
+	    (match o with
+	      | Concat ->
+	        (match t1, t2 with
+	          | (Pdf, Page) -> TBinop(ae1,o,ae2,t1)
+	          | (Tuple, Line) -> TBinop(ae1,o,ae2,t1)))
 
 and annotate_assign (i : Ast.id) (e : Ast.expression) (env : environment) : Ast.id * Sast.texpression =
   let ae2 = annotate_expr e env in
-    match i with
-    | IdTest(s) ->
-		if is_keyword s
-		then failwith "Cannot assign keyword."
-		else
-		let typ = find_variable env.scope s in
-		(match typ with
+  let t2 = type_of ae2 in
+  let ii = match i with | IdTest(s) -> s in
+  let t1 = find_variable env.scope ii in
+		(match t1 with
 		| Some(t) ->
-			Ast.IdTest(s), ae2
+			if t = t2 then i,ae2
+            else failwith "Invalid assignment."
 		| None -> failwith "Invalid assignment.")
 
 and add_scope_variable (i : Ast.id) (d : Ast.t) (env : environment) : unit =
@@ -110,21 +115,16 @@ and annotate_func_decl (fdecl : Ast.func_decl) (env : environment) : Sast.tfunc_
   let asts = annotate_stmts fdecl.body fenv in
   {rtype = fdecl.rtype; name = fdecl.name; tformals = aes; tbody = asts}
 
-and annotate_main_func_decl (mdecl : Ast.main_func_decl option) (env : environment) : Sast.tmain_func_decl =
-  match mdecl with
-  | Some(x) ->
-    let asts = annotate_stmts x.body env in
-    {tbody = asts}
-  | None -> {tbody = []}
+and annotate_main_func_decl (mdecl : Ast.main_func_decl) (env : environment) : Sast.tmain_func_decl =
+  let asts = annotate_stmts mdecl.body env in
+  {tbody = asts}
 
 and annotate_import_statement (istmt : Ast.import_stmt) (env : environment) : Sast.timport_stmt =
   let ai = "" in
   TImport(ai)
 
-and annotate_import_statements (istmts : Ast.import_stmt list option) (env : environment) : Sast.timport_stmt list =
-  match istmts with
-  | Some(x) -> List.map (fun i -> annotate_import_statement i env) x
-  | None -> []
+and annotate_import_statements (istmts : Ast.import_stmt list) (env : environment) : Sast.timport_stmt list =
+  List.map (fun i -> annotate_import_statement i env) istmts
 
 and annotate_exprs (exprs : Ast.expression list) (env : environment) : Sast.texpression list =
   List.map (fun s -> annotate_expr s env) exprs
@@ -132,10 +132,8 @@ and annotate_exprs (exprs : Ast.expression list) (env : environment) : Sast.texp
 and annotate_stmts (stmts : Ast.statement list) (env : environment) : Sast.tstatement list =
   List.map (fun x -> annotate_stmt x env) stmts
 
-and annotate_func_decls (fdecls : Ast.func_decl list option) (env : environment) : Sast.tfunc_decl list =
-  match fdecls with
-  | Some(x) -> List.map (fun f -> annotate_func_decl f env) x
-  | None -> []
+and annotate_func_decls (fdecls : Ast.func_decl list) (env : environment) : Sast.tfunc_decl list =
+  List.map (fun f -> annotate_func_decl f env) fdecls
 
 let annotate_prog (p : Ast.program) : Sast.tprogram =
   let env = new_env() in
