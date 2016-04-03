@@ -54,6 +54,7 @@ rule token = parse
     | "page"                          { PAGED }
     | "line"                          { LINED }
     | "list"                          { LISTD }
+    | "tuple"                         { TUPLED }
     | "if"                            { IF }
     | "elif"                          { ELIF }
     | "else"                          { ELSE }
@@ -64,6 +65,7 @@ rule token = parse
     | "import"                        { IMPORT }
     | "void"                          { VOID }
     | "null"                          { NULL }
+    | "main"                          { MAIN }
     | "function"                      { FUNCTION }
     (* Literals *)
     | digit+ as int                   { INT(int_of_string int) }

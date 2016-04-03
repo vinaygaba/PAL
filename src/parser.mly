@@ -8,13 +8,14 @@
 %token ASSIGN
 %token IF ELIF ELSE WHILELOOP FORLOOP BREAK CONTINUE VOID NULL
 %token EOF
-%token IMPORT FUNCTION RETURN
+%token IMPORT FUNCTION RETURN MAIN
 %token <string> ID
+%token IDTEST
 %token <string> STRING
 %token <int> INT
 %token <float> FLOAT
 %token <bool> BOOL
-%token INTD BOOLD STRINGD FLOATD PDFD PAGED LINED LISTD
+%token INTD BOOLD STRINGD FLOATD PDFD PAGED LINED LISTD TUPLED
 %left ASSIGN
 %left OR
 %left AND
@@ -32,14 +33,17 @@
 %%
 
 program:
-  import_decl_list func_decl_list EOF  { Program(List.rev $1, List.rev $2) }
+  import_decl_list main_func_decl_option func_decl_list EOF  { { ilist = List.rev $1 ; mainf = $2 ; declf = List.rev $3} }
+
+main_func_decl_option:
+  MAIN LEFTPAREN RIGHTPAREN body { { body = List.rev $4 }  } 
+  
 
 import_decl_list:
                                    { [] }
   | import_decl_list import_decl { $2::$1 }
 
 func_decl_list:
-
                                     { [] }
   | func_decl_list func_decl        { $2::$1 }
 
@@ -70,7 +74,7 @@ body:
    LEFTBRACE stmt_list RIGHTBRACE { List.rev $2 }
 
 function_call:
-     ID LEFTPAREN expr_list RIGHTPAREN SEMICOLON                    {($1,$3)}
+     ID LEFTPAREN expr_list RIGHTPAREN SEMICOLON                    { ($1,$3) }
 
 
 
@@ -80,15 +84,15 @@ stmt:
   | RETURN expr SEMICOLON                                           { Ret($2) }
   | function_call                                                   {CallStmt(fst $1,snd $1)}
   | WHILELOOP LEFTPAREN expr_stmt RIGHTPAREN body                   { While($3, $5) }
-  | ID TYPEASSIGNMENT sp_data_type LEFTPAREN expr_list RIGHTPAREN SEMICOLON  { ObjectCreate($1, $3, $5) }
-  | ID TYPEASSIGNMENT list_data_type data_type { ListDecl($1, $3, $4)}
+  | ID TYPEASSIGNMENT sp_data_type LEFTPAREN expr_list RIGHTPAREN SEMICOLON  { ObjectCreate(Ast.IdTest($1), $3, $5) }
+  | ID TYPEASSIGNMENT list_data_type data_type { ListDecl(Ast.IdTest($1), $3, $4 )}
 
 v_decl :
-| ID TYPEASSIGNMENT data_type SEMICOLON                           { Vdecl($1,$3) }
+| ID TYPEASSIGNMENT data_type SEMICOLON                           { Vdecl(Ast.IdTest($1),$3) }
 
 assign_stmt:
-  ID ASSIGN expr                                                  { Assign($1, $3) }
-| ID TYPEASSIGNMENT data_type ASSIGN expr                         { InitAssign($1,$3,$5) }
+  ID ASSIGN expr                                                  { Assign(Ast.IdTest($1), $3) }
+| ID TYPEASSIGNMENT data_type ASSIGN expr                         { InitAssign(Ast.IdTest($1),$3,$5) }
 
 
 expr_stmt:
@@ -105,7 +109,8 @@ STRINGD                                                             { String }
 | INTD                                                              { Int }
 | FLOATD                                                            { Float }
 | BOOLD                                                             { Bool }
-
+| PDFD                                                              { Pdf }
+| PAGED                                                             { Page }
 
 
 list_data_type:
@@ -113,6 +118,7 @@ LISTD { List }
 
 sp_data_type:
 LINED { Line }
+| TUPLED { Tuple }
 
 
 expr:
@@ -120,7 +126,7 @@ STRING               { LitString($1) }
 | INT                { LitInt($1) }
 | FLOAT              { LitFloat($1)}
 | BOOL               { LitBool($1) }
-| ID		             { Iden($1) }
+| ID		             { Iden(Ast.IdTest($1)) }
 | expr ADDOP expr    { Binop($1, Add, $3) }
 | expr SUBOP expr    { Binop($1, Sub, $3) }
 | expr MULOP expr    { Binop($1, Mul, $3) }

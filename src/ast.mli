@@ -23,7 +23,7 @@ type var_decl =  id * t
 (*type list_var_decl = id * recur_list_decl * data_type*)
 
 
-type list_var_decl = id * list_data_type * data_type
+type list_var_decl = id * list_data_type * t
 
 type expression =
   LitInt of int
@@ -44,7 +44,7 @@ type statement =
   | Assign of id * expression
   | Vdecl of var_decl
   | ListDecl of list_var_decl
-  | InitAssign of id * data_type * expression
+  | InitAssign of id * t * expression
   | ObjectCreate of id * sp_data_type * expression list
   | For of statement * expression * statement * statement list
   | CallStmt of string * expression list
@@ -69,8 +69,8 @@ type main_func_decl = {
   body : statement list;
 }
 
-type program = {
-  ilist : import_stmt list option;
-  mainf : main_func_decl option;
-  declf : func_decl list option;
+type program =  {
+  ilist : import_stmt list ;
+  mainf : main_func_decl ;
+  declf : func_decl list ;
 }
