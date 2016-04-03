@@ -54,6 +54,7 @@ rule token = parse
     | "page"                          { PAGED }
     | "line"                          { LINED }
     | "list"                          { LISTD }
+    | "tuple"                         { TUPLED }
     | "if"                            { IF }
     | "elif"                          { ELIF }
     | "else"                          { ELSE }
