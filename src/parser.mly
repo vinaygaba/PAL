@@ -39,23 +39,16 @@ import_decl_list:
   | import_decl_list import_decl { $2::$1 }
 
 func_decl_list:
-<<<<<<< HEAD
+
                                     { [] }
   | func_decl_list func_decl        { $2::$1 }
 
-func_decl : 
-  ID LEFTPAREN expr_list RIGHTPAREN TYPEASSIGNMENT data_type body { rtype : $6; name : $1; formals : $3 ; body : $7; } 
-=======
-                                   { [] }
-  | func_decl_list func_decl { $2::$1 }
-
-
-func_decl : 
-  ID LEFTPAREN stmt_list RIGHTPAREN TYPEASSIGNMENT data_type body { 
-    { rtype = $6 ; name = $1; formals = $3 ; body = $7; } 
+func_decl :
+  ID LEFTPAREN stmt_list RIGHTPAREN TYPEASSIGNMENT data_type body {
+    { rtype = $6 ; name = $1; formals = $3 ; body = $7; }
   }
->>>>>>> 289084094e0f4e167744e9ce314e4f68f4a5dc69
-  
+
+
 
 import_decl:
 	IMPORT LEFTPAREN STRING RIGHTPAREN SEMICOLON { Import($3) }
@@ -81,16 +74,16 @@ function_call:
 
 
 
-stmt:     
+stmt:
   | assign_stmt SEMICOLON                                           { $1 }
   | FORLOOP LEFTPAREN assign_stmt SEMICOLON expr_stmt SEMICOLON assign_stmt RIGHTPAREN body { For($3, $5, $7, $9) }
   | RETURN expr SEMICOLON                                           { Ret($2) }
-  | function_call                                                   {CallStmt(fst $1,snd $1)}          
-  | WHILELOOP LEFTPAREN expr_stmt RIGHTPAREN body                   { While($3, $5) }          
-  | ID TYPEASSIGNMENT sp_data_type LEFTPAREN expr_list RIGHTPAREN SEMICOLON  { ObjectCreate($1, $3, $5) }   
-  | ID TYPEASSIGNMENT list_data_type data_type { ListDecl($1, $3, $4)}                    
+  | function_call                                                   {CallStmt(fst $1,snd $1)}
+  | WHILELOOP LEFTPAREN expr_stmt RIGHTPAREN body                   { While($3, $5) }
+  | ID TYPEASSIGNMENT sp_data_type LEFTPAREN expr_list RIGHTPAREN SEMICOLON  { ObjectCreate($1, $3, $5) }
+  | ID TYPEASSIGNMENT list_data_type data_type { ListDecl($1, $3, $4)}
 
-v_decl : 
+v_decl :
 | ID TYPEASSIGNMENT data_type SEMICOLON                           { Vdecl($1,$3) }
 
 assign_stmt:
@@ -139,6 +132,3 @@ STRING               { LitString($1) }
 | expr OR     expr   { Binop($1, Or,      $3) }
 | NOT  expr         { Uop(Not,$2) }
 | function_call     {CallExpr(fst $1,snd $1)}
-
-
-
