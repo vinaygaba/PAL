@@ -9,9 +9,11 @@ main(){
 
   pdfVar = padVar . page1;
 
+  tupleVar : tuple(pdfVar, page1);
+
   line1 : line ("Hello World", "Times_New_Roman",12,100,700);
 
-  {pdfVar,page1} =   {pdfVar,page1} . line1;
+  tupleVar =   tupleVar . line1;
 
   renderpdf(pdfVar,"helloworld.pdf");
 

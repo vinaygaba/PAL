@@ -28,7 +28,7 @@ contentStream.endText();
 contentStream.close();
 
 // Save the results and ensure that the document is properly closed:
-document.save( "helloworld.pdf");
-document.close();
+pdfVar.save( "helloworld.pdf");
+pdfVar.close();
 
 }
