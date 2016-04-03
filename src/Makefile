@@ -12,8 +12,9 @@ make :
 	ocamlc -c analyzer.ml
 	#ocamlc -c semantics.ml
 	#ocamlc -c compile.ml
+	ocamlc -c codegen.ml
 	ocamlc -c pal.ml
-	ocamlc -o pal ast.cmo sast.cmo parser.cmo lexer.cmo analyzer.cmo semantics.cmo pal.cmo
+	ocamlc -o pal sast.cmo parser.cmo lexer.cmo analyzer.cmo codegen.cmo pal.cmo
 
 .PHONY : clean
 clean :
