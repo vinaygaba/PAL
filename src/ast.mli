@@ -5,17 +5,16 @@ type uop = Neg | Not
 
 type data_type = Int | Bool | Float | String | Pdf | Page
 
-
 type list_data_type = List
 
-type sp_data_type = Line
+type sp_data_type = Line | Tuple
 
 type id = string
 
 type var_decl =  id * data_type
 
 
-(*type recur_list_decl = list_data_type * recur_list_decl 
+(*type recur_list_decl = list_data_type * recur_list_decl
 | data_type*)
 
 (*type list_var_decl = id * recur_list_decl * data_type*)
@@ -36,7 +35,6 @@ type expression =
 
 
 type statement =
-
   | Ret of expression
   | While of expression * statement list
   | If of conditional list * statement list option
@@ -52,8 +50,8 @@ type statement =
     condition : expression;
     body : statement list;
   }
-  
-type import_stmt = 
+
+type import_stmt =
   | Import of string
 
 
@@ -64,5 +62,12 @@ type func_decl = {
   body : statement list;
 }
 
-type program = Program of import_stmt list * func_decl list
+type main_func_decl = {
+  body : statement list;
+}
 
+type program = {
+  ilist : import_stmt list option;
+  mainf : main_func_decl option;
+  declf : func_decl list option;
+}
