@@ -45,7 +45,7 @@ type statement =
   | Vdecl of var_decl
   | ListDecl of list_var_decl
   | InitAssign of id * t * expression
-  | ObjectCreate of id * sp_data_type * expression list
+  | ObjectCreate of id * t * expression list
   | For of statement * expression * statement * statement list
   | CallStmt of string * expression list
 
