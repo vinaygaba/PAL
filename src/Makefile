@@ -9,10 +9,11 @@ make :
 	ocamllex lexer.mll
 	ocamlc -c lexer.ml
 	ocamlc -c sast.ml
+	ocamlc -c analyzer.ml
 	#ocamlc -c semantics.ml
 	#ocamlc -c compile.ml
-	#ocamlc -c pal.ml
-	#ocamlc -o pal ast.cmo sast.cmo parser.cmo lexer.cmo compile.cmo semantics.cmo pal.cmo
+	ocamlc -c pal.ml
+	ocamlc -o pal ast.cmo sast.cmo parser.cmo lexer.cmo analyzer.cmo semantics.cmo pal.cmo
 
 .PHONY : clean
 clean :
