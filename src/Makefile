@@ -20,3 +20,6 @@ make :
 clean :
 	rm -f pal parser.ml parser.mli lexer.ml bin/*.class \
 	*.cmo *.cmi *.output *.class *.java *.log *.csv
+
+#javac -cp ".:pdfbox.jar" Output.java
+#java -cp ".:pdfbox.jar" Output

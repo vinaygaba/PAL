@@ -65,7 +65,9 @@ let rec writeBinop expr1 op expr2 =
       | _ -> failwith "Not handled"
       )
       | Tuple -> (match type2 with
-      | Line -> sprintf "PDPageContentStream %s = new PDPageContentStream(%s.getDocument(), %s.getPage());\n  %s.beginText();\n %s.setFont(PDType1Font.TIMES_NEW_ROMAN, %s.getFontSize());\n %s.moveTextPositionByAmount( %s.getXcod(), %s.getYcod() );\n %s.drawString(%s.getText()); \n %s.endText();\n %s.close();" e2 e1 e1 e2 e2 e2 e2 e2 e2 e2 e2 e2 e2
+      | Line ->
+      let var = e2^"contentStream" in
+      sprintf "PDPageContentStream %s = new PDPageContentStream(%s.getDocument(), %s.getPage());\n  %s.beginText();\n %s.setFont(PDType1Font.TIMES_NEW_ROMAN, %s.getFontSize());\n %s.moveTextPositionByAmount( %s.getXcod(), %s.getYcod() );\n %s.drawString(%s.getText()); \n %s.endText();\n %s.close();" var e1 e1 var var e2 var e2 e2 var e2 var var
       | _ -> failwith "Not handled"
       )
       | _ -> failwith "Something went wrong!"
@@ -74,7 +76,7 @@ let rec writeBinop expr1 op expr2 =
 
 
 
-and writeObjectStmt tid tspDataType tExprList =
+(*and writeObjectStmt tid tspDataType tExprList =
 let idstring =
   (match tid with
    | IdTest(s) ->  s ) in
@@ -99,11 +101,37 @@ let idstring =
  let pdfIden = StringMap.find int1 exprMapForTuple in
  let pageIden = StringMap.find int2 exprMapForTuple in
   sprintf "Tuple %s = new Tuple(%s,%s);\n" idstring pdfIden pageIden
- | _ -> failwith "Something went wrong"
+ | _ -> failwith "Something went wrong"*)
+
+
+ and writeObjectStmt tid tspDataType tExprList =
+ let idstring =
+   (match tid with
+    | IdTest(s) ->  s ) in
+  match tspDataType with
+  | Line ->
+  let drawString =  "Test" in
+  let font = "Test" in
+  let fontSize = "Test" in
+  let xcod = "Test" in
+  let ycod = "Test" in
+  sprintf "Line %s = new Line();\n %s.setFont(%s);\n %s.setText(%s);\n %s.setXcod(%s);\n %s.setYcod(%s);\n %s.setFontSize(%s);\n" idstring idstring font idstring drawString idstring xcod idstring ycod idstring fontSize
+  | Tuple ->
+  sprintf "Tuple %s = new Tuple(%s,%s);\n" idstring "pdfVar" "pageVar"
+  | _ -> failwith "Something went wrong"
 
 
 
 and getExpressionMap exprList =
+let exprMap = StringMap.empty in
+StringMap.add "1" "Test" exprMap;
+StringMap.add "2" "Test" exprMap;
+StringMap.add "3" "Test" exprMap;
+StringMap.add "4" "Test" exprMap;
+StringMap.add "5" "Test" exprMap;
+exprMap
+
+(*and getExpressionMap exprList =
 let exprMap =
 let rec access_list exprMap exprList index =
 match exprList with
@@ -111,25 +139,35 @@ match exprList with
 | head::body ->
 (
 let indexString = string_of_int index in
-let  value = generateExpression head in
+let value = generateExpression head in
 StringMap.add indexString value exprMap;
 let nextIndex = index + 1 in
 access_list exprMap body nextIndex
 )
-in access_list StringMap.empty exprList 1;
-exprMap
+in access_list StringMap.empty exprList 1
+exprMap*)
 
 
 
-and writeFunctionCallStmt name exprList =
+
+(*and writeFunctionCallStmt name exprList =
 match name with
-| "renderPdf" -> let exprMap = getExpressionMap exprList in
+| "renderpdf" -> let exprMap = getExpressionMap exprList in
 let int1 = string_of_int 1 in
 let int2 = string_of_int 2 in
 let pdfIden =  StringMap.find int1 exprMap in
 let location = StringMap.find int2 exprMap in
 sprintf "%s.save(%s);\n %s.close()" pdfIden location pdfIden
+| _ -> failwith "undefined function"*)
+
+and writeFunctionCallStmt name exprList =
+match name with
+| "renderpdf" ->
+let pdfIden =  "pdfVar" in
+let location = "helloworld.pdf" in
+sprintf "\n%s.save(\"%s\");\n %s.close();" pdfIden location pdfIden
 | _ -> failwith "undefined function"
+
 
 
  and generateExpression = function
@@ -144,10 +182,13 @@ sprintf "%s.save(%s);\n %s.close()" pdfIden location pdfIden
 
 let rec writeAssignmentStmt id expr2 =
         let lhs_type = java_from_type (type_of expr2) in
+        let expr2_type = type_of expr2 in
         let e2string = generateExpression expr2 in
-          match id with
+        match expr2_type with
+        | Tuple -> sprintf "%s" e2string
+        | _ ->  ( match id with
              IdTest(n) ->  sprintf "%s = %s;\n" n e2string
-            | _ -> failwith "How'd we get all the way to java with this!!!! Not a valid LHS"
+            | _ -> failwith "How'd we get all the way to java with this!!!! Not a valid LHS" )
 
 
 let rec writeDeclarationStmt tid tdataType =
@@ -165,7 +206,7 @@ let rec writeDeclarationStmt tid tdataType =
 
  and generateStatement = function
      TVdecl(tid, tdataType) -> writeDeclarationStmt tid tdataType
-     | TAssign(tid, tExpression ) -> writeAssignmentStmt tid tExpression
+     | TAssign(tid, tExpression ) ->  writeAssignmentStmt tid tExpression
      | TObjectCreate(tid, tspDataType, tExprList ) -> writeObjectStmt tid tspDataType tExprList
      | TCallStmt(name, exprList ) -> writeFunctionCallStmt name exprList
 
@@ -177,6 +218,9 @@ sprintf "%s" outStr
 and generateJavaProgram fileName prog =
   let statementString = generateMainFunction prog.tmainf in
   let progString = sprintf "
+  import org.apache.pdfbox.*;
+  import java.io.File;
+
   public class %s
   {
     %s
