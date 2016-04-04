@@ -25,12 +25,12 @@ let type_of (ae : Sast.texpression) : Ast.t =
 
 let java_from_type (ty: Ast.t) : string =
     match ty with
-      | _ ->  "PrimitiveObject" 
+      | _ ->  "PrimitiveObject"
 
 
 
 let writeId iden =
-   sprintf "PrimtiveObject %s" iden
+   sprintf "%s" iden
 
 let writeIntLit intLit =
   sprintf "new PrimitiveObject(%d)" intLit
@@ -65,7 +65,7 @@ let rec writeBinop expr1 op expr2 =
       | _ -> failwith "Not handled"
       )
       | Tuple -> (match type2 with
-      | Line -> sprintf "  PDPageContentStream %s = new PDPageContentStream(%s.getDocument(), %s.getPage());\n  %s.beginText();\n %s.setFont(PDType1Font.TIMES_NEW_ROMAN, %s.getFontSize());\n %s.moveTextPositionByAmount( %s.getXcod(), %s.getYcod() );\n %s.drawString(%s.getText()); \n %s.endText();\n %s.close();" e2 e1 e1 e2 e2 e2 e2 e2 e2 e2 e2 e2 e2
+      | Line -> sprintf "PDPageContentStream %s = new PDPageContentStream(%s.getDocument(), %s.getPage());\n  %s.beginText();\n %s.setFont(PDType1Font.TIMES_NEW_ROMAN, %s.getFontSize());\n %s.moveTextPositionByAmount( %s.getXcod(), %s.getYcod() );\n %s.drawString(%s.getText()); \n %s.endText();\n %s.close();" e2 e1 e1 e2 e2 e2 e2 e2 e2 e2 e2 e2 e2
       | _ -> failwith "Not handled"
       )
       | _ -> failwith "Something went wrong!"
@@ -75,17 +75,17 @@ let rec writeBinop expr1 op expr2 =
 
 
 and writeObjectStmt tid tspDataType tExprList =
-let idstring = 
-  (match tid with 
+let idstring =
+  (match tid with
    | IdTest(s) ->  s ) in
  match tspDataType with
  | Line ->
  let exprMapForLine = getExpressionMap tExprList in
- let int1 = string_of_int 1 in 
+ let int1 = string_of_int 1 in
  let int2 = string_of_int 2 in
- let int3 = string_of_int 3 in 
+ let int3 = string_of_int 3 in
  let int4 = string_of_int 4 in
- let int5 = string_of_int 5 in 
+ let int5 = string_of_int 5 in
  let drawString =  StringMap.find int1 exprMapForLine in
  let font = StringMap.find int2 exprMapForLine in
  let fontSize = StringMap.find int3 exprMapForLine in
@@ -94,7 +94,7 @@ let idstring =
  sprintf "Line %s = new Line();\n %s.setFont(%s);\n %s.setText(%s);\n %s.setXcod(%s);\n %s.setYcod(%s);\n %s.setFontSize(%s);\n" idstring idstring font idstring drawString idstring xcod idstring ycod idstring fontSize
  | Tuple ->
  let exprMapForTuple = getExpressionMap tExprList in
-  let int1 = string_of_int 1 in 
+  let int1 = string_of_int 1 in
  let int2 = string_of_int 2 in
  let pdfIden = StringMap.find int1 exprMapForTuple in
  let pageIden = StringMap.find int2 exprMapForTuple in
@@ -104,17 +104,20 @@ let idstring =
 
 
 and getExpressionMap exprList =
-let exprMap =  StringMap.empty in
-let rec access_list exprList index = match exprList with
+let exprMap =
+let rec access_list exprMap exprList index =
+match exprList with
 | [] -> exprMap
 | head::body ->
 (
 let indexString = string_of_int index in
-exprMap = StringMap.add indexString head exprMap;
-let nextIndex = index + 1 in 
-access_list body nextIndex
+let  value = generateExpression head in
+StringMap.add indexString value exprMap;
+let nextIndex = index + 1 in
+access_list exprMap body nextIndex
 )
-in access_list exprList 1
+in access_list StringMap.empty exprList 1;
+exprMap
 
 
 
@@ -133,8 +136,8 @@ sprintf "%s.save(%s);\n %s.close()" pdfIden location pdfIden
      TBinop(ope1, op, ope2, _) -> writeBinop ope1 op ope2
    | TLitString(stringLit, _) -> writeStringLit stringLit
    | TLitInt(intLit, _) -> writeIntLit intLit
-   | TIden(name, _) -> 
-   (match name with 
+   | TIden(name, _) ->
+   (match name with
    |IdTest(n) -> writeId n
   )
 
@@ -143,18 +146,19 @@ let rec writeAssignmentStmt id expr2 =
         let lhs_type = java_from_type (type_of expr2) in
         let e2string = generateExpression expr2 in
           match id with
-             IdTest(n) ->  sprintf "%s = (%s)(%s);\n" n lhs_type e2string
+             IdTest(n) ->  sprintf "%s = %s;\n" n e2string
             | _ -> failwith "How'd we get all the way to java with this!!!! Not a valid LHS"
 
 
 let rec writeDeclarationStmt tid tdataType =
   let lhs_type = java_from_type tdataType in
   match tid with
-      | IdTest(name) -> 
+      | IdTest(name) ->
                         (match tdataType with
-                                  | Pdf -> sprintf "%s %s = new %s(new PDDocument());\n" lhs_type name lhs_type
-                                  | Page -> sprintf "%s %s = new %s(new PDPage());\n" lhs_type name lhs_type
-                                  | _ -> sprintf "%s %s = new %s();\n" lhs_type name lhs_type)
+                                  | Pdf -> sprintf "PDDocument %s = new PDDocument();\n" name
+                                  | Page -> sprintf "PDPage %s = new PDPage();\n" name
+                                  | Int -> sprintf "Integer %s = new Integer();\n" name
+                                  | String -> sprintf "String %s = new String();\n" name)
       | _ -> failwith "Not handled"
 
 
@@ -182,7 +186,7 @@ and generateJavaProgram fileName prog =
   progString
 
 
- 
+
 
 and writeMainFunction stmtList =
 let mainBody = writeStmtList stmtList in
@@ -191,7 +195,7 @@ sprintf "  public static void main(String[] args)
         %s
       }  " mainBody
 
-      
+
 
   and generateMainFunction prog =
   let mainFunctionBody =  writeMainFunction prog.tbody in
@@ -202,4 +206,3 @@ sprintf "  public static void main(String[] args)
 (*******************************************************************************
 	Literal expression handling - helper functions
 ********************************************************************************)
-

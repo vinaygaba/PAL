@@ -39,9 +39,11 @@ let type_of (ae : Sast.texpression) : Ast.t =
   | TLitFloat(_, t) -> t
   | TLitBool(_, t) -> t
   | TIden(_, t) -> t
+  | TBinop(_, _, _, t) -> t
 
 
 let rec annotate_expr (e : Ast.expression) (env : environment) : Sast.texpression =
+  Printf.printf "Entered annotate_expression\n";
   match e with
   | LitInt(n) -> TLitInt(n, Int)
   | LitBool(n) -> TLitBool(n, Bool)
@@ -67,8 +69,11 @@ let rec annotate_expr (e : Ast.expression) (env : environment) : Sast.texpressio
 	          | (Tuple, Line) -> TBinop(ae1,o,ae2,t1)))
 
 and annotate_assign (i : Ast.id) (e : Ast.expression) (env : environment) : Ast.id * Sast.texpression =
+  Printf.printf "Entered annotate_assign\n";
   let ae2 = annotate_expr e env in
+  Printf.printf "Got annotated rhs of assign\n";
   let t2 = type_of ae2 in
+  let p1 = Printf.printf "Got type of annotated rhs\n" in
   let ii = match i with | IdTest(s) -> s in
   let t1 = find_variable env.scope ii in
 		(match t1 with
@@ -103,9 +108,14 @@ and annotate_stmt (s : Ast.statement) (env : environment) : Sast.tstatement =
 	  add_scope_variable e d env;
       TVdecl(e, d)
   | ObjectCreate(e,sd,el) ->
+      Printf.printf "Entered ObjectCreate in annotate_statement\n";
+      add_scope_variable e sd env;
 	  let ad = sd in
 	  let ael = annotate_exprs el env in
-	  TObjectCreate(e,ad,ael)
+	  let p2 = Printf.printf "Got annotated rhs exp list\n" in
+	  let ttt = TObjectCreate(e,ad,ael) in
+	  let p3 = Printf.printf "Here\n" in
+	  ttt
 
 and annotate_func_decl (fdecl : Ast.func_decl) (env : environment) : Sast.tfunc_decl =
   env.scope.functions <- (fdecl.name, fdecl.rtype) :: env.scope.functions;
@@ -140,4 +150,5 @@ let annotate_prog (p : Ast.program) : Sast.tprogram =
   let ai = annotate_import_statements p.ilist env in
   let am = annotate_main_func_decl p.mainf env in
   let af = annotate_func_decls p.declf env in
+  Printf.printf "There\n";
   {tilist = ai; tmainf = am; tdeclf = af}
