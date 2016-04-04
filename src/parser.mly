@@ -36,7 +36,7 @@ program:
   import_decl_list main_func_decl_option func_decl_list EOF  { { ilist = List.rev $1 ; mainf = $2 ; declf = List.rev $3} }
 
 main_func_decl_option:
-  MAIN LEFTPAREN RIGHTPAREN body { { body = List.rev $4 }  } 
+  MAIN LEFTPAREN RIGHTPAREN body { { body = $4 }  } 
   
 
 import_decl_list:
@@ -82,13 +82,14 @@ stmt:
   | assign_stmt SEMICOLON                                           { $1 }
   | FORLOOP LEFTPAREN assign_stmt SEMICOLON expr_stmt SEMICOLON assign_stmt RIGHTPAREN body { For($3, $5, $7, $9) }
   | RETURN expr SEMICOLON                                           { Ret($2) }
-  | function_call                                                   {CallStmt(fst $1,snd $1)}
+  | function_call                                                   { CallStmt(fst $1,snd $1) }
+  | v_decl                                                          { Vdecl(fst $1, snd $1) }
   | WHILELOOP LEFTPAREN expr_stmt RIGHTPAREN body                   { While($3, $5) }
   | ID TYPEASSIGNMENT sp_data_type LEFTPAREN expr_list RIGHTPAREN SEMICOLON  { ObjectCreate(Ast.IdTest($1), $3, $5) }
   | ID TYPEASSIGNMENT list_data_type data_type { ListDecl(Ast.IdTest($1), $3, $4 )}
 
 v_decl :
-| ID TYPEASSIGNMENT data_type SEMICOLON                           { Vdecl(Ast.IdTest($1),$3) }
+| ID TYPEASSIGNMENT data_type SEMICOLON                           { (Ast.IdTest($1),$3) }
 
 assign_stmt:
   ID ASSIGN expr                                                  { Assign(Ast.IdTest($1), $3) }
