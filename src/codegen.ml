@@ -61,13 +61,13 @@ let rec writeBinop expr1 op expr2 =
       Concat ->
       match type1 with
       | Pdf -> (match type2 with
-      | Page -> sprintf "%s.addPage( %s );\n" e1 e2
+      | Page -> sprintf "Util.addPageToPDF(%s,%s);\n" e1 e2
       | _ -> failwith "Not handled"
       )
       | Tuple -> (match type2 with
       | Line ->
       let var = e2^"contentStream" in
-      sprintf "PDPageContentStream %s = new PDPageContentStream(%s.getDocument(), %s.getPage());\n  %s.beginText();\n %s.setFont(PDType1Font.TIMES_ROMAN, %s.getFontSize());\n %s.moveTextPositionByAmount( %s.getXcod(), %s.getYcod() );\n %s.drawString(%s.getText()); \n %s.endText();\n %s.close();" var e1 e1 var var e2 var e2 e2 var e2 var var
+      sprintf "Util.addLineToTuple(%s,%s)" e1 e2
       | _ -> failwith "Not handled"
       )
       | _ -> failwith "Something went wrong!"
@@ -184,14 +184,10 @@ sprintf "\n%s.save(\"%s\");\n %s.close();" pdfIden location pdfIden
 
 let rec writeAssignmentStmt id expr2 =
         let lhs_type = java_from_type (type_of expr2) in
-        let expr2_type = type_of expr2 in
         let e2string = generateExpression expr2 in
-        match expr2_type with
-        | Tuple -> sprintf "%s" e2string
-        | Pdf -> sprintf "%s" e2string
-        | _ ->  ( match id with
+        match id with
              IdTest(n) ->  sprintf "%s = %s;\n" n e2string
-            | _ -> failwith "How'd we get all the way to java with this!!!! Not a valid LHS" )
+            | _ -> failwith "How'd we get all the way to java with this!!!! Not a valid LHS" 
 
 
 let rec writeDeclarationStmt tid tdataType =
