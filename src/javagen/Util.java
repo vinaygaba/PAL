@@ -9,14 +9,14 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 public class Util{
 
 
-  public static PDPDocument addPageToPDF(PDPDocument doc,PDPage page){
+  public static PDDocument addPageToPDF(PDDocument doc,PDPage page) throws Exception{
 
     doc.addPage(page);
 
     return doc;
   }
 
-  public static Tuple addLineToTuple(Tuple tuple,Line line){
+  public static Tuple addLineToTuple(Tuple tuple,Line line)throws Exception{
     // Start a new content stream which will "hold" the to be created content
     PDPageContentStream contentStream = new PDPageContentStream(tuple.getDocument(), tuple.getPage());
 
