@@ -36,8 +36,8 @@ program:
   import_decl_list main_func_decl_option func_decl_list EOF  { { ilist = List.rev $1 ; mainf = $2 ; declf = List.rev $3} }
 
 main_func_decl_option:
-  MAIN LEFTPAREN RIGHTPAREN body { { body = $4 }  } 
-  
+  MAIN LEFTPAREN RIGHTPAREN body { { body = $4 }  }
+
 
 import_decl_list:
                                    { [] }
@@ -74,7 +74,7 @@ body:
    LEFTBRACE stmt_list RIGHTBRACE { List.rev $2 }
 
 function_call:
-     ID LEFTPAREN expr_list RIGHTPAREN SEMICOLON                    { ($1,$3) }
+     ID LEFTPAREN expr_list RIGHTPAREN SEMICOLON                    { ($1,List.rev $3) }
 
 
 

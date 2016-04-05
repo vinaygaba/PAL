@@ -33,10 +33,10 @@ let writeId iden =
    sprintf "%s" iden
 
 let writeIntLit intLit =
-  sprintf "new PrimitiveObject(%d)" intLit
+  sprintf "new Integer(%d)" intLit
 
 let writeStringLit stringLit =
-  sprintf "new PrimitiveObject(%s)" stringLit
+  sprintf "%s" stringLit
 
 let rec writeJavaProgramToFile fileName programString =
 	let file = open_out ("javagen/" ^ fileName ^ ".java") in
@@ -76,35 +76,28 @@ let rec writeBinop expr1 op expr2 =
 
 
 
-(*and writeObjectStmt tid tspDataType tExprList =
+and writeObjectStmt tid tspDataType tExprList =
 let idstring =
   (match tid with
    | IdTest(s) ->  s ) in
  match tspDataType with
  | Line ->
  let exprMapForLine = getExpressionMap tExprList in
- let int1 = string_of_int 1 in
- let int2 = string_of_int 2 in
- let int3 = string_of_int 3 in
- let int4 = string_of_int 4 in
- let int5 = string_of_int 5 in
- let drawString =  StringMap.find int1 exprMapForLine in
- let font = StringMap.find int2 exprMapForLine in
- let fontSize = StringMap.find int3 exprMapForLine in
- let xcod = StringMap.find int4 exprMapForLine in
- let ycod = StringMap.find int5 exprMapForLine in
+ let drawString =  StringMap.find "5" exprMapForLine in
+ let font = StringMap.find "4" exprMapForLine in
+ let fontSize = StringMap.find "3" exprMapForLine in
+ let xcod = StringMap.find "2" exprMapForLine in
+ let ycod = StringMap.find "1" exprMapForLine in
  sprintf "Line %s = new Line();\n %s.setFont(%s);\n %s.setText(%s);\n %s.setXcod(%s);\n %s.setYcod(%s);\n %s.setFontSize(%s);\n" idstring idstring font idstring drawString idstring xcod idstring ycod idstring fontSize
  | Tuple ->
  let exprMapForTuple = getExpressionMap tExprList in
-  let int1 = string_of_int 1 in
- let int2 = string_of_int 2 in
- let pdfIden = StringMap.find int1 exprMapForTuple in
- let pageIden = StringMap.find int2 exprMapForTuple in
+ let pdfIden = StringMap.find "2" exprMapForTuple in
+ let pageIden = StringMap.find "1" exprMapForTuple in
   sprintf "Tuple %s = new Tuple(%s,%s);\n" idstring pdfIden pageIden
- | _ -> failwith "Something went wrong"*)
+ | _ -> failwith "Something went wrong"
 
 
- and writeObjectStmt tid tspDataType tExprList =
+ (*and writeObjectStmt tid tspDataType tExprList =
  let idstring =
    (match tid with
     | IdTest(s) ->  s ) in
@@ -119,20 +112,19 @@ let idstring =
   | Tuple ->
   sprintf "Tuple %s = new Tuple(%s,%s);\n" idstring "pdfVar" "pageVar"
   | _ -> failwith "Something went wrong"
+*)
 
 
-
-and getExpressionMap exprList =
+(*and getExpressionMap exprList =
 let exprMap = StringMap.empty in
 StringMap.add "1" "Test" exprMap;
 StringMap.add "2" "Test" exprMap;
 StringMap.add "3" "Test" exprMap;
 StringMap.add "4" "Test" exprMap;
 StringMap.add "5" "Test" exprMap;
-exprMap
+exprMap*)
 
-(*and getExpressionMap exprList =
-let exprMap =
+and getExpressionMap exprList =
 let rec access_list exprMap exprList index =
 match exprList with
 | [] -> exprMap
@@ -140,33 +132,43 @@ match exprList with
 (
 let indexString = string_of_int index in
 let value = generateExpression head in
-StringMap.add indexString value exprMap;
-let nextIndex = index + 1 in
+let exprMap = StringMap.add indexString value exprMap in
+let nextIndex = (index + 1) in
 access_list exprMap body nextIndex
 )
-in access_list StringMap.empty exprList 1
-exprMap*)
+in access_list StringMap.empty exprList 1;
 
 
+and getFuncExpressionMap exprList =
+let rec access_list funcExprMap exprList index =
+match exprList with
+| [] -> funcExprMap
+| head::body ->
+(
+let indexString = string_of_int index in
+let value = generateExpression head in
+let funcExprMap = StringMap.add indexString value funcExprMap in
+let nextIndex = (index + 1) in
+access_list funcExprMap body nextIndex
+)
+in access_list StringMap.empty exprList 1;
 
-
-(*and writeFunctionCallStmt name exprList =
-match name with
-| "renderpdf" -> let exprMap = getExpressionMap exprList in
-let int1 = string_of_int 1 in
-let int2 = string_of_int 2 in
-let pdfIden =  StringMap.find int1 exprMap in
-let location = StringMap.find int2 exprMap in
-sprintf "%s.save(%s);\n %s.close()" pdfIden location pdfIden
-| _ -> failwith "undefined function"*)
 
 and writeFunctionCallStmt name exprList =
+match name with
+| "renderpdf" -> let funcExprMap = getFuncExpressionMap exprList in
+let pdfIden =  StringMap.find "1" funcExprMap in
+let location = StringMap.find "2" funcExprMap in
+sprintf "\n%s.save(%s);\n %s.close();" pdfIden location pdfIden
+| _ -> failwith "undefined function"
+
+(*and writeFunctionCallStmt name exprList =
 match name with
 | "renderpdf" ->
 let pdfIden =  "pdfVar" in
 let location = "helloworld.pdf" in
 sprintf "\n%s.save(\"%s\");\n %s.close();" pdfIden location pdfIden
-| _ -> failwith "undefined function"
+| _ -> failwith "undefined function"*)
 
 
 
