@@ -9,5 +9,5 @@ let _ =
   match action with
   Java ->
       let ap = Analyzer.annotate_prog program in
-      let _ = Codegen.generateJavaProgram "output" ap in
-      print_string "Success! Compiled to java/output.java\n"
+      let _ = Codegen.generateJavaProgram "Output" ap in
+      print_string "Success! Compiled to java/Output.java\n"

@@ -67,7 +67,7 @@ let rec writeBinop expr1 op expr2 =
       | Tuple -> (match type2 with
       | Line ->
       let var = e2^"contentStream" in
-      sprintf "PDPageContentStream %s = new PDPageContentStream(%s.getDocument(), %s.getPage());\n  %s.beginText();\n %s.setFont(PDType1Font.TIMES_NEW_ROMAN, %s.getFontSize());\n %s.moveTextPositionByAmount( %s.getXcod(), %s.getYcod() );\n %s.drawString(%s.getText()); \n %s.endText();\n %s.close();" var e1 e1 var var e2 var e2 e2 var e2 var var
+      sprintf "PDPageContentStream %s = new PDPageContentStream(%s.getDocument(), %s.getPage());\n  %s.beginText();\n %s.setFont(PDType1Font.TIMES_ROMAN, %s.getFontSize());\n %s.moveTextPositionByAmount( %s.getXcod(), %s.getYcod() );\n %s.drawString(%s.getText()); \n %s.endText();\n %s.close();" var e1 e1 var var e2 var e2 e2 var e2 var var
       | _ -> failwith "Not handled"
       )
       | _ -> failwith "Something went wrong!"
@@ -110,12 +110,12 @@ let idstring =
     | IdTest(s) ->  s ) in
   match tspDataType with
   | Line ->
-  let drawString =  "Test" in
-  let font = "Test" in
-  let fontSize = "Test" in
-  let xcod = "Test" in
-  let ycod = "Test" in
-  sprintf "Line %s = new Line();\n %s.setFont(%s);\n %s.setText(%s);\n %s.setXcod(%s);\n %s.setYcod(%s);\n %s.setFontSize(%s);\n" idstring idstring font idstring drawString idstring xcod idstring ycod idstring fontSize
+  let drawString =  "Hello World" in
+  let font = "TIMES_ROMAN" in
+  let fontSize = 12 in
+  let xcod = 100 in
+  let ycod = 600 in
+  sprintf "Line %s = new Line();\n %s.setFont(\"%s\");\n %s.setText(\"%s\");\n %s.setXcod(%d);\n %s.setYcod(%d);\n %s.setFontSize(%d);\n" idstring idstring font idstring drawString idstring xcod idstring ycod idstring fontSize
   | Tuple ->
   sprintf "Tuple %s = new Tuple(%s,%s);\n" idstring "pdfVar" "pageVar"
   | _ -> failwith "Something went wrong"
@@ -186,6 +186,7 @@ let rec writeAssignmentStmt id expr2 =
         let e2string = generateExpression expr2 in
         match expr2_type with
         | Tuple -> sprintf "%s" e2string
+        | Pdf -> sprintf "%s" e2string
         | _ ->  ( match id with
              IdTest(n) ->  sprintf "%s = %s;\n" n e2string
             | _ -> failwith "How'd we get all the way to java with this!!!! Not a valid LHS" )
@@ -218,8 +219,13 @@ sprintf "%s" outStr
 and generateJavaProgram fileName prog =
   let statementString = generateMainFunction prog.tmainf in
   let progString = sprintf "
-  import org.apache.pdfbox.*;
   import java.io.File;
+  import org.apache.pdfbox.pdmodel.PDDocument;
+  import org.apache.pdfbox.pdmodel.PDPage;
+  import org.apache.pdfbox.pdmodel.PageLayout;
+  import org.apache.pdfbox.pdmodel.font.PDFont;
+  import org.apache.pdfbox.pdmodel.PDPageContentStream;
+  import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
   public class %s
   {
@@ -234,7 +240,7 @@ and generateJavaProgram fileName prog =
 
 and writeMainFunction stmtList =
 let mainBody = writeStmtList stmtList in
-sprintf "  public static void main(String[] args)
+sprintf "  public static void main(String[] args) throws Exception
       {
         %s
       }  " mainBody
