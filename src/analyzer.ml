@@ -96,7 +96,7 @@ and annotate_assign (i : Ast.id) (e : Ast.expression) (env : environment) : Ast.
 		| Some(t) -> 
 			if t = t2 then i,ae2
             else failwith "Invalid assignment."
-		| None -> failwith "Invalid assignment.")
+		| None -> failwith "Invalid assignment | Variable Not Found.")
 
 and add_scope_variable (i : Ast.id) (d : Ast.t) (env : environment) : unit =
 	match i with
@@ -132,6 +132,26 @@ and annotate_stmt (s : Ast.statement) (env : environment) : Sast.tstatement =
 	  let ttt = TObjectCreate(e,ad,ael) in
 	  let p3 = Printf.printf "Here\n" in
 	  ttt
+  | While(e,sl) ->
+      let nenv = nest_scope env in
+      (match e with
+      | Binop(e1,o,e2) ->
+          (match o with
+          | Equal
+		  | Neq
+		  | Less
+		  | Leq
+		  | Greater
+		  | Geq ->
+		      let ae1 = annotate_expr e1 nenv in
+		      let ae2 = annotate_expr e2 nenv in
+		      let t1 = type_of ae1 in
+		      let t2 = type_of ae2 in
+		      let te = TBinop(ae1,o,ae2,Bool) in
+		      let tsl = annotate_stmts sl nenv in
+		      TWhile(te,tsl)
+		  | _ -> failwith "Invalid While Expression Type.")
+      | _ -> failwith "Invalid While Expression Type.")
   | For(s1,e,s2,sl) ->
       let nenv = nest_scope env in
       (match s1 with
@@ -140,8 +160,9 @@ and annotate_stmt (s : Ast.statement) (env : environment) : Sast.tstatement =
           let ets1 = type_of aes1 in
           (match ets1 with
           | Int ->
-              let (ae11,ae12) = annotate_assign i1 ie1 nenv in
-              let ts1 = TAssign(ae11,ae12) in
+              let ts1 = annotate_stmt s1 nenv in
+              (*let (ae11,ae12) = annotate_assign i1 ie1 nenv in
+              let ts1 = TAssign(ae11,ae12) in*)
               (match e with
               | Binop(e1,o,e2) ->
                   (match o with
@@ -151,19 +172,20 @@ and annotate_stmt (s : Ast.statement) (env : environment) : Sast.tstatement =
 				  | Leq
 				  | Greater
 				  | Geq ->
-				      let aee1 = annotate_expr e1 nenv in
-	                  let aee2 = annotate_expr e2 nenv in
-	                  let tt1 = type_of aee1 in
-	                  let tt2 = type_of aee2 in
-	                  let te = TBinop(aee1,o,aee2,Bool) in
+				      let ae1 = annotate_expr e1 nenv in
+	                  let ae2 = annotate_expr e2 nenv in
+	                  let t1 = type_of ae1 in
+	                  let t2 = type_of ae2 in
+	                  let te = TBinop(ae1,o,ae2,Bool) in
 	                  (match s2 with
 	                  | Assign(i2,ie2) ->
 	                      let aes2 = annotate_expr ie2 nenv in
 	                      let ets2 = type_of aes2 in
 	                      (match ets2 with
 	                      | Int ->
-	                          let (ae21,ae22) = annotate_assign i2 ie2 nenv in
-	                          let ts2 = TAssign(ae11,ae12) in
+	                          let ts2 = annotate_stmt s2 nenv in
+	                          (*let (ae21,ae22) = annotate_assign i2 ie2 nenv in
+	                          let ts2 = TAssign(ae11,ae12) in*)
 	                          let tsl = annotate_stmts sl nenv in
 	                          TFor(ts1,te,ts2,tsl)
 	                      | _ -> failwith "Invalid Assignment Expression Type.")
