@@ -29,6 +29,10 @@ let is_keyword (name : string) : bool =
   in
   helper name ["import";"main";"pdf";"page";"line";"renderpdf"]
 
+let nest_scope (env : environment) : environment =
+  let s = {variables = []; functions = []; parent = Some(env.scope)} in
+  {scope = s}
+
 let new_env() : environment =
   let s = { variables = []; functions = []; parent = None } in
   {scope = s}
@@ -128,6 +132,46 @@ and annotate_stmt (s : Ast.statement) (env : environment) : Sast.tstatement =
 	  let ttt = TObjectCreate(e,ad,ael) in
 	  let p3 = Printf.printf "Here\n" in
 	  ttt
+  | For(s1,e,s2,sl) ->
+      let nenv = nest_scope env in
+      (match s1 with
+      | Assign(i1,ie1) ->
+          let aes1 = annotate_expr ie1 nenv in
+          let ets1 = type_of aes1 in
+          (match ets1 with
+          | Int ->
+              let (ae11,ae12) = annotate_assign i1 ie1 nenv in
+              let ts1 = TAssign(ae11,ae12) in
+              (match e with
+              | Binop(e1,o,e2) ->
+                  (match o with
+                  | Equal
+				  | Neq
+				  | Less
+				  | Leq
+				  | Greater
+				  | Geq ->
+				      let aee1 = annotate_expr e1 nenv in
+	                  let aee2 = annotate_expr e2 nenv in
+	                  let tt1 = type_of aee1 in
+	                  let tt2 = type_of aee2 in
+	                  let te = TBinop(aee1,o,aee2,Bool) in
+	                  (match s2 with
+	                  | Assign(i2,ie2) ->
+	                      let aes2 = annotate_expr ie2 nenv in
+	                      let ets2 = type_of aes2 in
+	                      (match ets2 with
+	                      | Int ->
+	                          let (ae21,ae22) = annotate_assign i2 ie2 nenv in
+	                          let ts2 = TAssign(ae11,ae12) in
+	                          let tsl = annotate_stmts sl nenv in
+	                          TFor(ts1,te,ts2,tsl)
+	                      | _ -> failwith "Invalid Assignment Expression Type.")
+	                  | _ -> failwith "Invalid For Statement.")
+				  | _ -> failwith "Invalid For Expression Type.")
+              | _ -> failwith "Invalid For Expression Type.")
+          | _ -> failwith "Invalid Assignment Expression Type.")
+      | _ -> failwith "Invalid For Statement.")
 
 and annotate_func_decl (fdecl : Ast.func_decl) (env : environment) : Sast.tfunc_decl =
   env.scope.functions <- (fdecl.name, fdecl.rtype) :: env.scope.functions;
