@@ -71,6 +71,12 @@ let rec annotate_expr (e : Ast.expression) (env : environment) : Sast.texpressio
 				| Sub -> TBinop(ae1,o,ae2,t1)
 				| Div -> TBinop(ae1,o,ae2,t1)
 				| Mul -> TBinop(ae1,o,ae2,t1)
+				| Equal -> TBinop(ae1,o,ae2,t1)
+				| Neq -> TBinop(ae1,o,ae2,t1)
+				| Less -> TBinop(ae1,o,ae2,t1)
+				| Leq -> TBinop(ae1,o,ae2,t1)
+				| Greater -> TBinop(ae1,o,ae2,t1)
+				| Geq -> TBinop(ae1,o,ae2,t1)
 			)
 
 
@@ -83,7 +89,7 @@ and annotate_assign (i : Ast.id) (e : Ast.expression) (env : environment) : Ast.
   let ii = match i with | IdTest(s) -> s in
   let t1 = find_variable env.scope ii in
 		(match t1 with
-		| Some(t) ->
+		| Some(t) -> 
 			if t = t2 then i,ae2
             else failwith "Invalid assignment."
 		| None -> failwith "Invalid assignment.")

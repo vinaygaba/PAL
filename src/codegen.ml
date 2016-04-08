@@ -35,6 +35,9 @@ let writeId iden =
 let writeIntLit intLit =
   sprintf "new Integer(%d)" intLit
 
+let writeBoolLit boolLit =
+  sprintf "new Boolean(%b)" boolLit
+
 let writeStringLit stringLit =
   sprintf "%s" stringLit
 
@@ -62,6 +65,12 @@ let rec writeBinop expr1 op expr2 =
       | Sub -> sprintf "%s - %s" e1 e2
       | Mul -> sprintf "%s * %s" e1 e2
       | Div -> sprintf "%s / %s" e1 e2
+      | Equal -> sprintf "%s == %s" e1 e2
+      | Neq -> sprintf "%s != %s" e1 e2
+      | Less -> sprintf "%s < %s" e1 e2
+      | Leq -> sprintf "%s <= %s" e1 e2
+      | Greater -> sprintf "%s > %s" e1 e2
+      | Geq -> sprintf "%s >= %s" e1 e2
       | Concat ->
       match type1 with
       | Pdf -> (match type2 with
@@ -180,6 +189,7 @@ sprintf "\n%s.save(\"%s\");\n %s.close();" pdfIden location pdfIden
      TBinop(ope1, op, ope2, _) -> writeBinop ope1 op ope2
    | TLitString(stringLit, _) -> writeStringLit stringLit
    | TLitInt(intLit, _) -> writeIntLit intLit
+   | TLitBool(boolLit, _) -> writeBoolLit boolLit
    | TIden(name, _) ->
    (match name with
    |IdTest(n) -> writeId n
@@ -202,6 +212,7 @@ let rec writeDeclarationStmt tid tdataType =
                                   | Pdf -> sprintf "PDDocument %s = new PDDocument();\n" name
                                   | Page -> sprintf "PDPage %s = new PDPage();\n" name
                                   | Int -> sprintf "Integer %s = new Integer(0);\n" name
+                                  | Bool -> sprintf "Boolean %s = new Boolean(true);\n" name
                                   | String -> sprintf "String %s = new String();\n" name)
       | _ -> failwith "Not handled"
 
