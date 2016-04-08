@@ -67,16 +67,16 @@ let rec annotate_expr (e : Ast.expression) (env : environment) : Sast.texpressio
 	        (match t1, t2 with
 	          | (Pdf, Page) -> TBinop(ae1,o,ae2,t1)
 	          | (Tuple, Line) -> TBinop(ae1,o,ae2,t1))
-				| Add -> TBinop(ae1,o,ae2,t1)
-				| Sub -> TBinop(ae1,o,ae2,t1)
-				| Div -> TBinop(ae1,o,ae2,t1)
+				| Add
+				| Sub
+				| Div
 				| Mul -> TBinop(ae1,o,ae2,t1)
-				| Equal -> TBinop(ae1,o,ae2,t1)
-				| Neq -> TBinop(ae1,o,ae2,t1)
-				| Less -> TBinop(ae1,o,ae2,t1)
-				| Leq -> TBinop(ae1,o,ae2,t1)
-				| Greater -> TBinop(ae1,o,ae2,t1)
-				| Geq -> TBinop(ae1,o,ae2,t1)
+				| Equal
+				| Neq
+				| Less
+				| Leq
+				| Greater
+				| Geq -> TBinop(ae1,o,ae2,Bool)
 			)
 
 
