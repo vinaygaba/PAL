@@ -58,7 +58,11 @@ let rec writeBinop expr1 op expr2 =
     let type1 = type_of expr1 in
      let type2 = type_of expr2 in
      let writeBinopHelper e1 op e2 = match op with
-      Concat ->
+      Add -> sprintf "%s + %s" e1 e2
+      | Sub -> sprintf "%s - %s" e1 e2
+      | Mul -> sprintf "%s * %s" e1 e2
+      | Div -> sprintf "%s / %s" e1 e2
+      | Concat ->
       match type1 with
       | Pdf -> (match type2 with
       | Page -> sprintf "Util.addPageToPDF(%s,%s);\n" e1 e2
@@ -187,7 +191,7 @@ let rec writeAssignmentStmt id expr2 =
         let e2string = generateExpression expr2 in
         match id with
              IdTest(n) ->  sprintf "%s = %s;\n" n e2string
-            | _ -> failwith "How'd we get all the way to java with this!!!! Not a valid LHS" 
+            | _ -> failwith "How'd we get all the way to java with this!!!! Not a valid LHS"
 
 
 let rec writeDeclarationStmt tid tdataType =
@@ -197,7 +201,7 @@ let rec writeDeclarationStmt tid tdataType =
                         (match tdataType with
                                   | Pdf -> sprintf "PDDocument %s = new PDDocument();\n" name
                                   | Page -> sprintf "PDPage %s = new PDPage();\n" name
-                                  | Int -> sprintf "Integer %s = new Integer();\n" name
+                                  | Int -> sprintf "Integer %s = new Integer(0);\n" name
                                   | String -> sprintf "String %s = new String();\n" name)
       | _ -> failwith "Not handled"
 

@@ -50,13 +50,13 @@ let rec annotate_expr (e : Ast.expression) (env : environment) : Sast.texpressio
   | LitFloat(n) -> TLitFloat(n, Float)
   | LitString(n) -> TLitString(n, String)
   | Iden(s) ->
-	  (match s with 
-	  | IdTest(w) -> 
+	  (match s with
+	  | IdTest(w) ->
 		  let typ = find_variable env.scope w in
 		  (match typ with
 		  | Some(x) -> TIden(s,x)
 		  | None -> failwith ("Unrecognized identifier " ^ w ^ ".")))
-		  
+
   | Binop(e1,o,e2) ->
 	  let ae1 = annotate_expr e1 env in
 	  let ae2 = annotate_expr e2 env in
@@ -66,7 +66,13 @@ let rec annotate_expr (e : Ast.expression) (env : environment) : Sast.texpressio
 	      | Concat ->
 	        (match t1, t2 with
 	          | (Pdf, Page) -> TBinop(ae1,o,ae2,t1)
-	          | (Tuple, Line) -> TBinop(ae1,o,ae2,t1)))
+	          | (Tuple, Line) -> TBinop(ae1,o,ae2,t1))
+				| Add -> TBinop(ae1,o,ae2,t1)
+				| Sub -> TBinop(ae1,o,ae2,t1)
+				| Div -> TBinop(ae1,o,ae2,t1)
+				| Mul -> TBinop(ae1,o,ae2,t1)
+			)
+
 
 and annotate_assign (i : Ast.id) (e : Ast.expression) (env : environment) : Ast.id * Sast.texpression =
   Printf.printf "Entered annotate_assign\n";
