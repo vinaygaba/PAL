@@ -3,19 +3,13 @@ type binop = Add | Sub | Mul | Div | Mod | Equal | Neq | Less | Leq | Greater | 
 
 type uop = Neg | Not
 
-type data_type = Int | Bool | Float | String | Pdf | Page
-
 type list_data_type = List
-
-type sp_data_type = Line | Tuple
 
 type id = IdTest of string
 
 type t = Int | Bool | Float | String | Pdf | Page | Line | Tuple
 
-
 type var_decl =  id * t
-
 
 (*type recur_list_decl = list_data_type * recur_list_decl 
 | data_type*)
@@ -56,7 +50,6 @@ type statement =
 
 type import_stmt =
   | Import of string
-
 
 type func_decl = {
   rtype : t;

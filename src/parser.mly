@@ -87,6 +87,16 @@ stmt:
   | WHILELOOP LEFTPAREN expr_stmt RIGHTPAREN body                   { While($3, $5) }
   | ID TYPEASSIGNMENT sp_data_type LEFTPAREN expr_list RIGHTPAREN SEMICOLON  { ObjectCreate(Ast.IdTest($1), $3, $5) }
   | ID TYPEASSIGNMENT list_data_type data_type { ListDecl(Ast.IdTest($1), $3, $4 )}
+  | IF LEFTPAREN expr_stmt RIGHTPAREN body elifs else_opt {If({condition = $3; body = $5} :: $6, $7)}
+
+
+elifs:
+  | {[]}
+  | ELIF LEFTPAREN expr_stmt RIGHTPAREN body elifs { {condition = $3; body = $5} :: $6 }
+
+else_opt:
+  | {None}
+  | ELSE body {Some($2)}
 
 v_decl :
 | ID TYPEASSIGNMENT data_type SEMICOLON                           { (Ast.IdTest($1),$3) }

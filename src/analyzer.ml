@@ -116,6 +116,18 @@ and annotate_stmt (s : Ast.statement) (env : environment) : Sast.tstatement =
   | Assign(i, e) ->
       let (ae1, ae2) = annotate_assign i e env in
       TAssign(ae1, ae2)
+  | InitAssign(i,t,e) ->
+      (match t with
+      | Int
+      | Bool
+      | Float
+      | String
+      | Pdf
+      | Page ->
+          add_scope_variable i t env;
+          let ae = annotate_expr e env in
+          TInitAssign(i,t,ae)
+      | _ -> failwith "Invalid Assignment Type.")
   | CallStmt(e, elist) ->
       let ae = e in
       let aelist = List.map (fun x -> annotate_expr x env) elist in
@@ -125,13 +137,17 @@ and annotate_stmt (s : Ast.statement) (env : environment) : Sast.tstatement =
       TVdecl(e, d)
   | ObjectCreate(e,sd,el) ->
       Printf.printf "Entered ObjectCreate in annotate_statement\n";
-      add_scope_variable e sd env;
-	  let ad = sd in
-	  let ael = annotate_exprs el env in
-	  let p2 = Printf.printf "Got annotated rhs exp list\n" in
-	  let ttt = TObjectCreate(e,ad,ael) in
-	  let p3 = Printf.printf "Here\n" in
-	  ttt
+      (match sd with
+      | Line
+      | Tuple ->
+          add_scope_variable e sd env;
+	      let ad = sd in
+	      let ael = annotate_exprs el env in
+	      let p2 = Printf.printf "Got annotated rhs exp list\n" in
+	      let ttt = TObjectCreate(e,ad,ael) in
+	      let p3 = Printf.printf "Here\n" in
+	      ttt
+      | _ -> failwith "Invalid Object Type.")
   | While(e,sl) ->
       let nenv = nest_scope env in
       (match e with
@@ -152,6 +168,15 @@ and annotate_stmt (s : Ast.statement) (env : environment) : Sast.tstatement =
 		      TWhile(te,tsl)
 		  | _ -> failwith "Invalid While Expression Type.")
       | _ -> failwith "Invalid While Expression Type.")
+  | If(cl,sl) ->
+      let tcl = annotate_conds cl env in
+      let nenv = nest_scope env in
+      (match sl with
+      | Some(xsl) ->
+          let nenv = nest_scope env in
+          let tsl = annotate_stmts xsl nenv in
+          TIf(tcl,Some(tsl))
+      | None -> TIf(tcl,None))
   | For(s1,e,s2,sl) ->
       let nenv = nest_scope env in
       (match s1 with
@@ -210,6 +235,19 @@ and annotate_main_func_decl (mdecl : Ast.main_func_decl) (env : environment) : S
 and annotate_import_statement (istmt : Ast.import_stmt) (env : environment) : Sast.timport_stmt =
   let ai = "" in
   TImport(ai)
+
+and annotate_cond (cond: Ast.conditional) (env : environment) : Sast.tconditional =
+  let ae = annotate_expr cond.condition env in
+  let t = type_of ae in
+  (match t with
+  | Bool ->
+      let nenv = nest_scope env in
+      let tsl = annotate_stmts cond.body nenv in
+      {tcondition = ae; tbody = tsl}
+  | _ -> failwith "Invalid For Statement.")
+
+and annotate_conds (conds : Ast.conditional list) (env : environment) : Sast.tconditional list =
+  List.map (fun i -> annotate_cond i env) conds
 
 and annotate_import_statements (istmts : Ast.import_stmt list) (env : environment) : Sast.timport_stmt list =
   List.map (fun i -> annotate_import_statement i env) istmts

@@ -19,7 +19,7 @@ type tstatement =
   | TAssign of Ast.id * texpression
   | TVdecl of Ast.var_decl
   | TListDecl of Ast.list_var_decl
-  | TInitAssign of Ast.id * Ast.data_type * texpression
+  | TInitAssign of Ast.id * Ast.t * texpression
   | TObjectCreate of Ast.id * Ast.t * texpression list
   | TFor of tstatement * texpression * tstatement * tstatement list
   | TCallStmt of string * texpression list
