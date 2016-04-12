@@ -176,9 +176,9 @@ sprintf "\n%s.save(%s);\n %s.close();" pdfIden location pdfIden
 | _ -> failwith "undefined function"
 
 
-and writeInitAssignStmt iden t expression = 
+and writeInitAssignStmt iden t expression =
 let expressionString = generateExpression expression in
-let name = 
+let name =
 ( match iden with
 | IdTest(n ) -> n ) in
 match t with
@@ -240,7 +240,7 @@ let rec writeDeclarationStmt tid tdataType =
      | TInitAssign(iden, t, expression) -> writeInitAssignStmt iden t expression
      | TFor(initStmt, condition, incrStmt, body) -> writeForLoopStatement initStmt condition incrStmt body
      | TWhile(condition, body) -> writeWhileStatement condition body
-     | TIf(conditionStmt, elsestmtList) -> writeIfBlock conditionStmt elsestmtList
+     (*| TIf(conditionStmt, elsestmtList) -> writeIfBlock conditionStmt elsestmtList*)
 
 
 and writeStmtList stmtList =
@@ -249,7 +249,7 @@ sprintf "%s" outStr
 
 
 
-and generateConditionalList conditionList =
+(*and generateConditionalList conditionList =
 let i = 0 in
   let concatenatedConditionals = List.fold_left (fun a b -> a ^ (generateConditionStmt b i+1)) "" conditionList in
     sprintf "%s" concatenatedConditionals
@@ -262,7 +262,7 @@ sprintf " else \n{   %s \n}" bodyString
 and writeIfBlock conditionList elseBody =
 let conditionListString = generateConditionalList conditionList in
 let elseBodyString = writeElseStmt body in
-sprintf " %s \n %s " conditionListString elseBodyString
+sprintf " %s \n %s " conditionListString elseBodyString*)
 
 and writeForLoopStatement initStmt condition incrStmt body =
 let exprString = generateExpression condition in
@@ -273,16 +273,16 @@ let bodyString = writeStmtList body in
 sprintf "\nfor(%s %s ; %s) \n { %s \n }" initStmtString exprString incrStmtSubString bodyString
 
 
-and generateConditionStmt conditional index = 
+and generateConditionStmt conditional index =
 let ifExpression = generateExpression conditional.tcondition in
 let body = writeStmtList conditional.tbody in
 match index with
-| 1  -> sprintf "\n if (%s)  \n{ \n %s \n}" ifExpression body 
+| 1  -> sprintf "\n if (%s)  \n{ \n %s \n}" ifExpression body
 | _ ->  sprintf "\n else if (%s)  \n{ \n %s \n}" ifExpression body
 
 
 
-and writeWhileStatement condition body = 
+and writeWhileStatement condition body =
 let exprString = generateExpression condition in
 let bodyString = writeStmtList body in
 sprintf "\nwhile(%s ) \n { %s \n }" exprString bodyString
