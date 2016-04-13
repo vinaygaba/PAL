@@ -1,0 +1,23 @@
+main()
+{
+	pdfVar : pdf;
+	pageVar : page;
+
+	pdfVar = pdfVar.pageVar;
+
+	lineVar42 : line("42", "Times_New_Roman",12,100,700);
+	lineVar17 : line("17", "Times_New_Roman",12,100,500);
+
+
+	tupleVar : tupleVar(pdfVar,pageVar);
+	
+	if(true)
+	{
+	tupleVar = tupleVar.line42;
+	}
+
+	tupleVar = tupleVar.line17;
+
+	renderPdf(pdfVar,"test-if1.pdf");
+
+}
