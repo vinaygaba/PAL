@@ -1,0 +1,20 @@
+main()
+{
+	pdfVar : pdf;
+	pageVar : page;
+	pdfVar = pdfVar.pageVar;
+	stringVar : string;
+	stringVar = "Failure";
+	intVar : int; 
+
+	for(intVar = 0; intVar < 5 ; intVar = intVar + 1)
+	{
+		stringVar = stringVar + "Success";
+	}
+
+	tupleVar : tuple(pdfVar, pageVar);
+	linevar : line(stringVar, "Times_New_Roman" , 12 , 100, 700);
+
+	stringVar = stringVar + "End";
+	renderpdf(pdfVar, "test-for1.pdf");
+}

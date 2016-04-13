@@ -1,0 +1,12 @@
+main()
+{
+	pdfVar : pdf;
+	pageVar : page;
+	pdfVar = pdfVar.pageVar;
+	intvar : int;
+	intVar = 39 + 3;
+	tupleVar : tuple(pdfVar, pageVar);
+	linevar : line(intVar, "Times_New_Roman" , 12 , 100, 700);
+	 
+	renderpdf(pdfVar, "test-arith1.pdf");
+}

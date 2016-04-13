@@ -1,0 +1,23 @@
+main()
+{
+	pdfVar : pdf;
+	pageVar : page;
+	pdfVar = pdfVar.pageVar;
+	stringVar : string;
+	stringVar = "Failure";
+
+	
+	tupleVar : tuple(pdfVar, pageVar);
+	linevar : line(intVar, "Times_New_Roman" , 12 , 100, 700);
+
+	if(true && true)
+	{
+		stringVar = "Success";
+	}
+	 
+	if(true && false)
+	{
+		stringVar = "Failure";
+	}
+	renderpdf(pdfVar, "test-bool1.pdf");
+}
