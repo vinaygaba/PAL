@@ -28,6 +28,12 @@ compile :
 
 	java -cp "javagen/.:javagen/pdfbox.jar" Output
 
+.PHONY : diff
+diff :
+		touch ../test/output.pdf
+		mv helloworld.pdf ../test/output.pdf
+		cd ../test/;./diff.sh
+
 
 #javac -cp ".:pdfbox.jar" Output.java
 #java -cp ".:pdfbox.jar" Output
