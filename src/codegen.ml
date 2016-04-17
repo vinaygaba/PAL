@@ -240,7 +240,7 @@ let rec writeDeclarationStmt tid tdataType =
      | TInitAssign(iden, t, expression) -> writeInitAssignStmt iden t expression
      | TFor(initStmt, condition, incrStmt, body) -> writeForLoopStatement initStmt condition incrStmt body
      | TWhile(condition, body) -> writeWhileStatement condition body
-     (*| TIf(conditionStmt, elsestmtList) -> writeIfBlock conditionStmt elsestmtList*)
+     | TIf(conditionStmtList, elsestmtList) -> writeIfBlock conditionStmtList elsestmtList
 
 
 and writeStmtList stmtList =
@@ -248,10 +248,18 @@ let outStr = List.fold_left (fun a b -> a ^ (generateStatement b)) "" stmtList i
 sprintf "%s" outStr
 
 
+and generateConditionStmt conditionalList index = 
+  match conditionalList with
+   [] -> []
+   | a::l -> let ifExpression = generateExpression a.tcondition in
+   let body = writeStmtList a.tbody in
+    match index with
+   | 1  -> sprintf "\n if (%s)  \n{ \n %s \n}" ifExpression body :: generateConditionStmt l (index+1)
+   | _ ->  sprintf "\n else if (%s)  \n{ \n %s \n}" ifExpression body :: generateConditionStmt l (index+1)
 
-(*and generateConditionalList conditionList =
-let i = 0 in
-  let concatenatedConditionals = List.fold_left (fun a b -> a ^ (generateConditionStmt b i+1)) "" conditionList in
+and generateConditionalList conditionList =
+  let concatenatedConditionalsList =  generateConditionStmt conditionList 1 in
+   let concatenatedConditionals = List.fold_left (fun a b -> a ^ b ) "" concatenatedConditionalsList in
     sprintf "%s" concatenatedConditionals
 
 and writeElseStmt body =
@@ -261,8 +269,11 @@ sprintf " else \n{   %s \n}" bodyString
 
 and writeIfBlock conditionList elseBody =
 let conditionListString = generateConditionalList conditionList in
-let elseBodyString = writeElseStmt body in
-sprintf " %s \n %s " conditionListString elseBodyString*)
+match elseBody with
+Some(x) -> let elseBodyString = writeElseStmt x in 
+sprintf " %s \n %s " conditionListString elseBodyString
+| None -> sprintf " %s " conditionListString 
+
 
 and writeForLoopStatement initStmt condition incrStmt body =
 let exprString = generateExpression condition in
@@ -271,16 +282,6 @@ let incrStmtString = generateStatement incrStmt in
 let incrStmtSubString = String.sub incrStmtString 0 ((String.length incrStmtString) - 2) in
 let bodyString = writeStmtList body in
 sprintf "\nfor(%s %s ; %s) \n { %s \n }" initStmtString exprString incrStmtSubString bodyString
-
-
-and generateConditionStmt conditional index =
-let ifExpression = generateExpression conditional.tcondition in
-let body = writeStmtList conditional.tbody in
-match index with
-| 1  -> sprintf "\n if (%s)  \n{ \n %s \n}" ifExpression body
-| _ ->  sprintf "\n else if (%s)  \n{ \n %s \n}" ifExpression body
-
-
 
 and writeWhileStatement condition body =
 let exprString = generateExpression condition in
