@@ -9,6 +9,10 @@ type id = IdTest of string
 
 type t = Int | Bool | Float | String | Pdf | Page | Line | Tuple
 
+type recr_t =
+  | TType of t
+  | RType of recr_t
+
 type var_decl =  id * t
 
 (*type recur_list_decl = list_data_type * recur_list_decl 
@@ -16,8 +20,7 @@ type var_decl =  id * t
 
 (*type list_var_decl = id * recur_list_decl * data_type*)
 
-
-type list_var_decl = id * list_data_type * t
+type list_var_decl = id * recr_t
 
 type expression =
   LitInt of int

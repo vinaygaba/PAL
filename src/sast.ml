@@ -18,7 +18,7 @@ type tstatement =
   | TIf of tconditional list * tstatement list option
   | TAssign of Ast.id * texpression
   | TVdecl of Ast.var_decl
-  | TListDecl of Ast.list_var_decl
+  | TListDecl of Ast.id * string
   | TInitAssign of Ast.id * Ast.t * texpression
   | TObjectCreate of Ast.id * Ast.t * texpression list
   | TFor of tstatement * texpression * tstatement * tstatement list

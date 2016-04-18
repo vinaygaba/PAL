@@ -83,10 +83,10 @@ stmt:
   | FORLOOP LEFTPAREN assign_stmt SEMICOLON expr_stmt SEMICOLON assign_stmt RIGHTPAREN body { For($3, $5, $7, $9) }
   | RETURN expr SEMICOLON                                           { Ret($2) }
   | function_call                                                   { CallStmt(fst $1,snd $1) }
-  | v_decl                                                          { Vdecl(fst $1, snd $1) }
+  | v_decl                                                         { Vdecl(fst $1, snd $1) }
+  | list_decl                                                      { ListDecl(fst $1, snd $1) }
   | WHILELOOP LEFTPAREN expr_stmt RIGHTPAREN body                   { While($3, $5) }
   | ID TYPEASSIGNMENT sp_data_type LEFTPAREN expr_list RIGHTPAREN SEMICOLON  { ObjectCreate(Ast.IdTest($1), $3, $5) }
-  | ID TYPEASSIGNMENT list_data_type data_type { ListDecl(Ast.IdTest($1), $3, $4 )}
   | IF LEFTPAREN expr_stmt RIGHTPAREN body elifs else_opt {If({condition = $3; body = $5} :: $6, $7)}
 
 
@@ -97,6 +97,13 @@ elifs:
 else_opt:
   | {None}
   | ELSE body {Some($2)}
+
+list_decl:
+  | ID TYPEASSIGNMENT LISTD recr_data_type SEMICOLON                           { (Ast.IdTest($1), $4) }
+
+recr_data_type:
+  | data_type                                                                  { (Ast.TType($1)) }
+  | LISTD recr_data_type                                                       { (Ast.RType($2)) }
 
 v_decl :
 | ID TYPEASSIGNMENT data_type SEMICOLON                           { (Ast.IdTest($1),$3) }
@@ -113,7 +120,6 @@ expr_stmt:
 | expr LEQ    expr                                                { Binop($1, Leq,     $3) }
 | expr GT     expr                                                { Binop($1, Greater, $3) }
 | expr GEQ    expr                                                { Binop($1, Geq,     $3) }
-
 
 data_type:
 STRINGD                                                             { String }
