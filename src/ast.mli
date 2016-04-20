@@ -7,7 +7,7 @@ type list_data_type = List
 
 type id = IdTest of string
 
-type t = Int | Bool | Float | String | Pdf | Page | Line | Tuple
+type t = Int | Bool | Float | String | Pdf | Page | Line | Tuple | ListType of string
 
 type recr_t =
   | TType of t
@@ -31,6 +31,7 @@ type expression =
   | Uop of uop * expression
   | Binop of expression * binop * expression
   | CallExpr of string * expression list
+  | ListAccess of id * expression
   | Noexpr
 
 
