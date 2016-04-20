@@ -5,6 +5,7 @@ type symbol_table = {
 	parent : symbol_table option;
     mutable variables : (string * Ast.t) list;
     mutable functions : (string * Ast.t) list;
+    mutable types : (string * string) list;
 }
 
 type environment = {
@@ -48,33 +49,35 @@ let next_type_var() : string =
     let name = (Char.escaped (Char.chr c1)) ^ (Char.escaped (Char.chr c2)) in
     name
 
-let initialize_types() =
-  let typeMap = StringMap.empty in
+
+let initialize_types() : (string * string) list =
   let inttype = next_type_var() in
-  let typeMap = StringMap.add "int" inttype typeMap in
+  let tupleint = ("int", inttype) in 
   let booltype = next_type_var() in
-  let typeMap = StringMap.add "bool" inttype typeMap in
+  let tuplebool = ("bool", booltype) in 
   let floattype = next_type_var() in
-  let typeMap = StringMap.add "float" floattype typeMap in
+  let tuplefloat = ("float", floattype) in 
   let stringtype = next_type_var() in
-  let typeMap = StringMap.add "string" stringtype typeMap in
+  let tuplestring = ("string", stringtype) in 
   let pdftype = next_type_var() in
-  let typeMap = StringMap.add "pdf" pdftype typeMap in
+  let tuplepdf = ("pdf", pdftype) in 
   let pagetype = next_type_var() in
-  let typeMap = StringMap.add "page" pagetype typeMap in
+  let tuplepage = ("page", pagetype) in 
   let linetype = next_type_var() in
-  let typeMap = StringMap.add "line" linetype typeMap in
+  let tupleline = ("line", linetype) in 
   let tupletype = next_type_var() in
-  let typeMap = StringMap.add "tuple" tupletype typeMap in
-  let m = ref typeMap in
-  m
+  let tupletuple = ("tuple", tupletype) in 
+  let mapperList = [tupleint;tuplebool;tuplefloat;tuplestring;tuplepdf;tuplepage;tupleline;tupletuple] in 
+  mapperList
+
 
 let nest_scope (env : environment) : environment =
-  let s = {variables = []; functions = []; parent = Some(env.scope)} in
+  let s = {variables = []; functions = []; parent = Some(env.scope) ; types = []} in
   {scope = s}
 
 let new_env() : environment =
-  let s = { variables = []; functions = []; parent = None } in
+  let maplist = initialize_types() in
+  let s = { variables = []; functions = []; parent = None; types = maplist } in
   {scope = s}
 
 let type_of (ae : Sast.texpression) : Ast.t =
@@ -85,11 +88,14 @@ let type_of (ae : Sast.texpression) : Ast.t =
   | TIden(_, t) -> t
   | TBinop(_, _, _, t) -> t
 
-let find_type (t : string) m : string =
-   let found = StringMap.mem t !m in
-   if found
-   then StringMap.find t !m
-   else ""
+let rec find_type (scope : symbol_table) (name : string) : string  =
+  try
+    let (_, typ) = List.find (fun (s, _) -> s = name) scope.types in
+    typ
+  with Not_found ->
+    match scope.parent with
+    | Some(p) -> find_type p name
+    | _ -> ""
 
 let rec annotate_expr (e : Ast.expression) (env : environment) : Sast.texpression =
   Printf.printf "Entered annotate_expression\n";
@@ -128,36 +134,43 @@ let rec annotate_expr (e : Ast.expression) (env : environment) : Sast.texpressio
 				| Geq -> TBinop(ae1,o,ae2,Bool)
 			)
 
-and annotate_recr_type (rd : Ast.recr_t) m : string =
+and annotate_recr_type (rd : Ast.recr_t) (env : environment) : string =
   (match rd with
     | TType(t) ->
       Printf.printf "Got Primitive Type\n";
       (match t with
-        | Int -> find_type "int" m
-        | Bool -> find_type "bool" m
-        | Float -> find_type "float" m
+        | Int -> find_type env.scope "int" 
+        | Bool -> find_type env.scope "bool" 
+        | Float -> find_type env.scope "float" 
         | String ->
             Printf.printf "PT: string\n";
-            let ft = find_type "string" m in
-            Printf.printf "PT: %s\n" ft;
-            find_type "string" m
-        | Pdf -> find_type "pdf" m
-        | Page -> find_type "page" m
-        | Line -> find_type "line" m
-        | Tuple -> find_type "tuple" m)
+            let ft = find_type env.scope "string" in
+            find_type env.scope "string" 
+        | Pdf -> find_type  env.scope "pdf" 
+        | Page -> find_type  env.scope "page" 
+        | Line -> find_type env.scope "line" 
+        | Tuple -> find_type env.scope "tuple" )
     | RType(r) ->
         Printf.printf "Got Recursive Type\n";
-        let d = annotate_recr_type r m in
-        let rt = find_type d m in
+        let d = annotate_recr_type r env in
+        let rt = find_type env.scope d in
         (match rt with
           | "" ->
-              let ard = next_type_var() in
-              m := StringMap.add ard rt !m;
-              let p = Printf.printf "%s\n" ard in
+              let ard = add_type d env in
+              let p = Printf.printf "Didn't exist previously: %s\n" ard in
               ard
           | _ ->
               let p = Printf.printf "Found type: %s\n" rt in
               rt))
+
+and add_type (name : string) (env : environment) : string =
+  if is_keyword name
+  then failwith "Cannot assign keyword."
+  else 
+  let gentype = next_type_var() in 
+  env.scope.types <- (name,gentype) :: env.scope.types;
+  gentype
+
 
 and annotate_assign (i : Ast.id) (e : Ast.expression) (env : environment) : Ast.id * Sast.texpression =
   Printf.printf "Entered annotate_assign\n";
@@ -186,7 +199,7 @@ and add_scope_variable (i : Ast.id) (d : Ast.t) (env : environment) : unit =
 	  | None ->
 		  env.scope.variables <- (s,d) :: env.scope.variables);
 
-and annotate_stmt (s : Ast.statement) (env : environment) m : Sast.tstatement =
+and annotate_stmt (s : Ast.statement) (env : environment) : Sast.tstatement =
   match s with
   | Assign(i, e) ->
       let (ae1, ae2) = annotate_assign i e env in
@@ -208,7 +221,7 @@ and annotate_stmt (s : Ast.statement) (env : environment) m : Sast.tstatement =
       let aelist = List.map (fun x -> annotate_expr x env) elist in
       TCallStmt(ae, aelist)
   | ListDecl(e,rd) ->
-      let ard = annotate_recr_type rd m in
+      let ard = annotate_recr_type rd env in
       TListDecl(e, ard)
   | Vdecl(e,d) ->
 	  add_scope_variable e d env;
@@ -242,17 +255,17 @@ and annotate_stmt (s : Ast.statement) (env : environment) m : Sast.tstatement =
 		      let t1 = type_of ae1 in
 		      let t2 = type_of ae2 in
 		      let te = TBinop(ae1,o,ae2,Bool) in
-		      let tsl = annotate_stmts sl nenv m in
+		      let tsl = annotate_stmts sl nenv  in
 		      TWhile(te,tsl)
 		  | _ -> failwith "Invalid While Expression Type.")
       | _ -> failwith "Invalid While Expression Type.")
   | If(cl,sl) ->
-      let tcl = annotate_conds cl env m in
+      let tcl = annotate_conds cl env  in
       let nenv = nest_scope env in
       (match sl with
       | Some(xsl) ->
           let nenv = nest_scope env in
-          let tsl = annotate_stmts xsl nenv m in
+          let tsl = annotate_stmts xsl nenv in
           TIf(tcl,Some(tsl))
       | None -> TIf(tcl,None))
   | For(s1,e,s2,sl) ->
@@ -263,7 +276,7 @@ and annotate_stmt (s : Ast.statement) (env : environment) m : Sast.tstatement =
           let ets1 = type_of aes1 in
           (match ets1 with
           | Int ->
-              let ts1 = annotate_stmt s1 nenv m in
+              let ts1 = annotate_stmt s1 nenv in
               (*let (ae11,ae12) = annotate_assign i1 ie1 nenv in
               let ts1 = TAssign(ae11,ae12) in*)
               (match e with
@@ -286,10 +299,10 @@ and annotate_stmt (s : Ast.statement) (env : environment) m : Sast.tstatement =
 	                      let ets2 = type_of aes2 in
 	                      (match ets2 with
 	                      | Int ->
-	                          let ts2 = annotate_stmt s2 nenv m in
+	                          let ts2 = annotate_stmt s2 nenv  in
 	                          (*let (ae21,ae22) = annotate_assign i2 ie2 nenv in
 	                          let ts2 = TAssign(ae11,ae12) in*)
-	                          let tsl = annotate_stmts sl nenv m in
+	                          let tsl = annotate_stmts sl nenv  in
 	                          TFor(ts1,te,ts2,tsl)
 	                      | _ -> failwith "Invalid Assignment Expression Type.")
 	                  | _ -> failwith "Invalid For Statement.")
@@ -298,52 +311,51 @@ and annotate_stmt (s : Ast.statement) (env : environment) m : Sast.tstatement =
           | _ -> failwith "Invalid Assignment Expression Type.")
       | _ -> failwith "Invalid For Statement.")
 
-and annotate_func_decl (fdecl : Ast.func_decl) (env : environment) m : Sast.tfunc_decl =
+and annotate_func_decl (fdecl : Ast.func_decl) (env : environment)  : Sast.tfunc_decl =
   env.scope.functions <- (fdecl.name, fdecl.rtype) :: env.scope.functions;
-  let s = {variables = []; functions = []; parent = Some(env.scope)} in
+  let s = {variables = []; functions = []; parent = Some(env.scope) ; types = []} in
   let fenv = {scope = s} in
-  let aes = annotate_stmts fdecl.formals fenv m in
-  let asts = annotate_stmts fdecl.body fenv m in
+  let aes = annotate_stmts fdecl.formals fenv  in
+  let asts = annotate_stmts fdecl.body fenv  in
   {rtype = fdecl.rtype; name = fdecl.name; tformals = aes; tbody = asts}
 
-and annotate_main_func_decl (mdecl : Ast.main_func_decl) (env : environment) m : Sast.tmain_func_decl =
-  let asts = annotate_stmts mdecl.body env m in
+and annotate_main_func_decl (mdecl : Ast.main_func_decl) (env : environment)  : Sast.tmain_func_decl =
+  let asts = annotate_stmts mdecl.body env in
   {tbody = asts}
 
-and annotate_import_statement (istmt : Ast.import_stmt) (env : environment) m : Sast.timport_stmt =
+and annotate_import_statement (istmt : Ast.import_stmt) (env : environment)  : Sast.timport_stmt =
   let ai = "" in
   TImport(ai)
 
-and annotate_cond (cond: Ast.conditional) (env : environment) m : Sast.tconditional =
+and annotate_cond (cond: Ast.conditional) (env : environment)  : Sast.tconditional =
   let ae = annotate_expr cond.condition env in
   let t = type_of ae in
   (match t with
   | Bool ->
       let nenv = nest_scope env in
-      let tsl = annotate_stmts cond.body nenv m in
+      let tsl = annotate_stmts cond.body nenv in
       {tcondition = ae; tbody = tsl}
   | _ -> failwith "Invalid For Statement.")
 
-and annotate_conds (conds : Ast.conditional list) (env : environment) m : Sast.tconditional list =
-  List.map (fun i -> annotate_cond i env m) conds
+and annotate_conds (conds : Ast.conditional list) (env : environment)  : Sast.tconditional list =
+  List.map (fun i -> annotate_cond i env ) conds
 
-and annotate_import_statements (istmts : Ast.import_stmt list) (env : environment) m : Sast.timport_stmt list =
-  List.map (fun i -> annotate_import_statement i env m) istmts
+and annotate_import_statements (istmts : Ast.import_stmt list) (env : environment)  : Sast.timport_stmt list =
+  List.map (fun i -> annotate_import_statement i env ) istmts
 
 and annotate_exprs (exprs : Ast.expression list) (env : environment) : Sast.texpression list =
   List.map (fun s -> annotate_expr s env) exprs
 
-and annotate_stmts (stmts : Ast.statement list) (env : environment) m : Sast.tstatement list =
-  List.map (fun x -> annotate_stmt x env m) stmts
+and annotate_stmts (stmts : Ast.statement list) (env : environment)  : Sast.tstatement list =
+  List.map (fun x -> annotate_stmt x env ) stmts
 
-and annotate_func_decls (fdecls : Ast.func_decl list) (env : environment) m : Sast.tfunc_decl list =
-  List.map (fun f -> annotate_func_decl f env m) fdecls
+and annotate_func_decls (fdecls : Ast.func_decl list) (env : environment)  : Sast.tfunc_decl list =
+  List.map (fun f -> annotate_func_decl f env ) fdecls
 
 let annotate_prog (p : Ast.program) : Sast.tprogram =
-  let typeMap = initialize_types() in
   let env = new_env() in
-  let ai = annotate_import_statements p.ilist env typeMap in
-  let am = annotate_main_func_decl p.mainf env typeMap in
-  let af = annotate_func_decls p.declf env typeMap in
+  let ai = annotate_import_statements p.ilist env  in
+  let am = annotate_main_func_decl p.mainf env  in
+  let af = annotate_func_decls p.declf env in
   Printf.printf "There there\n";
   {tilist = ai; tmainf = am; tdeclf = af}
