@@ -9,6 +9,7 @@ type texpression =
   | TUop of Ast.uop * texpression * t
   | TBinop of texpression * Ast.binop * texpression * t
   | TCallExpr of string * texpression list * t
+  | TListAccess of Ast.id * texpression * t
   | TNoexpr
 
 
@@ -18,7 +19,7 @@ type tstatement =
   | TIf of tconditional list * tstatement list option
   | TAssign of Ast.id * texpression
   | TVdecl of Ast.var_decl
-  | TListDecl of Ast.id * string
+  | TListDecl of Ast.id * Ast.t
   | TInitAssign of Ast.id * Ast.t * texpression
   | TObjectCreate of Ast.id * Ast.t * texpression list
   | TFor of tstatement * texpression * tstatement * tstatement list

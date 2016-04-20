@@ -4,6 +4,7 @@ module StringMap = Map.Make(String);;
 type symbol_table = {
 	parent : symbol_table option;
     mutable variables : (string * Ast.t) list;
+    mutable lists : (string * string) list;
     mutable functions : (string * Ast.t) list;
 }
 
@@ -24,6 +25,15 @@ let rec find_variable (scope : symbol_table) (name : string) : Ast.t option =
   with Not_found ->
     match scope.parent with
     | Some(p) -> find_variable p name
+    | _ -> None
+
+let rec find_list (scope : symbol_table) (name : string) : string option =
+  try
+    let (_, typ) = List.find (fun (s, _) -> s = name) scope.lists in
+    Some(typ)
+  with Not_found ->
+    match scope.parent with
+    | Some(p) -> find_list p name
     | _ -> None
 
 let is_keyword (name : string) : bool =
@@ -73,11 +83,11 @@ let initialize_types(tmap : type_map) =
   tmap.map <- typeMap
 
 let nest_scope (env : environment) : environment =
-  let s = {variables = []; functions = []; parent = Some(env.scope)} in
+  let s = {variables = []; lists = []; functions = []; parent = Some(env.scope)} in
   {scope = s}
 
 let new_env() : environment =
-  let s = { variables = []; functions = []; parent = None } in
+  let s = { variables = []; lists = []; functions = []; parent = None } in
   {scope = s}
 
 let new_map() : type_map =
@@ -91,6 +101,7 @@ let type_of (ae : Sast.texpression) : Ast.t =
   | TLitBool(_, t) -> t
   | TIden(_, t) -> t
   | TBinop(_, _, _, t) -> t
+  | TListAccess(_, _, t) -> t
 
 let find_type (t : string) (tmap : type_map) : string =
    let found = StringMap.mem t tmap.map in
@@ -99,7 +110,6 @@ let find_type (t : string) (tmap : type_map) : string =
    else ""
 
 let rec annotate_expr (e : Ast.expression) (env : environment) : Sast.texpression =
-  Printf.printf "Entered annotate_expression\n";
   match e with
   | LitInt(n) -> TLitInt(n, Int)
   | LitBool(n) -> TLitBool(n, Bool)
@@ -134,6 +144,18 @@ let rec annotate_expr (e : Ast.expression) (env : environment) : Sast.texpressio
 				| Greater
 				| Geq -> TBinop(ae1,o,ae2,Bool)
 			)
+  | ListAccess(i,e) ->
+      let ae = annotate_expr e env in
+      let t = type_of ae in
+      (match t with
+      | Int ->
+          (match i with
+          | IdTest(w) ->
+              let typ = find_list env.scope w in
+              (match typ with
+              | Some(x) -> TListAccess(i,ae,ListType(x))
+              | None -> failwith ("Unrecognized identifier " ^ w ^ ".")))
+      | _ -> failwith "Invalid List Access Expression")
 
 and annotate_recr_type (rd : Ast.recr_t) (tmap : type_map) : string =
   (match rd with
@@ -166,11 +188,11 @@ and annotate_assign (i : Ast.id) (e : Ast.expression) (env : environment) : Ast.
   let t2 = type_of ae2 in
   let ii = match i with | IdTest(s) -> s in
   let t1 = find_variable env.scope ii in
-		(match t1 with
-		| Some(t) -> 
-			if t = t2 then i,ae2
-            else failwith "Invalid assignment."
-		| None -> failwith "Invalid assignment | Variable Not Found.")
+  (match t1 with
+  | Some(t) ->
+      if t = t2 then i,ae2
+      else failwith "Invalid assignment."
+  | None -> failwith "Invalid assignment | Variable Not Found.")
 
 and add_scope_variable (i : Ast.id) (d : Ast.t) (env : environment) : unit =
 	match i with
@@ -184,6 +206,20 @@ and add_scope_variable (i : Ast.id) (d : Ast.t) (env : environment) : unit =
 	      failwith "Invalid assignment, already exists."
 	  | None ->
 		  env.scope.variables <- (s,d) :: env.scope.variables);
+
+and add_scope_list (i : Ast.id) (rd : string) (env : environment) : unit =
+    match i with
+    | IdTest(s) ->
+      if is_keyword s
+      then failwith "Cannot assign keyword."
+      else
+      let typ = find_list env.scope s in
+      (match typ with
+      | Some(t) ->
+          failwith "Invalid assignment, already exists."
+      | None ->
+          Printf.printf "Added List: %s | %s\n" s rd;
+          env.scope.lists <- (s,rd) :: env.scope.lists);
 
 and annotate_stmt (s : Ast.statement) (env : environment) (tmap : type_map) : Sast.tstatement =
   match s with
@@ -208,7 +244,8 @@ and annotate_stmt (s : Ast.statement) (env : environment) (tmap : type_map) : Sa
       TCallStmt(ae, aelist)
   | ListDecl(e,rd) ->
       let ard = annotate_recr_type rd tmap in
-      TListDecl(e, ard)
+      add_scope_list e ard env;
+      TListDecl(e, ListType(ard))
   | Vdecl(e,d) ->
 	  add_scope_variable e d env;
       TVdecl(e, d)
@@ -296,7 +333,7 @@ and annotate_stmt (s : Ast.statement) (env : environment) (tmap : type_map) : Sa
 
 and annotate_func_decl (fdecl : Ast.func_decl) (env : environment) (tmap : type_map) : Sast.tfunc_decl =
   env.scope.functions <- (fdecl.name, fdecl.rtype) :: env.scope.functions;
-  let s = {variables = []; functions = []; parent = Some(env.scope)} in
+  let s = {variables = []; lists = []; functions = []; parent = Some(env.scope)} in
   let fenv = {scope = s} in
   let aes = annotate_stmts fdecl.formals fenv tmap in
   let asts = annotate_stmts fdecl.body fenv tmap in
