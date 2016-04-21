@@ -2,17 +2,17 @@ open Sast
 module StringMap = Map.Make(String);;
 
 type symbol_table = {
-	parent : symbol_table option;
+  parent : symbol_table option;
     mutable variables : (string * Ast.t) list;
     mutable functions : (string * Ast.t) list;
 }
 
 type environment = {
-	scope : symbol_table;        (* symbol table for vars *)
+  scope : symbol_table;        (* symbol table for vars *)
 }
 
 type type_map = {
-	mutable map : string StringMap.t;
+  mutable map : string StringMap.t;
 }
 
 let str_eq a b = ((Pervasives.compare a b) = 0)
@@ -92,6 +92,7 @@ let type_of (ae : Sast.texpression) : Ast.t =
   | TIden(_, t) -> t
   | TBinop(_, _, _, t) -> t
   | TListAccess(_, _, t) -> t
+  | TMapAccess(_, _, t) -> t
 
 let find_type (t : string) (tmap : type_map) : string =
    let found = StringMap.mem t tmap.map in
@@ -119,34 +120,34 @@ let rec annotate_expr (e : Ast.expression) (env : environment) (tmap : type_map)
   | LitFloat(n) -> TLitFloat(n, Float)
   | LitString(n) -> TLitString(n, String)
   | Iden(s) ->
-	  (match s with
-	  | IdTest(w) ->
-		  let typ = find_variable env.scope w in
-		  (match typ with
-		  | Some(x) -> TIden(s,x)
-		  | None -> failwith ("Unrecognized identifier " ^ w ^ ".")))
+    (match s with
+    | IdTest(w) ->
+      let typ = find_variable env.scope w in
+      (match typ with
+      | Some(x) -> TIden(s,x)
+      | None -> failwith ("Unrecognized identifier " ^ w ^ ".")))
 
   | Binop(e1,o,e2) ->
-	  let ae1 = annotate_expr e1 env tmap in
-	  let ae2 = annotate_expr e2 env tmap in
-	  let t1 = type_of ae1 in
-	  let t2 = type_of ae2 in
-	    (match o with
-	      | Concat ->
-	        (match t1, t2 with
-	          | (Pdf, Page) -> TBinop(ae1,o,ae2,t1)
-	          | (Tuple, Line) -> TBinop(ae1,o,ae2,t1))
-				| Add
-				| Sub
-				| Div
-				| Mul -> TBinop(ae1,o,ae2,t1)
-				| Equal
-				| Neq
-				| Less
-				| Leq
-				| Greater
-				| Geq -> TBinop(ae1,o,ae2,Bool)
-			)
+    let ae1 = annotate_expr e1 env tmap in
+    let ae2 = annotate_expr e2 env tmap in
+    let t1 = type_of ae1 in
+    let t2 = type_of ae2 in
+      (match o with
+        | Concat ->
+          (match t1, t2 with
+            | (Pdf, Page) -> TBinop(ae1,o,ae2,t1)
+            | (Tuple, Line) -> TBinop(ae1,o,ae2,t1))
+        | Add
+        | Sub
+        | Div
+        | Mul -> TBinop(ae1,o,ae2,t1)
+        | Equal
+        | Neq
+        | Less
+        | Leq
+        | Greater
+        | Geq -> TBinop(ae1,o,ae2,Bool)
+      )
   | ListAccess(i,e) ->
       let ae = annotate_expr e env tmap in
       let t = type_of ae in
@@ -159,10 +160,25 @@ let rec annotate_expr (e : Ast.expression) (env : environment) (tmap : type_map)
               | Some(x) ->
                   (match x with
                   | ListType(s) ->
-                      TListAccess(i,ae,ListType(s))
+                      TListAccess(i,ae,x)
                   | _ -> failwith "Variable not List")
               | None -> failwith ("Unrecognized identifier " ^ w ^ ".")))
       | _ -> failwith "Invalid List Access Expression")
+    | MapAccess(i, e) -> 
+        let ae = annotate_expr e env tmap in
+        let t = type_of ae in 
+        (match i with 
+          | IdTest(w) -> 
+                    let typ = find_variable env.scope w in 
+                    (match typ with                      
+                      | Some(x) -> 
+                            (match x with
+                            | MapType(kd,vd) -> 
+                                  if kd = t 
+                                  then TMapAccess(i, ae, x) 
+                                  else failwith "Incorrect type for access"
+                            | _ -> failwith "Variable not Map" )   
+                      | None -> failwith ("Unrecognized identifier " ^ w ^ ".") ) )
 
 and annotate_recr_type (rd : Ast.recr_t) (tmap : type_map) : string =
   (match rd with
@@ -199,6 +215,10 @@ and annotate_assign (i : Ast.id) (e : Ast.expression) (env : environment) (tmap 
               let ti = find_primitive_type idt tmap in
               if ti = lte then i,ae
               else failwith "Invalid assignment.")
+      | MapType(kdt, vdt) -> 
+           if vdt = idt
+           then i,ae
+           else failwith "Invalid assignment because of different types on LHS, RHS." 
       | _ ->
           if idt = te then i,ae
           else failwith "Invalid assignment.")
@@ -223,17 +243,17 @@ and annotate_list_assign (e1 : Ast.expression) (e2 : Ast.expression) (env : envi
   | _ -> failwith "Invalid Assignment | Variable not List")
 
 and add_scope_variable (i : Ast.id) (d : Ast.t) (env : environment) : unit =
-	match i with
+  match i with
     | IdTest(s) ->
-	  if is_keyword s
+    if is_keyword s
       then failwith "Cannot assign keyword."
       else
       let typ = find_variable env.scope s in
       (match typ with
       | Some(t) ->
-	      failwith "Invalid assignment, already exists."
-	  | None ->
-		  env.scope.variables <- (s,d) :: env.scope.variables);
+        failwith "Invalid assignment, already exists."
+    | None ->
+      env.scope.variables <- (s,d) :: env.scope.variables);
 
 and annotate_stmt (s : Ast.statement) (env : environment) (tmap : type_map) : Sast.tstatement =
   match s with
@@ -264,18 +284,30 @@ and annotate_stmt (s : Ast.statement) (env : environment) (tmap : type_map) : Sa
       let ld = Ast.ListType(ard) in
       add_scope_variable e ld env;
       TListDecl(e, Ast.ListType(ard))
+  | MapDecl(e, kd, vd) -> 
+      (match vd with
+      | TType(x) -> 
+              let md = Ast.MapType(kd,x) in
+              add_scope_variable e md env;
+              TMapDecl(e, md)
+      | RType(x) -> 
+              let rd = annotate_recr_type x tmap in
+              let mrd = Ast.ListType(rd) in
+              let md = Ast.MapType(kd,mrd) in
+              add_scope_variable e md env;
+              TMapDecl(e, md))
   | Vdecl(e,d) ->
-	  add_scope_variable e d env;
+    add_scope_variable e d env;
       TVdecl(e, d)
   | ObjectCreate(e,sd,el) ->
       (match sd with
       | Line
       | Tuple ->
           add_scope_variable e sd env;
-	      let ad = sd in
-	      let ael = annotate_exprs el env tmap in
-	      let ttt = TObjectCreate(e,ad,ael) in
-	      ttt
+        let ad = sd in
+        let ael = annotate_exprs el env tmap in
+        let ttt = TObjectCreate(e,ad,ael) in
+        ttt
       | _ -> failwith "Invalid Object Type.")
   | While(e,sl) ->
       let nenv = nest_scope env in
@@ -283,19 +315,19 @@ and annotate_stmt (s : Ast.statement) (env : environment) (tmap : type_map) : Sa
       | Binop(e1,o,e2) ->
           (match o with
           | Equal
-		  | Neq
-		  | Less
-		  | Leq
-		  | Greater
-		  | Geq ->
-		      let ae1 = annotate_expr e1 nenv tmap in
-		      let ae2 = annotate_expr e2 nenv tmap in
-		      let t1 = type_of ae1 in
-		      let t2 = type_of ae2 in
-		      let te = TBinop(ae1,o,ae2,Bool) in
-		      let tsl = annotate_stmts sl nenv tmap in
-		      TWhile(te,tsl)
-		  | _ -> failwith "Invalid While Expression Type.")
+      | Neq
+      | Less
+      | Leq
+      | Greater
+      | Geq ->
+          let ae1 = annotate_expr e1 nenv tmap in
+          let ae2 = annotate_expr e2 nenv tmap in
+          let t1 = type_of ae1 in
+          let t2 = type_of ae2 in
+          let te = TBinop(ae1,o,ae2,Bool) in
+          let tsl = annotate_stmts sl nenv tmap in
+          TWhile(te,tsl)
+      | _ -> failwith "Invalid While Expression Type.")
       | _ -> failwith "Invalid While Expression Type.")
   | If(cl,sl) ->
       let tcl = annotate_conds cl env tmap in
@@ -319,30 +351,30 @@ and annotate_stmt (s : Ast.statement) (env : environment) (tmap : type_map) : Sa
               | Binop(e1,o,e2) ->
                   (match o with
                   | Equal
-				  | Neq
-				  | Less
-				  | Leq
-				  | Greater
-				  | Geq ->
-				      let ae1 = annotate_expr e1 nenv tmap in
-	                  let ae2 = annotate_expr e2 nenv tmap in
-	                  let t1 = type_of ae1 in
-	                  let t2 = type_of ae2 in
-	                  let te = TBinop(ae1,o,ae2,Bool) in
-	                  (match s2 with
-	                  | Assign(i2,ie2) ->
-	                      let aes2 = annotate_expr ie2 nenv tmap in
-	                      let ets2 = type_of aes2 in
-	                      (match ets2 with
-	                      | Int ->
-	                          let ts2 = annotate_stmt s2 nenv tmap in
-	                          (*let (ae21,ae22) = annotate_assign i2 ie2 nenv in
-	                          let ts2 = TAssign(ae11,ae12) in*)
-	                          let tsl = annotate_stmts sl nenv tmap in
-	                          TFor(ts1,te,ts2,tsl)
-	                      | _ -> failwith "Invalid Assignment Expression Type.")
-	                  | _ -> failwith "Invalid For Statement.")
-				  | _ -> failwith "Invalid For Expression Type.")
+          | Neq
+          | Less
+          | Leq
+          | Greater
+          | Geq ->
+              let ae1 = annotate_expr e1 nenv tmap in
+                    let ae2 = annotate_expr e2 nenv tmap in
+                    let t1 = type_of ae1 in
+                    let t2 = type_of ae2 in
+                    let te = TBinop(ae1,o,ae2,Bool) in
+                    (match s2 with
+                    | Assign(i2,ie2) ->
+                        let aes2 = annotate_expr ie2 nenv tmap in
+                        let ets2 = type_of aes2 in
+                        (match ets2 with
+                        | Int ->
+                            let ts2 = annotate_stmt s2 nenv tmap in
+                            (*let (ae21,ae22) = annotate_assign i2 ie2 nenv in
+                            let ts2 = TAssign(ae11,ae12) in*)
+                            let tsl = annotate_stmts sl nenv tmap in
+                            TFor(ts1,te,ts2,tsl)
+                        | _ -> failwith "Invalid Assignment Expression Type.")
+                    | _ -> failwith "Invalid For Statement.")
+          | _ -> failwith "Invalid For Expression Type.")
               | _ -> failwith "Invalid For Expression Type.")
           | _ -> failwith "Invalid Assignment Expression Type.")
       | _ -> failwith "Invalid For Statement.")

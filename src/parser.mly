@@ -15,7 +15,7 @@
 %token <int> INT
 %token <float> FLOAT
 %token <bool> BOOL
-%token INTD BOOLD STRINGD FLOATD PDFD PAGED LINED LISTD TUPLED
+%token INTD BOOLD STRINGD FLOATD PDFD PAGED LINED LISTD TUPLED MAPD
 %left ASSIGN
 %left OR
 %left AND
@@ -83,8 +83,9 @@ stmt:
   | FORLOOP LEFTPAREN assign_stmt SEMICOLON expr_stmt SEMICOLON assign_stmt RIGHTPAREN body { For($3, $5, $7, $9) }
   | RETURN expr SEMICOLON                                           { Ret($2) }
   | function_call                                                   { CallStmt(fst $1,snd $1) }
-  | v_decl                                                         { Vdecl(fst $1, snd $1) }
-  | list_decl                                                      { ListDecl(fst $1, snd $1) }
+  | v_decl                                                          { Vdecl(fst $1, snd $1) }
+  | list_decl                                                       { ListDecl(fst $1, snd $1) }
+  | ID TYPEASSIGNMENT MAPD data_type COMMA recr_data_type SEMICOLON      { MapDecl(Ast.IdTest($1),$4,$6) }
   | WHILELOOP LEFTPAREN expr_stmt RIGHTPAREN body                   { While($3, $5) }
   | ID TYPEASSIGNMENT sp_data_type LEFTPAREN expr_list RIGHTPAREN SEMICOLON  { ObjectCreate(Ast.IdTest($1), $3, $5) }
   | IF LEFTPAREN expr_stmt RIGHTPAREN body elifs else_opt {If({condition = $3; body = $5} :: $6, $7)}
@@ -143,14 +144,21 @@ STRING               { LitString($1) }
 | INT                { LitInt($1) }
 | FLOAT              { LitFloat($1)}
 | BOOL               { LitBool($1) }
+<<<<<<< HEAD
+| ID		             { Iden(Ast.IdTest($1)) }
+| ID LEFTBRAC expr RIGHTBRAC { ListAccess(Ast.IdTest($1), $3) }
+| ID TYPEASSIGNMENT ASSIGN expr { MapAccess(Ast.IdTest($1), $4) }
+=======
 | ID		         { Iden(Ast.IdTest($1)) }
 | list_access        { ListAccess(fst $1,snd $1) }
+>>>>>>> f486e7d103a27125f85261fb5a240fe9d2646f11
 | expr ADDOP expr    { Binop($1, Add, $3) }
 | expr SUBOP expr    { Binop($1, Sub, $3) }
 | expr MULOP expr    { Binop($1, Mul, $3) }
 | expr DIVOP expr    { Binop($1, Div, $3) }
 | expr CONCAT expr   { Binop($1, Concat,  $3) }
 | expr MODOP expr    { Binop($1, Mod,     $3) }
+| LEFTPAREN expr RIGHTPAREN { $2 }
 | expr_stmt          { $1 }
 | expr AND    expr   { Binop($1, And,     $3) }
 | expr OR     expr   { Binop($1, Or,      $3) }
