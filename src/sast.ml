@@ -27,6 +27,8 @@ type tstatement =
   | TObjectCreate of Ast.id * Ast.t * texpression list
   | TFor of tstatement * texpression * tstatement * tstatement list
   | TCallStmt of string * texpression list
+  | TMapAdd of Ast.id * texpression * texpression
+  | TListAdd of Ast.id * texpression
 
   and tconditional = {
     tcondition : texpression;

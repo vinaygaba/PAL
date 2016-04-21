@@ -87,6 +87,7 @@ let new_map() : type_map =
 let type_of (ae : Sast.texpression) : Ast.t =
   match ae with
   | TLitInt(_, t) -> t
+  | TLitString(_, t) -> t
   | TLitFloat(_, t) -> t
   | TLitBool(_, t) -> t
   | TIden(_, t) -> t
@@ -218,10 +219,29 @@ and annotate_assign (i : Ast.id) (e : Ast.expression) (env : environment) (tmap 
       | MapType(kdt, vdt) -> 
            if vdt = idt
            then i,ae
-           else failwith "Invalid assignment because of different types on LHS, RHS." 
+           else failwith "Invalid assignment."
       | _ ->
           if idt = te then i,ae
           else failwith "Invalid assignment.")
+  | None -> failwith "Invalid assignment | Variable Not Found.")
+
+and annotate_map_add (i : Ast.id) (e1 : Ast.expression) (e2 : Ast.expression) (env : environment) (tmap : type_map) : Ast.id * Sast.texpression * Sast.texpression =
+  let ae1 = annotate_expr e1 env tmap in
+  let ae2 = annotate_expr e2 env tmap in
+  let te1 = type_of ae1 in
+  let te2 = type_of ae2 in
+  let id = match i with | IdTest (s) -> s in
+  let tid = find_variable env.scope id in
+  (match tid with
+  | Some(idt) ->
+      (match idt with
+      | MapType(kidt,vidt) ->
+          if kidt = te1
+          then if vidt = te2
+               then i,ae1,ae2
+               else failwith "Invalid assignment | Value not Valid"
+          else failwith "Invalid assignment | Key not Valid"
+      | _ -> failwith "Invalid assignment | Variable not Map")
   | None -> failwith "Invalid assignment | Variable Not Found.")
 
 and annotate_list_assign (e1 : Ast.expression) (e2 : Ast.expression) (env : environment) (tmap : type_map) : Sast.texpression * Sast.texpression =
@@ -284,6 +304,12 @@ and annotate_stmt (s : Ast.statement) (env : environment) (tmap : type_map) : Sa
       let ld = Ast.ListType(ard) in
       add_scope_variable e ld env;
       TListDecl(e, Ast.ListType(ard))
+  | ListAdd(i,e) ->
+      let ie = Ast.Iden(i) in
+      let (t,ae) = annotate_list_assign ie e env tmap in
+      (match t with
+      | TIden(ti,tt) -> TListAdd(ti,ae)
+      | _ -> failwith "Invalid Identifier Expression")
   | MapDecl(e, kd, vd) -> 
       (match vd with
       | TType(x) -> 
@@ -296,6 +322,9 @@ and annotate_stmt (s : Ast.statement) (env : environment) (tmap : type_map) : Sa
               let md = Ast.MapType(kd,mrd) in
               add_scope_variable e md env;
               TMapDecl(e, md))
+  | MapAdd(i,e1,e2) ->
+      let (t,ae1,ae2) = annotate_map_add i e1 e2 env tmap in
+      TMapAdd(t,ae1,ae2)
   | Vdecl(e,d) ->
     add_scope_variable e d env;
       TVdecl(e, d)

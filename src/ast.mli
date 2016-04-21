@@ -13,8 +13,6 @@ type recr_t =
 
 and t = Int | Bool | Float | String | Pdf | Page | Line | Tuple | ListType of string | MapType of t * t
 
-
-
 type var_decl =  id * t
 
 (*type recur_list_decl = list_data_type * recur_list_decl 
@@ -52,6 +50,8 @@ type statement =
   | ObjectCreate of id * t * expression list
   | For of statement * expression * statement * statement list
   | CallStmt of string * expression list
+  | MapAdd of id * expression * expression
+  | ListAdd of id * expression
 
   and conditional = {
     condition : expression;
