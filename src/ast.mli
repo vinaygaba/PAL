@@ -51,6 +51,7 @@ type statement =
   | For of statement * expression * statement * statement list
   | CallStmt of string * expression list
   | MapAdd of id * expression * expression
+  | MapRemove of id * expression
   | ListAdd of id * expression
 
   and conditional = {

@@ -28,6 +28,7 @@ type tstatement =
   | TFor of tstatement * texpression * tstatement * tstatement list
   | TCallStmt of string * texpression list
   | TMapAdd of Ast.id * texpression * texpression
+  | TMapRemove of Ast.id * texpression
   | TListAdd of Ast.id * texpression
 
   and tconditional = {
