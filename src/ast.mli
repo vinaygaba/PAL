@@ -44,6 +44,7 @@ type statement =
   | While of expression * statement list
   | If of conditional list * statement list option
   | Assign of id * expression
+  | ListAssign of expression * expression
   | Vdecl of var_decl
   | ListDecl of list_var_decl
   | MapDecl of map_decl
