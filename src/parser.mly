@@ -111,7 +111,7 @@ v_decl :
 assign_stmt:
   ID ASSIGN expr                                                  { Assign(Ast.IdTest($1), $3) }
 | ID TYPEASSIGNMENT data_type ASSIGN expr                         { InitAssign(Ast.IdTest($1),$3,$5) }
-
+| list_access ASSIGN expr                                         { ListAssign(ListAccess(fst $1, snd $1), $3) }
 
 expr_stmt:
   expr EQ     expr                                                { Binop($1, Equal,   $3) }
@@ -143,8 +143,8 @@ STRING               { LitString($1) }
 | INT                { LitInt($1) }
 | FLOAT              { LitFloat($1)}
 | BOOL               { LitBool($1) }
-| ID		             { Iden(Ast.IdTest($1)) }
-| ID LEFTBRAC expr RIGHTBRAC { ListAccess(Ast.IdTest($1), $3) }
+| ID		         { Iden(Ast.IdTest($1)) }
+| list_access        { ListAccess(fst $1,snd $1) }
 | expr ADDOP expr    { Binop($1, Add, $3) }
 | expr SUBOP expr    { Binop($1, Sub, $3) }
 | expr MULOP expr    { Binop($1, Mul, $3) }
@@ -156,3 +156,6 @@ STRING               { LitString($1) }
 | expr OR     expr   { Binop($1, Or,      $3) }
 | NOT  expr         { Uop(Not,$2) }
 | function_call     {CallExpr(fst $1,snd $1)}
+
+list_access:
+ID LEFTBRAC expr RIGHTBRAC { (Ast.IdTest($1), $3) }

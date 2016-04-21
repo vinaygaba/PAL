@@ -204,6 +204,24 @@ and annotate_assign (i : Ast.id) (e : Ast.expression) (env : environment) (tmap 
           else failwith "Invalid assignment.")
   | None -> failwith "Invalid assignment | Variable Not Found.")
 
+and annotate_list_assign (e1 : Ast.expression) (e2 : Ast.expression) (env : environment) (tmap : type_map) : Sast.texpression * Sast.texpression =
+  let ae1 = annotate_expr e1 env tmap in
+  let ae2 = annotate_expr e2 env tmap in
+  let et1 = type_of ae1 in
+  let et2 = type_of ae2 in
+  (match et1 with
+  | ListType(s1) ->
+      (match et2 with
+      | ListType(s2) ->
+          let t1 = find_type s2 tmap in
+          if t1 = s1 then ae1,ae2
+          else failwith "Invalid assignment."
+      | _ ->
+          let t2 = find_primitive_type et2 tmap in
+          if t2 = s1 then ae1,ae2
+          else failwith "Invalid assignment.")
+  | _ -> failwith "Invalid Assignment | Variable not List")
+
 and add_scope_variable (i : Ast.id) (d : Ast.t) (env : environment) : unit =
 	match i with
     | IdTest(s) ->
@@ -234,6 +252,9 @@ and annotate_stmt (s : Ast.statement) (env : environment) (tmap : type_map) : Sa
           let ae = annotate_expr e env tmap in
           TInitAssign(i,t,ae)
       | _ -> failwith "Invalid Assignment Type.")
+  | ListAssign(e1,e2) ->
+      let (ae1, ae2) = annotate_list_assign e1 e2 env tmap in
+      TListAssign(ae1,ae2)
   | CallStmt(e, elist) ->
       let ae = e in
       let aelist = List.map (fun x -> annotate_expr x env tmap) elist in
