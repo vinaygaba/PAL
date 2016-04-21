@@ -7,11 +7,13 @@ type list_data_type = List
 
 type id = IdTest of string
 
-type t = Int | Bool | Float | String | Pdf | Page | Line | Tuple | ListType of string
-
 type recr_t =
   | TType of t
   | RType of recr_t
+
+and t = Int | Bool | Float | String | Pdf | Page | Line | Tuple | ListType of string | MapType of t * t
+
+
 
 type var_decl =  id * t
 
@@ -19,6 +21,7 @@ type var_decl =  id * t
 | data_type*)
 
 (*type list_var_decl = id * recur_list_decl * data_type*)
+type map_decl = id * t * recr_t 
 
 type list_var_decl = id * recr_t
 
@@ -32,6 +35,7 @@ type expression =
   | Binop of expression * binop * expression
   | CallExpr of string * expression list
   | ListAccess of id * expression
+  | MapAccess of id * expression
   | Noexpr
 
 
@@ -42,6 +46,7 @@ type statement =
   | Assign of id * expression
   | Vdecl of var_decl
   | ListDecl of list_var_decl
+  | MapDecl of map_decl
   | InitAssign of id * t * expression
   | ObjectCreate of id * t * expression list
   | For of statement * expression * statement * statement list
