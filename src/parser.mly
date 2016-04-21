@@ -144,14 +144,9 @@ STRING               { LitString($1) }
 | INT                { LitInt($1) }
 | FLOAT              { LitFloat($1)}
 | BOOL               { LitBool($1) }
-<<<<<<< HEAD
 | ID		             { Iden(Ast.IdTest($1)) }
-| ID LEFTBRAC expr RIGHTBRAC { ListAccess(Ast.IdTest($1), $3) }
-| ID TYPEASSIGNMENT ASSIGN expr { MapAccess(Ast.IdTest($1), $4) }
-=======
-| ID		         { Iden(Ast.IdTest($1)) }
 | list_access        { ListAccess(fst $1,snd $1) }
->>>>>>> f486e7d103a27125f85261fb5a240fe9d2646f11
+| ID TYPEASSIGNMENT ASSIGN expr { MapAccess(Ast.IdTest($1), $4) }
 | expr ADDOP expr    { Binop($1, Add, $3) }
 | expr SUBOP expr    { Binop($1, Sub, $3) }
 | expr MULOP expr    { Binop($1, Mul, $3) }
