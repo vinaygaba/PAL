@@ -362,6 +362,7 @@ and annotate_stmt (s : Ast.statement) (env : environment) (tmap : type_map) : Sa
   | ObjectCreate(e,sd,el) ->
       (match sd with
       | Line
+      | Image
       | Tuple ->
           add_scope_variable e sd env;
         let ad = sd in
