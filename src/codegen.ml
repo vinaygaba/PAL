@@ -167,6 +167,25 @@ access_list funcExprMap body nextIndex
 in access_list StringMap.empty exprList 1;
 
 
+and writeFunctionCallExpr name exprList =
+match name with 
+| "length" -> let funcExprMap = getFUncExpressionMap exprList in 
+let iden = StringMap.find "1" funcExprMap in
+ ( match iden with
+  |  TIden(_, t) -> (
+    match t with 
+    | String ->  sprintf "\n %s.length();"
+    | ListType -> sprintf "\n %s.size();"
+    | MapType -> sprintf "\n %s.size();"
+  )
+  | _ -> failwith "expecting an identifier"
+ ) 
+| "readFile" -> let funcExprMap = getFUncExpressionMap exprList in 
+let location = StringMap.find "1" funcExprMap in
+sprintf "\n Util.readFile(%s)" location
+| _ -> failwith "undefined function"
+
+
 and writeFunctionCallStmt name exprList =
 match name with
 | "renderpdf" -> let funcExprMap = getFuncExpressionMap exprList in
@@ -187,6 +206,14 @@ match t with
 | Bool -> sprintf "\nBoolean %s = %s;" name expressionString
 | Float -> sprintf "\nFloat %s = %s;" name expressionString
 | _ -> failwith "initialization not possible for this type"
+
+
+
+and writeControlStmt name = 
+match name with 
+| "Continue" -> sprintf "\ncontinue;"
+| "Break" -> sprintf "\nbreak;"
+| _ -> failwith "undefined control statement"
 
 
 (*and writeFunctionCallStmt name exprList =
@@ -228,8 +255,19 @@ let rec writeDeclarationStmt tid tdataType =
                                   | Int -> sprintf "Integer %s = new Integer(0);\n" name
                                   | Bool -> sprintf "Boolean %s = new Boolean(true);\n" name
                                   | String -> sprintf "String %s = new String();\n" name)
+                                  | RType(t) -> match t with
+                                  (
+                                    RType -> 
+                                    TType(x) ->  ( match x with
+                                    | "string" ->
+                                    | "int" ->
+                                    | "pdf" ->
+                                    | "page" ->
+                                    | "line" ->
+                                    | _ -> failwith "Type cannot be stored in a list"
+                                     )
+                                  ) 
       | _ -> failwith "Not handled"
-
 
 
  and generateStatement = function
@@ -237,10 +275,13 @@ let rec writeDeclarationStmt tid tdataType =
      | TAssign(tid, tExpression ) ->  writeAssignmentStmt tid tExpression
      | TObjectCreate(tid, tspDataType, tExprList ) -> writeObjectStmt tid tspDataType tExprList
      | TCallStmt(name, exprList ) -> writeFunctionCallStmt name exprList
+     | TCallExpr(name, exprList) -> writeFunctionCallExpr name exprList
      | TInitAssign(iden, t, expression) -> writeInitAssignStmt iden t expression
      | TFor(initStmt, condition, incrStmt, body) -> writeForLoopStatement initStmt condition incrStmt body
      | TWhile(condition, body) -> writeWhileStatement condition body
      | TIf(conditionStmtList, elsestmtList) -> writeIfBlock conditionStmtList elsestmtList
+     | TControlStmt(name) -> writeControlStmt name
+
 
 
 and writeStmtList stmtList =
