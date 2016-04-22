@@ -34,12 +34,9 @@ type expression =
   | CallExpr of string * expression list
   | ListAccess of id * expression
   | MapAccess of id * expression
-  | Noexpr
-
 
 type statement =
-  | Continue of string
-  | Break of string
+  | ControlStmt of string
   | Ret of expression
   | While of expression * statement list
   | If of conditional list * statement list option
@@ -61,6 +58,7 @@ type statement =
     condition : expression;
     body : statement list;
   }
+
 
 type import_stmt =
   | Import of string

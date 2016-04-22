@@ -62,8 +62,6 @@ rule token = parse
     | "else"                          { ELSE }
     | "while"                         { WHILELOOP }
     | "for"                           { FORLOOP }
-    | "break"                         { BREAK }
-    | "continue"                      { CONTINUE }
     | "import"                        { IMPORT }
     | "void"                          { VOID }
     | "null"                          { NULL }

@@ -9,6 +9,8 @@
 %token IF ELIF ELSE WHILELOOP FORLOOP BREAK CONTINUE VOID NULL
 %token EOF
 %token IMPORT FUNCTION RETURN MAIN
+%token CONTINUE
+%token BREAK
 %token <string> ID
 %token IDTEST
 %token <string> STRING
@@ -74,7 +76,7 @@ body:
    LEFTBRACE stmt_list RIGHTBRACE { List.rev $2 }
 
 function_call:
-     ID LEFTPAREN expr_list RIGHTPAREN SEMICOLON                    { ($1,List.rev $3) }
+     ID LEFTPAREN expr_list RIGHTPAREN                     { ($1,List.rev $3) }
 
 
 
@@ -82,7 +84,7 @@ stmt:
   | assign_stmt SEMICOLON                                           { $1 }
   | FORLOOP LEFTPAREN assign_stmt SEMICOLON expr_stmt SEMICOLON assign_stmt RIGHTPAREN body { For($3, $5, $7, $9) }
   | RETURN expr SEMICOLON                                           { Ret($2) }
-  | function_call                                                   { CallStmt(fst $1,snd $1) }
+  | function_call  SEMICOLON                                                 { CallStmt(fst $1,snd $1) }
   | v_decl                                                          { Vdecl(fst $1, snd $1) }
   | list_decl                                                       { ListDecl(fst $1, snd $1) }
   | ID TYPEASSIGNMENT MAPD data_type COMMA recr_data_type SEMICOLON      { MapDecl(Ast.IdTest($1),$4,$6) }
@@ -93,6 +95,12 @@ stmt:
   | ID SUBOP ASSIGN expr SEMICOLON                                  { MapRemove(Ast.IdTest($1), $4) }
   | ID ADDOP ASSIGN expr SEMICOLON                                  { ListAdd(Ast.IdTest($1), $4) }
   | ID SUBOP ASSIGN LEFTBRAC expr RIGHTBRAC SEMICOLON               { ListRemove(Ast.IdTest($1), $5) }
+  | controlstmt SEMICOLON                                           { ControlStmt($1) }
+
+
+controlstmt:
+  | CONTINUE            { "Continue" } 
+  | BREAK               {  "Break" }
 
 elifs:
   | {[]}
