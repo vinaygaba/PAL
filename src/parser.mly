@@ -92,7 +92,7 @@ stmt:
   | ID ADDOP ASSIGN expr COMMA expr SEMICOLON                       { MapAdd(Ast.IdTest($1), $4, $6) }
   | ID SUBOP ASSIGN expr SEMICOLON                                  { MapRemove(Ast.IdTest($1), $4) }
   | ID ADDOP ASSIGN expr SEMICOLON                                  { ListAdd(Ast.IdTest($1), $4) }
-
+  | ID SUBOP ASSIGN LEFTBRAC expr RIGHTBRAC SEMICOLON               { ListRemove(Ast.IdTest($1), $5) }
 
 elifs:
   | {[]}

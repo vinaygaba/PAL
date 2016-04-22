@@ -53,6 +53,7 @@ type statement =
   | MapAdd of id * expression * expression
   | MapRemove of id * expression
   | ListAdd of id * expression
+  | ListRemove of id * expression
 
   and conditional = {
     condition : expression;

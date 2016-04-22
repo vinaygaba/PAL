@@ -324,6 +324,20 @@ and annotate_stmt (s : Ast.statement) (env : environment) (tmap : type_map) : Sa
       (match t with
       | TIden(ti,tt) -> TListAdd(ti,ae)
       | _ -> failwith "Invalid Identifier Expression")
+  | ListRemove(i,e) ->
+      let ae = annotate_expr e env tmap in
+      let te = type_of ae in
+      let id = match i with | IdTest(s) -> s in
+      let tid = find_variable env.scope id in
+      (match tid with
+      | Some(idt) ->
+          (match idt with
+          | ListType(lt) ->
+              (match te with
+              | Int -> TMapRemove(i,ae)
+              | _ -> failwith "Invalid List Access")
+          | _ -> failwith "Invalid assignment | Variable not List")
+      | None -> failwith "Invalid assignment | Variable Not Found.")
   | MapDecl(e, kd, vd) -> 
       (match vd with
       | TType(x) -> 
