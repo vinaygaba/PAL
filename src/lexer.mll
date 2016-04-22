@@ -55,6 +55,7 @@ rule token = parse
     | "line"                          { LINED }
     | "list"                          { LISTD }
     | "map"                           { MAPD }
+    | "image"                         { IMAGED }
     | "tuple"                         { TUPLED }
     | "if"                            { IF }
     | "elif"                          { ELIF }
@@ -67,6 +68,9 @@ rule token = parse
     | "void"                          { VOID }
     | "null"                          { NULL }
     | "main"                          { MAIN }
+    | "return"                        { RETURN }
+    | "continue"                      { CONTINUE }
+    | "break"                         { BREAK }
     | "function"                      { FUNCTION }
     (* Literals *)
     | digit+ as int                   { INT(int_of_string int) }

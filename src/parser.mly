@@ -15,7 +15,7 @@
 %token <int> INT
 %token <float> FLOAT
 %token <bool> BOOL
-%token INTD BOOLD STRINGD FLOATD PDFD PAGED LINED LISTD TUPLED MAPD
+%token INTD BOOLD STRINGD FLOATD PDFD PAGED LINED LISTD TUPLED IMAGED MAPD
 %left ASSIGN
 %left OR
 %left AND
@@ -106,6 +106,7 @@ list_decl:
   | ID TYPEASSIGNMENT LISTD recr_data_type SEMICOLON                           { (Ast.IdTest($1), $4) }
 
 recr_data_type:
+  | sp_data_type                                                               { (Ast.TType($1)) }
   | data_type                                                                  { (Ast.TType($1)) }
   | LISTD recr_data_type                                                       { (Ast.RType($2)) }
 
@@ -140,6 +141,7 @@ LISTD { List }
 sp_data_type:
 LINED { Line }
 | TUPLED { Tuple }
+| IMAGED { Image }
 
 
 expr:
