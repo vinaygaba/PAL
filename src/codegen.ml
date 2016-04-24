@@ -113,13 +113,13 @@ let idstring =
  let pageIden = StringMap.find "1" exprMapForTuple in
   sprintf "Tuple %s = new Tuple(%s,%s);\n" idstring pdfIden pageIden
  | Image ->  let exprMapForImage = getExpressionMap tExprList in
- let fileLoc =  StringMap.find "1" exprMapForImage in
- let xcood = StringMap.find "2" exprMapForImage in
+ let fileLoc =  StringMap.find "5" exprMapForImage in
+ let xcood = StringMap.find "4" exprMapForImage in
  let ycood = StringMap.find "3" exprMapForImage in
- let height = StringMap.find "4" exprMapForImage in
- let width = StringMap.find "5" exprMapForImage in
+ let height = StringMap.find "2" exprMapForImage in
+ let width = StringMap.find "1" exprMapForImage in
  let fileVar = idstring^"file" in
- sprintf "\nFile %s = new File(\"%s\") \nImage %s = new Image(%s,%s,%s,%s,%s);" fileVar fileLoc idstring fileVar height width xcood ycood
+ sprintf "\nFile %s = new File(\"%s\"); \nImage %s = new Image(%s,%s,%s,%s,%s);\n" fileVar fileLoc idstring fileVar height width xcood ycood
  | _ -> failwith "Something went wrong"
 
 
