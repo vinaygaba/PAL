@@ -1,10 +1,11 @@
 
-
+import java.io.File;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -49,6 +50,22 @@ public class Util{
 
     return tuple;
   }
+
+
+public static Tuple addImageToTuple(Tuple tuple, Image image)
+{
+ PDImageXObject pdIMage = PDImageXObject.createFromFileByContent(image.getFile(), tuple.getDocument());
+ PDPageContentStream contentStream = new PDPageContentStream(tuple.getDocument(), tuple.getPage(), true, true);
+
+ 
+ contentStream.drawImage(pdIMage, image.getXCood, image,getYCood, image.getHeight(), image.getWidth());
+ 
+ contentStream.close();
+    
+ return tuple;  
+
+}
+
 
   public static String readFile(String location) throw Exception{
 
