@@ -151,6 +151,7 @@ let rec annotate_expr (e : Ast.expression) (env : environment) (tmap : type_map)
           (match t1, t2 with
             | (Ast.Pdf, Ast.Page) -> TBinop(ae1,o,ae2,t1)
             | (Ast.Tuple, Ast.Line) -> TBinop(ae1,o,ae2,t1)
+            | (Ast.Tuple,Ast.Image) -> TBinop(ae1,o,ae2,t1)
             | _ -> failwith "Oops")
         | Ast.Add
         | Ast.Sub
