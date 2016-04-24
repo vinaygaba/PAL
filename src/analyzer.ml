@@ -152,7 +152,7 @@ let rec annotate_expr (e : Ast.expression) (env : environment) (tmap : type_map)
             | (Ast.Pdf, Ast.Page) -> TBinop(ae1,o,ae2,t1)
             | (Ast.Tuple, Ast.Line) -> TBinop(ae1,o,ae2,t1)
             | _ -> failwith "Oops")
-        | Ast.Add 
+        | Ast.Add
         | Ast.Sub
         | Ast.Div
         | Ast.Swap
@@ -160,10 +160,10 @@ let rec annotate_expr (e : Ast.expression) (env : environment) (tmap : type_map)
         | Ast.Mod
         | Ast.Mul -> TBinop(ae1,o,ae2,t1)
         | Ast.Equal
-        | Ast.Neq 
+        | Ast.Neq
         | Ast.Less
-        | Ast.Leq 
-        | Ast.Greater 
+        | Ast.Leq
+        | Ast.Greater
         | Ast.And
         | Ast.Or
         | Ast.Geq -> TBinop(ae1,o,ae2,Ast.Bool))
@@ -184,31 +184,34 @@ let rec annotate_expr (e : Ast.expression) (env : environment) (tmap : type_map)
                   | _ -> failwith "Variable not List")
               | None -> failwith ("Unrecognized identifier " ^ w ^ ".")))
       | _ -> failwith "Invalid List Access Expression")
-    | Ast.MapAccess(i, e) -> 
+    | Ast.MapAccess(i, e) ->
         let ae = annotate_expr e env tmap in
-        let t = type_of ae in 
-        (match i with 
-          | Ast.IdTest(w) -> 
-                    let typ = find_variable env.scope w in 
-                    (match typ with                      
-                      | Some(x) -> 
+        let t = type_of ae in
+        (match i with
+          | Ast.IdTest(w) ->
+                    let typ = find_variable env.scope w in
+                    (match typ with
+                      | Some(x) ->
                             (match x with
-                            | Ast.MapType(kd,vd) -> 
-                                  if kd = t 
-                                  then TMapAccess(i, ae, x) 
+                            | Ast.MapType(kd,vd) ->
+                                  if kd = t
+                                  then TMapAccess(i, ae, x)
                                   else failwith "Incorrect type for access"
-                            | _ -> failwith "Variable not Map" )   
+                            | _ -> failwith "Variable not Map" )
                       | None -> failwith ("Unrecognized identifier " ^ w ^ ".") ) )
     | Ast.CallExpr(e, elist) ->
       let et = find_function env.scope e in
       let aelist = List.map (fun x -> annotate_expr x env tmap) elist in
-      (match et with 
+      (match et with
         | Some(x) ->  TCallExpr(e, aelist, x)
         | None -> failwith "Did not find the type for this function" )
-    | Ast.Uop(u,e) -> 
-          let ae = annotate_expr e env tmap in 
+    | Ast.Uop(u,e) ->
+          let ae = annotate_expr e env tmap in
           let t = type_of ae in
-          TUop(u, ae, t)
+          match u with
+          | LineBuffer -> TUop(u, ae, Ast.String)
+          | _ -> TUop(u, ae, t)
+
 and annotate_recr_type (rd : Ast.recr_t) (tmap : type_map) : string =
   (match rd with
     | Ast.TType(t) ->
@@ -242,7 +245,7 @@ and annotate_assign (i : Ast.id) (e : Ast.expression) (env : environment) (tmap 
               let ti = find_primitive_type idt tmap in
               if ti = lte then i,ae
               else failwith "Invalid assignment.")
-      | Ast.MapType(kdt, vdt) -> 
+      | Ast.MapType(kdt, vdt) ->
            if vdt = idt
            then i,ae
            else failwith "Invalid assignment."
@@ -317,9 +320,9 @@ and add_scope_variable (i : Ast.id) (d : Ast.t) (env : environment) : unit =
 
 and annotate_stmt (s : Ast.statement) (env : environment) (tmap : type_map) : Sast.tstatement =
   match s with
-  | Ast.Ret(e) -> 
-      let ae = annotate_expr e env tmap in 
-      let typ = type_of ae in 
+  | Ast.Ret(e) ->
+      let ae = annotate_expr e env tmap in
+      let typ = type_of ae in
       TRet(ae, typ)
   | Ast.ControlStmt(s) -> TControlStmt(s)
   | Ast.Assign(i, e) ->
@@ -369,13 +372,13 @@ and annotate_stmt (s : Ast.statement) (env : environment) (tmap : type_map) : Sa
               | _ -> failwith "Invalid List Access")
           | _ -> failwith "Invalid assignment | Variable not List")
       | None -> failwith "Invalid assignment | Variable Not Found.")
-  | Ast.MapDecl(e, kd, vd) -> 
+  | Ast.MapDecl(e, kd, vd) ->
       (match vd with
-      | Ast.TType(x) -> 
+      | Ast.TType(x) ->
               let md = Ast.MapType(kd,x) in
               add_scope_variable e md env;
               TMapDecl(e, md)
-      | Ast.RType(x) -> 
+      | Ast.RType(x) ->
               let rd = annotate_recr_type x tmap in
               let mrd = Ast.ListType(rd) in
               let md = Ast.MapType(kd,mrd) in
