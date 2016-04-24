@@ -33,7 +33,7 @@ public class Util{
     // Define a text content stream using the selected font, moving the cursor and drawing the text "Hello World"
    
    for (int i =0; i < array.length; i++ ) {
-      float width = font.getStringWidth(line.getText().substring(start,array[i])) / 1000 * fontSize;
+      float width = font.getStringWidth(line.getText().substring(start,array[i])) / 1000 * line.getFontSize();
         if ( start <= end && width > paragraphWidth ) {
 
 
@@ -46,19 +46,20 @@ public class Util{
 
     // Make sure that the content stream is closed:
     contentStream.close();
-
-
+    break;
+        }
+   }
     return tuple;
   }
 
 
-public static Tuple addImageToTuple(Tuple tuple, Image image)
+public static Tuple addImageToTuple(Tuple tuple, Image image) throws Exception
 {
  PDImageXObject pdIMage = PDImageXObject.createFromFileByContent(image.getFile(), tuple.getDocument());
  PDPageContentStream contentStream = new PDPageContentStream(tuple.getDocument(), tuple.getPage(), true, true);
 
  
- contentStream.drawImage(pdIMage, image.getXCood, image,getYCood, image.getHeight(), image.getWidth());
+ contentStream.drawImage(pdIMage, image.getXCood(), image.getYCood(), image.getHeight(), image.getWidth());
  
  contentStream.close();
     
@@ -67,9 +68,9 @@ public static Tuple addImageToTuple(Tuple tuple, Image image)
 }
 
 
-  public static String readFile(String location) throw Exception{
+  public static String readFile(String location) throws Exception{
 
-    BufferedReader br = new BufferedReader(new FileReader(%s));
+    BufferedReader br = new BufferedReader(new FileReader(location));
     try {
         StringBuilder sb = new StringBuilder();
         String line = br.readLine();

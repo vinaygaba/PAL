@@ -14,8 +14,8 @@ public class Image {
 		this.file = file;
 		this.height = height;
 		this.width = width;
-		this.xcood = xcood;
-		this.ycood = ycood;
+		this.XCood = xcood;
+		this.YCood = ycood;
 	}
 	
 	public File getFile() {
