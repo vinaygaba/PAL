@@ -168,19 +168,19 @@ in access_list StringMap.empty exprList 1;
 
 
 and writeFunctionCallExpr name exprList =
-match name with 
-| "length" -> let funcExprMap = getFUncExpressionMap exprList in 
+match name with
+| "length" -> let funcExprMap = getFuncExpressionMap exprList in
 let iden = StringMap.find "1" funcExprMap in
  ( match iden with
   |  TIden(_, t) -> (
-    match t with 
+    match t with
     | String ->  sprintf "\n %s.length();"
     | ListType -> sprintf "\n %s.size();"
     | MapType -> sprintf "\n %s.size();"
   )
   | _ -> failwith "expecting an identifier"
- ) 
-| "readFile" -> let funcExprMap = getFUncExpressionMap exprList in 
+ )
+| "readFile" -> let funcExprMap = getFuncExpressionMap exprList in
 let location = StringMap.find "1" funcExprMap in
 sprintf "\n Util.readFile(%s)" location
 | _ -> failwith "undefined function"
@@ -209,8 +209,8 @@ match t with
 
 
 
-and writeControlStmt name = 
-match name with 
+and writeControlStmt name =
+match name with
 | "Continue" -> sprintf "\ncontinue;"
 | "Break" -> sprintf "\nbreak;"
 | _ -> failwith "undefined control statement"
@@ -255,9 +255,9 @@ let rec writeDeclarationStmt tid tdataType =
                                   | Int -> sprintf "Integer %s = new Integer(0);\n" name
                                   | Bool -> sprintf "Boolean %s = new Boolean(true);\n" name
                                   | String -> sprintf "String %s = new String();\n" name)
-                                  | RType(t) -> match t with
+                                (*  | RType(t) -> match t with
                                   (
-                                    RType -> 
+                                    RType ->
                                     TType(x) ->  ( match x with
                                     | "string" ->
                                     | "int" ->
@@ -266,7 +266,7 @@ let rec writeDeclarationStmt tid tdataType =
                                     | "line" ->
                                     | _ -> failwith "Type cannot be stored in a list"
                                      )
-                                  ) 
+                                  ) *)
       | _ -> failwith "Not handled"
 
 
@@ -289,7 +289,7 @@ let outStr = List.fold_left (fun a b -> a ^ (generateStatement b)) "" stmtList i
 sprintf "%s" outStr
 
 
-and generateConditionStmt conditionalList index = 
+and generateConditionStmt conditionalList index =
   match conditionalList with
    [] -> []
    | a::l -> let ifExpression = generateExpression a.tcondition in
@@ -311,9 +311,9 @@ sprintf " else \n{   %s \n}" bodyString
 and writeIfBlock conditionList elseBody =
 let conditionListString = generateConditionalList conditionList in
 match elseBody with
-Some(x) -> let elseBodyString = writeElseStmt x in 
+Some(x) -> let elseBodyString = writeElseStmt x in
 sprintf " %s \n %s " conditionListString elseBodyString
-| None -> sprintf " %s " conditionListString 
+| None -> sprintf " %s " conditionListString
 
 
 and writeForLoopStatement initStmt condition incrStmt body =
