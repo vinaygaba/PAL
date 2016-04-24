@@ -49,18 +49,10 @@ let rec writeJavaProgramToFile fileName programString =
   (*and generateFunctionList prog =
   let concatenatedFunctions = List.fold_left (fun a b -> a ^ (generateFunctionDefinitions b)) "" prog in
   	sprintf "%s" concatenatedFunctions
-
   and generateFunctionDefinitions  = function
        tmainf(stmtList) -> writeMainFunction stmtList
       | failwith "Not handled"*)
 
-
-let rec writeUop op expr1 =
-  let e1 = generateExpression expr1 in
-  let type1 = type_of expr1 in
-  let writeUopHelper e1 op = match op with
-    LineBuffer -> sprintf "%s.getRemainingText();" e1
-  in writUopHelper e1 op
 
 
 let rec writeBinop expr1 op expr2 =
@@ -93,8 +85,12 @@ let rec writeBinop expr1 op expr2 =
       | _ -> failwith "Something went wrong!"
     in writeBinopHelper e1 op e2
 
-
-
+and writeUop expr1 op =
+  let e1 = generateExpression expr1 in
+  let type1 = type_of expr1 in
+  let writeUopHelper e1 op = match op with
+    | LineBuffer -> sprintf "%s.getRemainingText();" e1
+  in writeUopHelper e1 op
 
 and writeObjectStmt tid tspDataType tExprList =
 let idstring =
@@ -176,14 +172,16 @@ in access_list StringMap.empty exprList 1;
 
 and writeFunctionCallExpr name exprList =
 match name with
-| "length" -> let funcExprMap = getFuncExpressionMap exprList in
-let iden = StringMap.find "1" funcExprMap in
- ( match iden with
-  |  TIden(_, t) -> (
+| "length" -> let identifier = List.hd exprList in
+ ( match identifier with
+  |  TIden(n, t) -> (
+      let name =
+      ( match n with
+      |IdTest(n) -> n) in
     match t with
-    | String ->  sprintf "\n %s.length();"
-    | ListType -> sprintf "\n %s.size();"
-    | MapType -> sprintf "\n %s.size();"
+    | String ->  sprintf "%s.length()" name
+    | ListType(x) -> sprintf "%s.size()" name
+    | MapType(t,x) -> sprintf "%s.size()" name
   )
   | _ -> failwith "expecting an identifier"
  )
@@ -235,10 +233,11 @@ sprintf "\n%s.save(\"%s\");\n %s.close();" pdfIden location pdfIden
 
  and generateExpression = function
      TBinop(ope1, op, ope2, _) -> writeBinop ope1 op ope2
-   | TUop(op,ope1) -> writeUop op ope1
+   | TUop(op,ope1, _) -> writeUop ope1 op
    | TLitString(stringLit, _) -> writeStringLit stringLit
    | TLitInt(intLit, _) -> writeIntLit intLit
    | TLitBool(boolLit, _) -> writeBoolLit boolLit
+   | TCallExpr(name, exprList, _) -> writeFunctionCallExpr name exprList
    | TIden(name, _) ->
    (match name with
    |IdTest(n) -> writeId n
@@ -283,14 +282,11 @@ let rec writeDeclarationStmt tid tdataType =
      | TAssign(tid, tExpression ) ->  writeAssignmentStmt tid tExpression
      | TObjectCreate(tid, tspDataType, tExprList ) -> writeObjectStmt tid tspDataType tExprList
      | TCallStmt(name, exprList ) -> writeFunctionCallStmt name exprList
-     | TCallExpr(name, exprList) -> writeFunctionCallExpr name exprList
      | TInitAssign(iden, t, expression) -> writeInitAssignStmt iden t expression
      | TFor(initStmt, condition, incrStmt, body) -> writeForLoopStatement initStmt condition incrStmt body
      | TWhile(condition, body) -> writeWhileStatement condition body
      | TIf(conditionStmtList, elsestmtList) -> writeIfBlock conditionStmtList elsestmtList
      | TControlStmt(name) -> writeControlStmt name
-
-
 
 and writeStmtList stmtList =
 let outStr = List.fold_left (fun a b -> a ^ (generateStatement b)) "" stmtList in
@@ -348,7 +344,6 @@ and generateJavaProgram fileName prog =
   import org.apache.pdfbox.pdmodel.font.PDFont;
   import org.apache.pdfbox.pdmodel.PDPageContentStream;
   import org.apache.pdfbox.pdmodel.font.PDType1Font;
-
   public class %s
   {
     %s

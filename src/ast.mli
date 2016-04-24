@@ -1,7 +1,7 @@
 type binop = Add | Sub | Mul | Div | Mod | Equal | Neq | Less | Leq | Greater | Geq |
           And | Or | Swap | Append | Concat
 
-type uop = Neg | Not
+type uop = Neg | Not | LineBuffer
 
 type list_data_type = List
 
@@ -15,11 +15,11 @@ and t = Int | Bool | Float | String | Pdf | Page | Line | Tuple | Image | ListTy
 
 type var_decl =  id * t
 
-(*type recur_list_decl = list_data_type * recur_list_decl 
+(*type recur_list_decl = list_data_type * recur_list_decl
 | data_type*)
 
 (*type list_var_decl = id * recur_list_decl * data_type*)
-type map_decl = id * t * recr_t 
+type map_decl = id * t * recr_t
 
 type list_var_decl = id * recr_t
 
