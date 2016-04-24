@@ -2,7 +2,7 @@
 %token SEMICOLON
 %token LEFTBRACE LEFTPAREN LEFTBRAC RIGHTBRACE RIGHTPAREN RIGHTBRAC COMMA
 %token ADDOP SUBOP MULOP DIVOP MODOP
-%token SWAP CONCAT TYPEASSIGNMENT LINEBUFFER
+%token SWAP CONCAT TYPEASSIGNMENT
 %token EQ NEQ LT GT LEQ GEQ
 %token NOT AND OR
 %token ASSIGN
@@ -25,6 +25,7 @@
 %nonassoc LT LEQ GT GEQ
 %left ADDOP SUBOP
 %left CONCAT
+%left LINEBUFFER
 %left MULOP DIVOP MODOP
 %nonassoc TYPEASSIGNMENT
 %right NOT
@@ -99,7 +100,7 @@ stmt:
 
 
 controlstmt:
-  | CONTINUE            { "Continue" } 
+  | CONTINUE            { "Continue" }
   | BREAK               {  "Break" }
 
 elifs:
@@ -171,6 +172,7 @@ STRING               { LitString($1) }
 | expr AND    expr   { Binop($1, And,     $3) }
 | expr OR     expr   { Binop($1, Or,      $3) }
 | NOT  expr         { Uop(Not,$2) }
+| expr LINEBUFFER    { Uop(LineBuffer,$1) }
 | function_call     {CallExpr(fst $1,snd $1)}
 
 list_access:

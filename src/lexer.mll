@@ -16,7 +16,6 @@ rule token = parse
     | ','                             { COMMA }
     | ';'                             { SEMICOLON }
     | ':'                             { TYPEASSIGNMENT }
-    | "::"                            { LINEBUFFER }
     | eof                             { EOF }
     (* Scoping *)
     | '{'                             { LEFTBRACE }
@@ -43,6 +42,7 @@ rule token = parse
     | "!"                             { NOT }
     | '='                             { ASSIGN }
     | '.'                             { CONCAT }
+    | "|_"                            { LINEBUFFER }
     (* Keywords *)
     | "bool"                          { BOOLD }
     | "true"                          { BOOL(true) }
