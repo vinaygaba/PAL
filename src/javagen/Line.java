@@ -5,6 +5,7 @@ public class Line {
 	private int xcod;
 	private int ycod;
 	private int fontSize;
+	private String remainingText;
 
 	public String getText() {
 		return text;
@@ -36,4 +37,15 @@ public class Line {
 	public void setFontSize(int fontSize) {
 		this.fontSize = fontSize;
 	}
+
+public String getRemainingText() {
+		return remainingText;
+	}
+
+	public void setRemainingText(String remainingText) {
+		this.remainingText = remainingText;
+	}
+
+
+
 }

@@ -169,14 +169,16 @@ in access_list StringMap.empty exprList 1;
 
 and writeFunctionCallExpr name exprList =
 match name with
-| "length" -> let funcExprMap = getFuncExpressionMap exprList in
-let iden = StringMap.find "1" funcExprMap in
- ( match iden with
-  |  TIden(_, t) -> (
+| "length" -> let identifier = List.hd exprList in
+ ( match identifier with
+  |  TIden(n, t) -> (
+      let name = 
+      ( match n with 
+      |IdTest(n) -> n) in
     match t with
-    | String ->  sprintf "\n %s.length();"
-    | ListType -> sprintf "\n %s.size();"
-    | MapType -> sprintf "\n %s.size();"
+    | String ->  sprintf "%s.length()" name
+    | ListType(x) -> sprintf "%s.size()" name
+    | MapType(t,x) -> sprintf "%s.size()" name
   )
   | _ -> failwith "expecting an identifier"
  )
@@ -231,6 +233,7 @@ sprintf "\n%s.save(\"%s\");\n %s.close();" pdfIden location pdfIden
    | TLitString(stringLit, _) -> writeStringLit stringLit
    | TLitInt(intLit, _) -> writeIntLit intLit
    | TLitBool(boolLit, _) -> writeBoolLit boolLit
+   | TCallExpr(name, exprList, _) -> writeFunctionCallExpr name exprList
    | TIden(name, _) ->
    (match name with
    |IdTest(n) -> writeId n
@@ -275,14 +278,11 @@ let rec writeDeclarationStmt tid tdataType =
      | TAssign(tid, tExpression ) ->  writeAssignmentStmt tid tExpression
      | TObjectCreate(tid, tspDataType, tExprList ) -> writeObjectStmt tid tspDataType tExprList
      | TCallStmt(name, exprList ) -> writeFunctionCallStmt name exprList
-     | TCallExpr(name, exprList) -> writeFunctionCallExpr name exprList
      | TInitAssign(iden, t, expression) -> writeInitAssignStmt iden t expression
      | TFor(initStmt, condition, incrStmt, body) -> writeForLoopStatement initStmt condition incrStmt body
      | TWhile(condition, body) -> writeWhileStatement condition body
      | TIf(conditionStmtList, elsestmtList) -> writeIfBlock conditionStmtList elsestmtList
      | TControlStmt(name) -> writeControlStmt name
-
-
 
 and writeStmtList stmtList =
 let outStr = List.fold_left (fun a b -> a ^ (generateStatement b)) "" stmtList in
