@@ -1,0 +1,16 @@
+main()
+{
+ pdfVar : pdf;
+
+  page1 : page;
+
+  pdfVar = pdfVar . page1;
+
+tupleVar : tuple(pdfVar, page1);
+
+imageVar : image("file.png", 500, 600, 100, 100);
+
+tupleVar = tupleVar . imageVar;
+
+renderpdf(pdfVar,"helloworld.pdf");
+}

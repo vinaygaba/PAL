@@ -7,7 +7,7 @@ main(){
 
   page1 : page;
 
-  pdfVar = padVar . page1;
+  pdfVar = pdfVar . page1;
 
   tupleVar : tuple(pdfVar, page1);
 
