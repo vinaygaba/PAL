@@ -195,7 +195,7 @@ match name with
   )
   | _ -> failwith "expecting an identifier"
  )
-| "readFile" -> let funcExprMap = getFuncExpressionMap exprList in
+| "readfile" -> let funcExprMap = getFuncExpressionMap exprList in
 let location = StringMap.find "1" funcExprMap in
 sprintf "\n Util.readFile(%s)" location
 | _ -> failwith "undefined function"

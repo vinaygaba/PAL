@@ -13,7 +13,7 @@ import java.io.IOException;
 public class Util{
 
 
-  public static int paragraphWidth = 500;
+  public static int paragraphWidth = 400;
 
   public static PDDocument addPageToPDF(PDDocument doc,PDPage page) throws Exception{
 
@@ -36,19 +36,32 @@ public class Util{
       float width = font.getStringWidth(line.getText().substring(start,array[i])) / 1000 * line.getFontSize();
         if ( start <= end && width > paragraphWidth ) {
 
+           contentStream.beginText();
+           contentStream.setFont(PDType1Font.TIMES_ROMAN, line.getFontSize());
+           contentStream.moveTextPositionByAmount( line.getXcod(), line.getYcod() );
+           end = array[i];
+           contentStream.drawString(line.getText().substring(start,end));
+           contentStream.endText();
+           line.setRemainingText(line.getText().substring(end,line.getText().length()));
 
-   contentStream.beginText();
-   contentStream.setFont(PDType1Font.TIMES_ROMAN, line.getFontSize());
-   contentStream.moveTextPositionByAmount( line.getXcod(), line.getYcod() );
-   contentStream.drawString(line.getText().substring(start,end));
-   contentStream.endText();
-   line.setRemainingText(line.getText().substring(end,line.getText().length()));
-
-    // Make sure that the content stream is closed:
-    contentStream.close();
+            // Make sure that the content stream is closed:
+            contentStream.close();
     break;
         }
-   }
+        else if(i == array.length - 1)
+        {
+           contentStream.beginText();
+           contentStream.setFont(PDType1Font.TIMES_ROMAN, line.getFontSize());
+           contentStream.moveTextPositionByAmount( line.getXcod(), line.getYcod() );
+           end = array[i];
+           contentStream.drawString(line.getText().substring(start,end));
+           contentStream.endText();
+           line.setRemainingText("");
+            // Make sure that the content stream is closed:
+            contentStream.close();
+
+        }
+    }
     return tuple;
   }
 
@@ -77,7 +90,7 @@ public static Tuple addImageToTuple(Tuple tuple, Image image) throws Exception
 
         while (line != null) {
             sb.append(line);
-            sb.append("\n");
+            sb.append(" ");
             line = br.readLine();
         }
         return sb.toString();

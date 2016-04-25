@@ -7,7 +7,7 @@ main(){
 
   pageVar : page;
 
-  stringVar : string = "My name is DIksha. La la la al .meow meow meow. bhow bhow bhow. ksajdk askjdksajd askdjkjashd asdjlaskdj sadkjaskjd askdjaskjd asdkjhasd sajdhasduh wdkjsdjs daskjhdas askdjasd sadjkahskdjhas dlkasjdlkasd asdkjasdkhasd asdhjaskjdhasd asdkjhasjd asdkjhskdjhasd askjdhaskd asdkjhaskdj asdjhaksjdh askdjhaskjd askdjhasjd askdjhaskjhd askdjhaskdj askdjhaksjdh asdkjhas sakjwhd aslkjsad asdkjnd sakjdskjad sakjdhaksjn askdjhaskjd asdkjhasjdhas asldkjask askdjhasd askjdhaskjd askdjhaskd asdkjhaskdj askjhwda sadlkjsadb adkjhns dlkjsmd sadkjhnsd asldkjasmasd askdjahsdjas askdjhsd asdkjaskdjn sadkjhasdkjhqw sakdjhasd lkasjd asdkjhasd asdkjansdjn asdkjnasd asdkjnads dkajsh wlk;wl sal;sdnas asdkjk";
+  stringVar : string = "My name is DIksha. La la la al .meow meow meow. bhow bhow bhow. ksajdk askjdksajd askdjkjashd asdjlaskdj sadkjaskjd askdjaskjd asdkjhasd sajdhasduh wdkjsdjs daskjhdas askdjasd sadjkahskdjhas dlkasjdlkasd asdkjasdkhasd asdhjaskjdhasd asdkjhasjd asdkjhskdjhasd askjdhaskd asdkjhaskdj asdjhaksjdh askdjhaskjd askdjhasjd askdjhaskjhd askdjhaskdj askdjhaksjdh asdkjhas sakjwhd aslkjsad asdkjnd sakjdskjad sakjdhaksjn askdjhaskjd asdkjhasjdhas asldkjask askdjhasd askjdhaskjd askdjhaskd asdkjhaskdj askjhwda sadlkjsadb adkjhns dlkjsmd sadkjhnsd asldkjasmasd askdjahsdjas askdjhsd asdkjaskdjn sadkjhasdkjhqw sakdjhasd lkasjd asdkjhasd asdkjansdjn asdkjnasd asdkjnads dkajsh wlkwl salsdnas asdkjk";
 
   pdfVar = pdfVar . pageVar;
 
@@ -21,7 +21,7 @@ main(){
 
   lengthOfString = length(stringVar);
 
-  while(lengthOfString != 0)
+  while(lengthOfString > 0)
   {
 
     lineVar : line(stringVar, "Times_New_Roman",12,100,height);
