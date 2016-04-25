@@ -1,0 +1,8 @@
+main() {
+}
+
+func (x : int; y : string;) : int {
+    l : list list string;
+    return 1;
+}
+
