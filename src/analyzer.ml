@@ -32,7 +32,7 @@ let rec find_function (scope : symbol_table) (name : string) : Ast.t option =
     Some(typ)
   with Not_found ->
     match scope.parent with
-    | Some(p) -> find_variable p name
+    | Some(p) -> find_function p name
     | _ -> None
 
 let is_keyword (name : string) : bool =
@@ -80,6 +80,16 @@ let initialize_types(tmap : type_map) =
   let tupletype = next_type_var() in
   let typeMap = StringMap.add "tuple" tupletype typeMap in
   tmap.map <- typeMap
+
+
+let initialize_predefined_functions (env : environment) =  
+    let lengthfn = ("length", Ast.Int) in 
+    env.scope.functions <- lengthfn :: env.scope.functions;
+    (* let lengthfn = ("getpages", Ast.Page list) in 
+    env.scope.functions <- lengthfn :: env.scope.functions); *)
+   
+    let readfn = ("readfile", Ast.String) in 
+    env.scope.functions <- readfn :: env.scope.functions;;
 
 let nest_scope (env : environment) : environment =
   let s = {variables = []; functions = []; parent = Some(env.scope)} in
@@ -212,6 +222,8 @@ let rec annotate_expr (e : Ast.expression) (env : environment) (tmap : type_map)
           match u with
           | LineBuffer -> TUop(u, ae, Ast.String)
           | _ -> TUop(u, ae, t)
+
+
 
 and annotate_recr_type (rd : Ast.recr_t) (tmap : type_map) : string =
   (match rd with
@@ -513,6 +525,7 @@ and annotate_func_decls (fdecls : Ast.func_decl list) (env : environment) (tmap 
 
 let annotate_prog (p : Ast.program) : Sast.tprogram =
   let env = new_env() in
+  initialize_predefined_functions(env);
   let tmap = new_map() in
   initialize_types tmap;
   let ai = annotate_import_statements p.Ast.ilist env tmap in
