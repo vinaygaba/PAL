@@ -223,8 +223,6 @@ let rec annotate_expr (e : Ast.expression) (env : environment) (tmap : type_map)
           | LineBuffer -> TUop(u, ae, Ast.String)
           | _ -> TUop(u, ae, t)
 
-
-
 and annotate_recr_type (rd : Ast.recr_t) (tmap : type_map) : string =
   (match rd with
     | Ast.TType(t) ->
@@ -494,9 +492,16 @@ and annotate_main_func_decl (mdecl : Ast.main_func_decl) (env : environment) (tm
   let asts = annotate_stmts mdecl.Ast.body env tmap in
   {tbody = asts}
 
-and annotate_import_statement (istmt : Ast.import_stmt) (env : environment) (tmap : type_map) : Sast.timport_stmt =
-  let ai = "" in
-  TImport(ai)
+and annotate_import_statement (istmt : Ast.import_stmt) (env : environment) (tmap : type_map) : Sast.tprogram =
+  (match istmt with
+  | Import(s) ->
+      let l = String.length s in
+      let sl = 1 in
+      let el = l-2 in
+      let is = String.sub s sl el in
+      let aip = parse_file is in
+      aip
+  | _ -> failwith "Invalid Import Statement")
 
 and annotate_cond (cond: Ast.conditional) (env : environment) (tmap : type_map) : Sast.tconditional =
   let ae = annotate_expr cond.Ast.condition env tmap in
@@ -511,7 +516,7 @@ and annotate_cond (cond: Ast.conditional) (env : environment) (tmap : type_map) 
 and annotate_conds (conds : Ast.conditional list) (env : environment) (tmap : type_map) : Sast.tconditional list =
   List.map (fun i -> annotate_cond i env tmap) conds
 
-and annotate_import_statements (istmts : Ast.import_stmt list) (env : environment) (tmap : type_map) : Sast.timport_stmt list =
+and annotate_import_statements (istmts : Ast.import_stmt list) (env : environment) (tmap : type_map) : Sast.tprogram list =
   List.map (fun i -> annotate_import_statement i env tmap) istmts
 
 and annotate_exprs (exprs : Ast.expression list) (env : environment) (tmap : type_map) : Sast.texpression list =
@@ -523,13 +528,33 @@ and annotate_stmts (stmts : Ast.statement list) (env : environment) (tmap : type
 and annotate_func_decls (fdecls : Ast.func_decl list) (env : environment) (tmap : type_map) : Sast.tfunc_decl list =
   List.map (fun f -> annotate_func_decl f env tmap) fdecls
 
-let annotate_prog (p : Ast.program) : Sast.tprogram =
+and parse_file (fname : string) : Sast.tprogram =
+  let file = open_in fname in
+  let lexbuf = Lexing.from_channel file in
+  let program = Parser.program Lexer.token lexbuf in
+  let annotatedProgram = annotate_prog program in
+  annotatedProgram
+
+and extract_function (itp : Sast.tprogram) (env : environment) : Sast.tfunc_decl list = 
+	let fdecls = itp.tdeclf in
+	List.map (fun f ->  env.scope.functions <- (f.name , f.rtype) :: env.scope.functions) fdecls;
+	fdecls
+
+and extract_functions (itps : Sast.tprogram list) (env : environment) : Sast.tfunc_decl list = 
+	let l = List.map (fun f -> extract_function f env) itps in
+	let tf = [] in
+	List.fold_left (fun acc x -> x :: acc) tf l;
+	tf
+
+and annotate_prog (p : Ast.program) : Sast.tprogram =
   let env = new_env() in
   initialize_predefined_functions(env);
   let tmap = new_map() in
   initialize_types tmap;
   let ai = annotate_import_statements p.Ast.ilist env tmap in
-  let af = annotate_func_decls p.Ast.declf env tmap in
+  let ef = extract_functions ai env in
+  let f = annotate_func_decls p.Ast.declf env tmap in
+  let af = List.append ef f in
   let am = annotate_main_func_decl p.Ast.mainf env tmap in
   Printf.printf "There there\n";
-  {tilist = ai; tmainf = am; tdeclf = af}
+  {tmainf = am; tdeclf = af}

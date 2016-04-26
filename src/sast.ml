@@ -38,9 +38,6 @@ type tstatement =
     tbody : tstatement list;
   }
 
-type timport_stmt =
-  | TImport of string
-
 type tfunc_decl = {
   rtype : Ast.t;
   name : string;
@@ -53,7 +50,6 @@ type tmain_func_decl = {
 }
 
 type tprogram = {
-  tilist : timport_stmt list;
   tmainf : tmain_func_decl;
   tdeclf : tfunc_decl list;
 }

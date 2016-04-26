@@ -1,3 +1,5 @@
+import ("goldenImport.txt");
+
 main() {
   pdfVar : pdf;
   pageVar : page;
@@ -7,6 +9,7 @@ main() {
   i : int;
   j : int;
   k : int;
+  s : string;
   
   for (k = 0; k < 5; k = k+1) {
       pdfTVar : pdf;
@@ -23,4 +26,6 @@ main() {
           pageVar = documentMap:=pdfVar;
       }
   }
+  
+  j = func(i,s);
 }
