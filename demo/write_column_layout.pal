@@ -1,0 +1,22 @@
+
+
+write_column_layout(tupleVar:tuple ,stringVar:string,fontType:string,fontSize:int){
+
+startX:int = 20
+
+endX:int = 280
+
+startY: int = 800
+
+endHeight:int = 20
+
+  stringVar = write_paragraph(tupleVar, stringVar, startX, startY, fontSize, fontType, endHeight,endX);
+
+  if(length(stringVar) > 0){
+    startX = startX + endX;
+    endX = endX + endX;
+    stringVar = write_paragraph(tupleVar, stringVar, startX, startY, fontSize, fontType, endHeight,endX);
+  }
+
+  return stringVar;
+}
