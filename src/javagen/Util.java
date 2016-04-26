@@ -12,9 +12,6 @@ import java.io.IOException;
 
 public class Util{
 
-
-  public static int paragraphWidth = 400;
-
   public static PDDocument addPageToPDF(PDDocument doc,PDPage page) throws Exception{
 
     doc.addPage(page);
@@ -24,6 +21,8 @@ public class Util{
 
   public static Tuple addLineToTuple(Tuple tuple,Line line)throws Exception{
     // Start a new content stream which will "hold" the to be created content
+
+    int pwidth = line.getWidth();
     int start = 0;
     int end = 0;
     PDPageContentStream contentStream = new PDPageContentStream(tuple.getDocument(), tuple.getPage(), true, true);
@@ -34,7 +33,7 @@ public class Util{
    
    for (int i =0; i < array.length; i++ ) {
       float width = font.getStringWidth(line.getText().substring(start,array[i])) / 1000 * line.getFontSize();
-        if ( start <= end && width > paragraphWidth ) {
+        if ( start <= end && width > pwidth ) {
 
            contentStream.beginText();
            contentStream.setFont(PDType1Font.TIMES_ROMAN, line.getFontSize());

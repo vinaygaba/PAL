@@ -5,6 +5,7 @@ public class Line {
 	private int xcod;
 	private int ycod;
 	private int fontSize;
+	private int width;
 	private String remainingText;
 
 	public String getText() {
@@ -38,14 +39,19 @@ public class Line {
 		this.fontSize = fontSize;
 	}
 
-public String getRemainingText() {
+	public String getRemainingText() {
 		return remainingText;
 	}
 
 	public void setRemainingText(String remainingText) {
 		this.remainingText = remainingText;
 	}
-
+	public void setWidth(int width) {
+		this.width = width;
+	}
+	public int getWidth() {
+		return width;
+	}
 
 
 }
