@@ -1,8 +1,7 @@
 main() {
+    i : int;
 }
 
-func (x : int; y : string;) : int {
-    l : list list string;
-    return 1;
+func (i : int s : string l : list list list string t : tuple m : map int,list list string x : line) : string {
+    return s;
 }
-
