@@ -1,41 +1,18 @@
-
-
-
-
 main(){
 
 pdfVar : pdf;
 
 pageVar : page;
 
-stringVar : string = "My name is DIksha. La la la al .meow meow meow. bhow bhow bhow. ksajdk askjdksajd askdjkjashd asdjlaskdj sadkjaskjd askdjaskjd asdkjhasd sajdhasduh wdkjsdjs daskjhdas askdjasd sadjkahskdjhas dlkasjdlkasd asdkjasdkhasd asdhjaskjdhasd asdkjhasjd asdkjhskdjhasd askjdhaskd asdkjhaskdj asdjhaksjdh askdjhaskjd askdjhasjd askdjhaskjhd askdjhaskdj askdjhaksjdh asdkjhas sakjwhd aslkjsad asdkjnd sakjdskjad sakjdhaksjn askdjhaskjd asdkjhasjdhas asldkjask askdjhasd askjdhaskjd askdjhaskd asdkjhaskdj askjhwda sadlkjsadb adkjhns dlkjsmd sadkjhnsd asldkjasmasd askdjahsdjas askdjhsd asdkjaskdjn sadkjhasdkjhqw sakdjhasd lkasjd asdkjhasd asdkjansdjn asdkjnasd asdkjnads dkajsh wlkwl salsdnas asdkjk";
+stringVar : string = "My name is DIksha. La la la al .meow meow meow. bhow bhow bhow. ksajdk askjdksajd askdjkjashd asdjlaskdj sadkjaskjd askdjaskjd asdkjhasd sajdhasduh wdkjsdjs daskjhdas askdjasd sadjkahskdjhas dlkasjdlkasd asdkjasdkhasd asdhjaskjdhasd asdkjhasjd asdkjhskdjhasd askjdhaskd asdkjhaskdj asdjhaksjdh askdjhaskjd askdjhasjd askdjhaskjhd askdjhaskdj askdjhaksjdh asdkjhas sakjwhd aslkjsad asdkjnd sakjdskjad sakjdhaksjn askdjhaskjd asdkjhasjdhas asldkjask askdjhasd askjdhaskjd askdjhaskd asdkjhaskdj askjhwda sadlkjsadb adkjhns dlkjsmd sadkjhnsd asldkjasmasd askdjahsdjas askdjhsd asdkjaskdjn sadkjhasdkjhqw sakdjhasd lkasjd asdkjhasd asdkjansdjn asdkjnasd asdkjnads dkajsh wlkwl salsdnas asdkjkMy name is DIksha. La la la al .meow meow meow. bhow bhow bhow. ksajdk askjdksajd askdjkjashd asdjlaskdj sadkjaskjd askdjaskjd asdkjhasd sajdhasduh wdkjsdjs daskjhdas askdjasd sadjkahskdjhas dlkasjdlkasd asdkjasdkhasd asdhjaskjdhasd asdkjhasjd asdkjhskdjhasd askjdhaskd asdkjhaskdj asdjhaksjdh askdjhaskjd askdjhasjd askdjhaskjhd askdjhaskdj askdjhaksjdh asdkjhas sakjwhd aslkjsad asdkjnd sakjdskjad sakjdhaksjn askdjhaskjd asdkjhasjdhas asldkjask askdjhasd askjdhaskjd askdjhaskd asdkjhaskdj askjhwda sadlkjsadb adkjhns d";
 
 pdfVar = pdfVar . pageVar;
 
 tupleVar : tuple(pdfVar, pageVar);
 
-startX:int = 15;
-
-width:int = 270;
-
-startY: int = 700;
-
-endHeight:int = 500;
-
-fontSize:int = 12;
-
-fontType:string = "TIMES_ROMAN";
-
-stringVar = write_paragraph(tupleVar, stringVar, startX, startY, fontSize, fontType, endHeight,width);
-
-if(length(stringVar) > 0){
-  startX = 315;
-  #width = width + width;
-  stringVar = write_paragraph(tupleVar, stringVar, startX, startY, fontSize, fontType, endHeight,width);
-}
+stringVar = write_three_column_layout(tupleVar, stringVar, "TIMES_ROMAN", 12);
 
 renderpdf(pdfVar,"helloworld.pdf");
-
 
 }
 
@@ -65,52 +42,53 @@ write_paragraph(tupleVar:tuple stringVar:string startMargin:int startHeight:int 
   return stringVar;
 }
 
-/*
-write_two_column_layout(tupleVar:tuple;stringVar:string;fontType:string;fontSize:int;){
+
+write_two_column_layout(tupleVar:tuple stringVar:string fontType:string fontSize:int):string{
 
 startX:int = 20;
 
-width:int = 280;
+width:int = 230;
 
-startY: int = 800;
+startY: int = 700;
 
-endHeight:int = 20;
+endHeight:int = 500;
 
   stringVar = write_paragraph(tupleVar, stringVar, startX, startY, fontSize, fontType, endHeight,width);
 
   if(length(stringVar) > 0){
-    startX = startX + width;
-    width = width + width;
+    startX = 315;
+    #width = width + width;
     stringVar = write_paragraph(tupleVar, stringVar, startX, startY, fontSize, fontType, endHeight,width);
   }
 
   return stringVar;
 }
 
-write_three_column_layout(tupleVar:tuple;stringVar:string;fontType:string;fontSize:int;){
+
+
+write_three_column_layout(tupleVar:tuple stringVar:string fontType:string fontSize:int):string{
 
 startX:int = 20;
 
-width:int = 190;
+width:int = 120;
 
-startY: int = 800;
+startY: int = 700;
 
-endHeight:int = 20;
+endHeight:int = 400;
 
   stringVar = write_paragraph(tupleVar, stringVar, startX, startY, fontSize, fontType, endHeight,width);
 
   if(length(stringVar) > 0){
-    startX = startX + width;
-    width = width + width;
+    startX = 180;
+    #width = width + width;
     stringVar = write_paragraph(tupleVar, stringVar, startX, startY, fontSize, fontType, endHeight,width);
   }
 
   if(length(stringVar) > 0){
-    startX = startX + width;
-    width = width + width;
+    startX = 340;
+    #width = width + width;
     stringVar = write_paragraph(tupleVar, stringVar, startX, startY, fontSize, fontType, endHeight,width);
   }
 
   return stringVar;
 }
-*/
