@@ -78,8 +78,13 @@ rule token = parse
     | id as i                              { ID(i) }
     (* Comment *)
     | '#'                             {comment lexbuf}
+    | "/*"                 { multilinecomment lexbuf }
     | _ as char { raise (Failure("Illegal character " ^ Char.escaped char)) }
 
 and comment = parse
     | '\n'                            {token lexbuf}
     | _                               {comment lexbuf}
+
+and multilinecomment = parse
+      "*/" { token lexbuf }
+    | _    { multilinecomment lexbuf }
