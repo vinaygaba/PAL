@@ -79,7 +79,7 @@ let rec writeBinop expr1 op expr2 =
       | Line ->
       let var = e2^"contentStream" in
       sprintf "Util.addLineToTuple(%s,%s)" e1 e2
-      | Image -> 
+      | Image ->
       sprintf "Util.addImageToTuple(%s, %s)" e1 e2
       | _ -> failwith "Not handled"
       )
@@ -97,30 +97,35 @@ and writeObjectStmt tid tspDataType tExprList =
 let idstring =
   (match tid with
    | IdTest(s) ->  s ) in
- match tspDataType with
- | Line ->
- let exprMapForLine = getExpressionMap tExprList in
- let drawString =  StringMap.find "6" exprMapForLine in
- let font = StringMap.find "5" exprMapForLine in
- let fontSize = StringMap.find "4" exprMapForLine in
- let xcod = StringMap.find "3" exprMapForLine in
- let ycod = StringMap.find "2" exprMapForLine in
- let width = StringMap.find "1" exprMapForLine in
- sprintf "Line %s = new Line();\n %s.setFont(%s);\n %s.setText(%s);\n %s.setXcod(%s);\n %s.setYcod(%s);\n %s.setFontSize(%s);\n %s.setWidth(%s);\n" idstring idstring font idstring drawString idstring xcod idstring ycod idstring fontSize idstring width
+ (match tspDataType with
+ | Line -> (match tExprList with
+          [] -> sprintf "Line %s = new Line();\n %s.setFont(\"TIMES_ROMAN\");\n %s.setText(\"Hello World\");\n %s.setXcod(100);\n %s.setYcod(700);\n %s.setFontSize(12);\n %s.setWidth(500);\n" idstring idstring idstring idstring idstring idstring idstring
+          | _ ->
+          let exprMapForLine = getExpressionMap tExprList in
+          let drawString =  StringMap.find "6" exprMapForLine in
+          let font = StringMap.find "5" exprMapForLine in
+          let fontSize = StringMap.find "4" exprMapForLine in
+          let xcod = StringMap.find "3" exprMapForLine in
+          let ycod = StringMap.find "2" exprMapForLine in
+          let width = StringMap.find "1" exprMapForLine in
+          sprintf "Line %s = new Line();\n %s.setFont(%s);\n %s.setText(%s);\n %s.setXcod(%s);\n %s.setYcod(%s);\n %s.setFontSize(%s);\n %s.setWidth(%s);\n" idstring idstring font idstring drawString idstring xcod idstring ycod idstring fontSize idstring width)
  | Tuple ->
  let exprMapForTuple = getExpressionMap tExprList in
  let pdfIden = StringMap.find "2" exprMapForTuple in
  let pageIden = StringMap.find "1" exprMapForTuple in
   sprintf "Tuple %s = new Tuple(%s,%s);\n" idstring pdfIden pageIden
- | Image ->  let exprMapForImage = getExpressionMap tExprList in
- let fileLoc =  StringMap.find "5" exprMapForImage in
- let xcood = StringMap.find "4" exprMapForImage in
- let ycood = StringMap.find "3" exprMapForImage in
- let height = StringMap.find "2" exprMapForImage in
- let width = StringMap.find "1" exprMapForImage in
- let fileVar = idstring^"file" in
- sprintf "\nFile %s = new File(\"%s\"); \nImage %s = new Image(%s,%s,%s,%s,%s);\n" fileVar fileLoc idstring fileVar height width xcood ycood
- | _ -> failwith "Something went wrong"
+ | Image ->  (match tExprList with
+          [] -> sprintf "\nFile file = new File(\"\"); \nImage %s = new Image(file,%s,%s,%s,%s);\n" idstring "800" "600" "100" "600"
+          | _ ->
+           let exprMapForImage = getExpressionMap tExprList in
+           let fileLoc =  StringMap.find "5" exprMapForImage in
+           let xcood = StringMap.find "4" exprMapForImage in
+           let ycood = StringMap.find "3" exprMapForImage in
+           let height = StringMap.find "2" exprMapForImage in
+           let width = StringMap.find "1" exprMapForImage in
+           let fileVar = idstring^"file" in
+           sprintf "\nFile %s = new File(\"%s\"); \nImage %s = new Image(%s,%s,%s,%s,%s);\n" fileVar fileLoc idstring fileVar height width xcood ycood)
+ | _ -> failwith "Something went wrong")
 
 
  (*and writeObjectStmt tid tspDataType tExprList =
@@ -239,10 +244,10 @@ let location = "helloworld.pdf" in
 sprintf "\n%s.save(\"%s\");\n %s.close();" pdfIden location pdfIden
 | _ -> failwith "undefined function"*)
 
- and writeListAccess tid texpression = 
+ and writeListAccess tid texpression =
    let gexpr = generateExpression texpression in
    match tid with
-   | IdTest(x) -> sprintf "%s[%s]" x gexpr 
+   | IdTest(x) -> sprintf "%s[%s]" x gexpr
    | _ -> failwith "Y u no pass Id?"
 
  and generateExpression = function
@@ -268,12 +273,12 @@ let rec writeAssignmentStmt id expr2 =
             | _ -> failwith "How'd we get all the way to java with this!!!! Not a valid LHS"
 
 let rec makeLists (typeid : string) (typemap)  : string =
-      let found = StringMap.mem typeid typemap in 
+      let found = StringMap.mem typeid typemap in
       if found
       then let foundType = StringMap.find typeid typemap in
-      let recurseType = makeLists foundType typemap in 
-      let liststring = "List<" ^ recurseType ^ ">" in 
-      liststring 
+      let recurseType = makeLists foundType typemap in
+      let liststring = "List<" ^ recurseType ^ ">" in
+      liststring
       else
           (match typeid with
           | "int" ->  "Integer"
@@ -298,11 +303,11 @@ let rec writeDeclarationStmt tid tdataType typemap =
                                   | Int -> sprintf "Integer %s = new Integer(0);\n" name
                                   | Bool -> sprintf "Boolean %s = new Boolean(true);\n" name
                                   | String -> sprintf "String %s = new String();\n" name
-                                  | ListType(x) -> 
-                                    let acc = makeLists x typemap in 
+                                  | ListType(x) ->
+                                    let acc = makeLists x typemap in
                                     sprintf "%s %s = new Array%s(); \n" acc name acc
                                   | MapType(k,v) ->
-                                      let keytype = 
+                                      let keytype =
                                       (   match k with
                                             | Int ->  "Integer"
                                             | Bool -> "Boolean"
@@ -312,11 +317,11 @@ let rec writeDeclarationStmt tid tdataType typemap =
                                             | Page -> "PDPage"
                                             | Line -> "Line"
                                             | Tuple -> "Tuple"
-                                            | Image -> "Image" )  in 
-                                      let valuetype =  
+                                            | Image -> "Image" )  in
+                                      let valuetype =
                                           ( match v with
-                                            | ListType(x) -> 
-                                                      let acc = makeLists x typemap in 
+                                            | ListType(x) ->
+                                                      let acc = makeLists x typemap in
                                                       acc
                                             | Int ->  "Integer"
                                             | Bool -> "Boolean"
@@ -326,7 +331,7 @@ let rec writeDeclarationStmt tid tdataType typemap =
                                             | Page -> "PDPage"
                                             | Line -> "Line"
                                             | Tuple -> "Tuple"
-                                            | Image -> "Image"         ) in 
+                                            | Image -> "Image"         ) in
                                           sprintf "Map<%s,%s> %s = new HashMap<%s,%s>(); \n" keytype valuetype name keytype valuetype
 
 
@@ -334,32 +339,32 @@ let rec writeDeclarationStmt tid tdataType typemap =
 
       | _ -> failwith "Not handled"
 
-and writeListAdd tid texpression typemap = 
+and writeListAdd tid texpression typemap =
       let genexpr = generateExpression texpression in
-      match tid with 
+      match tid with
       | IdTest(name) -> sprintf "%s.append(%s); \n" name genexpr
       | _ -> "Y u no use Id?"
 
-and writeListRemove tid texpression typemap = 
+and writeListRemove tid texpression typemap =
       let genexpr = generateExpression texpression in
-      match tid with 
+      match tid with
       | IdTest(name) -> sprintf "%s.remove(%s); \n" name genexpr
       | _ -> "Y u no use Id?"
 
-and writeMapAdd tid texpression1 texpression2 = 
+and writeMapAdd tid texpression1 texpression2 =
       let genexpr1 = generateExpression texpression1 in
       let genexpr2  = generateExpression texpression2 in
-      match tid with 
+      match tid with
       | IdTest(name) -> sprintf "%s.put(%s,%s); \n" name genexpr1 genexpr2
       | _ -> "Y u no use Id?"
 
-and writeMapRemove tid texpression  = 
+and writeMapRemove tid texpression  =
       let genexpr = generateExpression texpression in
-      match tid with 
+      match tid with
       | IdTest(name) -> sprintf "%s.remove(%s); \n" name genexpr
       | _ -> "Y u no use Id?"
 
- and generateStatement tstatement typemap = 
+ and generateStatement tstatement typemap =
  match tstatement with
      | TVdecl(tid, tdataType) -> writeDeclarationStmt tid tdataType typemap
      | TAssign(tid, tExpression ) ->  writeAssignmentStmt tid tExpression
@@ -374,8 +379,8 @@ and writeMapRemove tid texpression  =
      | TListAdd(tid, texpr) -> writeListAdd tid texpr typemap
      | TListRemove(tid, texpr) -> writeListRemove tid texpr typemap
      | TMapDecl(tid, tdataype) -> writeDeclarationStmt tid tdataype typemap
-     | TMapAdd(tid, texpr1, texpr2) -> writeMapAdd tid texpr1 texpr2 
-     | TMapRemove(tid, texpr) -> writeMapRemove tid texpr 
+     | TMapAdd(tid, texpr1, texpr2) -> writeMapAdd tid texpr1 texpr2
+     | TMapRemove(tid, texpr) -> writeMapRemove tid texpr
 
 and writeStmtList stmtList typemap =
 let outStr = List.fold_left (fun a b -> a ^ (generateStatement b typemap)) "" stmtList in
@@ -405,7 +410,7 @@ and writeIfBlock conditionList elseBody typemap =
 let conditionListString = generateConditionalList conditionList typemap in
 match elseBody with
 Some(x) -> let elseBodyString = writeElseStmt x typemap in
-sprintf " %s \n %s " conditionListString elseBodyString 
+sprintf " %s \n %s " conditionListString elseBodyString
 | None -> sprintf " %s " conditionListString
 
 
