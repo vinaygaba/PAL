@@ -4,7 +4,7 @@ pdfVar : pdf;
 
 pageVar : page;
 
-stringVar : string = "My name is DIksha. La la la al .meow meow meow. bhow bhow bhow. ksajdk askjdksajd askdjkjashd asdjlaskdj sadkjaskjd askdjaskjd asdkjhasd sajdhasduh wdkjsdjs daskjhdas askdjasd sadjkahskdjhas dlkasjdlkasd asdkjasdkhasd asdhjaskjdhasd asdkjhasjd asdkjhskdjhasd askjdhaskd asdkjhaskdj asdjhaksjdh askdjhaskjd askdjhasjd askdjhaskjhd askdjhaskdj askdjhaksjdh asdkjhas sakjwhd aslkjsad asdkjnd sakjdskjad sakjdhaksjn askdjhaskjd asdkjhasjdhas asldkjask askdjhasd askjdhaskjd askdjhaskd asdkjhaskdj askjhwda sadlkjsadb adkjhns dlkjsmd sadkjhnsd asldkjasmasd askdjahsdjas askdjhsd asdkjaskdjn sadkjhasdkjhqw sakdjhasd lkasjd asdkjhasd asdkjansdjn asdkjnasd asdkjnads dkajsh wlkwl salsdnas asdkjkMy name is DIksha. La la la al .meow meow meow. bhow bhow bhow. ksajdk askjdksajd askdjkjashd asdjlaskdj sadkjaskjd askdjaskjd asdkjhasd sajdhasduh wdkjsdjs daskjhdas askdjasd sadjkahskdjhas dlkasjdlkasd asdkjasdkhasd asdhjaskjdhasd asdkjhasjd asdkjhskdjhasd askjdhaskd asdkjhaskdj asdjhaksjdh askdjhaskjd askdjhasjd askdjhaskjhd askdjhaskdj askdjhaksjdh asdkjhas sakjwhd aslkjsad asdkjnd sakjdskjad sakjdhaksjn askdjhaskjd asdkjhasjdhas asldkjask askdjhasd askjdhaskjd askdjhaskd asdkjhaskdj askjhwda sadlkjsadb adkjhns d";
+stringVar : string = "Lorem ipsum dolor sit amet, praesent nunc elit wisi, quaerat molestie ultricies, elementum neque, ultricies dolor, ante elit. At velit pretium, libero orci molestie nam in id sed, velit urna augue ullamcorper tellus, a interdum neque mauris vestibulum, fusce est. Fusce magna montes laoreet magnis neque scelerisque, varius eu mauris in metus litora, mauris odio velit praesent blandit adipiscing mattis, venenatis eu lorem laoreet, erat urna leo est. Sed porttitor congue reprehenderit, libero nulla, suspendisse cras proin arcu orci rutrum. Massa faucibus mauris a ultrices vitae metus, velit parturient lacinia, at quis, pretium dictum nunc. Et pede eu facilis, morbi lectus hac faucibus ac, elementum urna netus accumsan eget, molestie ullamcorper nulla ante nibh ornare ultricies. Aliquam quam, urna sit lacus quam, consectetuer luctus odio lorem. Consectetuer habitasse ac, tempor curabitur, purus ullamcorper nibh mi, congue ut posuere et et ut lacinia. Donec sollicitudin duis dolor, ac pede sem vitae duis. Donec nullam pulvinar, pede praesent cum nulla nulla, cras tortor ut, donec velit hymenaeos et, mattis vivamus aliquet felis risus ridiculus.";
 
 pdfVar = pdfVar . pageVar;
 
@@ -70,7 +70,7 @@ write_three_column_layout(tupleVar:tuple stringVar:string fontType:string fontSi
 
 startX:int = 20;
 
-width:int = 120;
+width:int = 150;
 
 startY: int = 700;
 
@@ -79,13 +79,13 @@ endHeight:int = 400;
   stringVar = write_paragraph(tupleVar, stringVar, startX, startY, fontSize, fontType, endHeight,width);
 
   if(length(stringVar) > 0){
-    startX = 180;
+    startX = 200;
     #width = width + width;
     stringVar = write_paragraph(tupleVar, stringVar, startX, startY, fontSize, fontType, endHeight,width);
   }
 
   if(length(stringVar) > 0){
-    startX = 340;
+    startX = 380;
     #width = width + width;
     stringVar = write_paragraph(tupleVar, stringVar, startX, startY, fontSize, fontType, endHeight,width);
   }
