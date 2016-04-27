@@ -19,6 +19,7 @@ let type_of (ae : Sast.texpression) : Ast.t =
   | TBinop(_, _, _, t) -> t
 	| TIden(_,t) -> t
   | TListAccess(_, _, t) -> t
+  | TMapAccess (_, _, t) -> t
 
 let java_from_type (ty: Ast.t) : string =
     match ty with
@@ -250,6 +251,12 @@ sprintf "\n%s.save(\"%s\");\n %s.close();" pdfIden location pdfIden
    | IdTest(x) -> sprintf "%s[%s]" x gexpr
    | _ -> failwith "Y u no pass Id?"
 
+ and writeMapAccess tid texpression = 
+   let gexpr = generateExpression texpression in
+   match tid with
+   | IdTest(x) -> sprintf "%s.get(%s)" x gexpr 
+   | _ -> failwith "Y u no pass Id?"
+
  and generateExpression = function
      TBinop(ope1, op, ope2, _) -> writeBinop ope1 op ope2
    | TUop(op,ope1, _) -> writeUop ope1 op
@@ -263,6 +270,7 @@ sprintf "\n%s.save(\"%s\");\n %s.close();" pdfIden location pdfIden
    |IdTest(n) -> writeId n
     )
    | TListAccess(tid, tex, _) -> writeListAccess tid tex
+   | TMapAccess (tid, tex, _) -> writeMapAccess tid tex
 
 
 let rec writeAssignmentStmt id expr2 =
