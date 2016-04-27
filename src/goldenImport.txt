@@ -1,7 +1,17 @@
 main() {
-    i : int;
 }
 
-func (i : int s : string l : list list list string t : tuple m : map int,list list string x : line) : string {
+func0 (i : int) : int {
+    return i;
+}
+
+func1 (i : int, s : string) : string {
+    i = func0(i);
     return s;
+}
+
+func2 (i : int, s : string, l : list list tuple) : int{
+    s = func1(i,s);
+    m : map int,string;
+    return 1;
 }

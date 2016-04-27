@@ -69,12 +69,13 @@ stmt_list:
 
 decl_list:
    /* nothing */  { [] }
- | decl_list decl { $2 :: $1 }
+ | decl { [$1] }
+ | decl COMMA decl_list { $1 :: $3 }
 
 expr_list:
    /* nothing */  { [] }
-  | expr_list expr COMMA {$2 :: $1 }
-  | expr_list expr {$2 :: $1}
+  | expr { [$1] }
+  | expr COMMA expr_list {$1 :: $3 }
 
 body:
    LEFTBRACE stmt_list RIGHTBRACE { List.rev $2 }
