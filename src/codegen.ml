@@ -387,8 +387,15 @@ and writeMapRemove tid texpression  =
      | TListAdd(tid, texpr) -> writeListAdd tid texpr typemap
      | TListRemove(tid, texpr) -> writeListRemove tid texpr typemap
      | TMapDecl(tid, tdataype) -> writeDeclarationStmt tid tdataype typemap
-     | TMapAdd(tid, texpr1, texpr2) -> writeMapAdd tid texpr1 texpr2
-     | TMapRemove(tid, texpr) -> writeMapRemove tid texpr
+     | TMapAdd(tid, texpr1, texpr2) -> writeMapAdd tid texpr1 texpr2 
+     | TMapRemove(tid, texpr) -> writeMapRemove tid texpr 
+     | TRet(texpr,t) -> writeReturnStatement texpr
+
+
+and writeReturnStatement tExpression =
+let exprString = generateExpression tExpression in
+sprintf "\nreturn %s;" exprString
+
 
 and writeStmtList stmtList typemap =
 let outStr = List.fold_left (fun a b -> a ^ (generateStatement b typemap)) "" stmtList in
@@ -438,6 +445,8 @@ sprintf "\nwhile(%s ) \n { %s \n }" exprString bodyString
 
 and generateJavaProgram fileName prog =
   let statementString = generateMainFunction prog.tmainf prog.tmap in
+  let decllist = prog.tdeclf in 
+  let funcDeclString = generateOtherFunctions decllist prog.tmap in
   let progString = sprintf "
   import java.io.File;
   import org.apache.pdfbox.pdmodel.PDDocument;
@@ -450,11 +459,94 @@ and generateJavaProgram fileName prog =
   {
     %s
   }
-" fileName statementString in
+" fileName statementString^funcDeclString in
   writeJavaProgramToFile fileName progString;
   progString
 
 
+
+and getJavaType typ typemap = 
+match typ with 
+  | Int ->  "Integer"
+  | Bool -> "Boolean"
+  | Float -> "Float"
+  | String -> "String"
+  | Pdf -> "PDDocument"
+  | Page -> "PDPage"
+  | Line -> "Line"
+  | Tuple -> "Tuple"
+  | Image -> "Image"  
+  | ListType(l) -> makeLists l typemap
+  | MapType(k,v) ->    let keytype = 
+                                      (   match k with
+                                            | Int ->  "Integer"
+                                            | Bool -> "Boolean"
+                                            | Float -> "Float"
+                                            | String -> "String"
+                                            | Pdf -> "PDDocument"
+                                            | Page -> "PDPage"
+                                            | Line -> "Line"
+                                            | Tuple -> "Tuple"
+                                            | Image -> "Image" )  in 
+                                      let valuetype =  
+                                          ( match v with
+                                            | ListType(x) -> 
+                                                      let acc = makeLists x typemap in 
+                                                      acc
+                                            | Int ->  "Integer"
+                                            | Bool -> "Boolean"
+                                            | Float -> "Float"
+                                            | String -> "String"
+                                            | Pdf -> "PDDocument"
+                                            | Page -> "PDPage"
+                                            | Line -> "Line"
+                                            | Tuple -> "Tuple"
+                                            | Image -> "Image"         )  in "Map<" ^keytype ^","^valuetype^">"
+
+
+and generateFunction (b : Sast.tfunc_decl) typemap =
+let name = b.name in
+let returnType = b.rtype in 
+let returnTypeString = getJavaType returnType typemap in
+let formalStatementList = b.tformals in 
+let functionBody = b.tbody in
+let formalsListString = generateFormalsList formalStatementList typemap in 
+let functionBodyString = writeStmtList functionBody typemap in
+sprintf"\npublic %s %s ( %s ) \n{ \n%s \n}" returnTypeString name formalsListString functionBodyString
+
+
+and generateFormal formal typemap = 
+match formal with 
+| TVdecl(id,t) -> 
+(
+let name = match id with
+| IdTest(n) -> n in
+let jtype = getJavaType t typemap in sprintf "%s %s" jtype name )
+| TListDecl(id,t) -> (
+let name = match id with
+| IdTest(n) -> n in
+let jtype = getJavaType t typemap in sprintf "%s %s" jtype name )
+| TMapDecl(id,t) -> (
+let name = match id with
+| IdTest(n) -> n in
+let jtype = getJavaType t typemap in sprintf "%s %s" jtype name )
+| TObjectCreate(id,t,exprList) -> (
+let name = match id with
+| IdTest(n) -> n in
+let jtype = getJavaType t typemap in sprintf "%s %s" jtype name )
+
+
+
+
+and generateFormalsList formalStatementList typemap = 
+let outStr = List.fold_left (fun a b -> a ^ (generateFormal b typemap)^ ",") "" formalStatementList in
+let arg = String.sub outStr 0 ((String.length outStr) - 1) in
+sprintf "%s" arg
+
+
+and generateOtherFunctions functionList typemap =
+let outStr = List.fold_left (fun a b -> a ^ (generateFunction b typemap)) "" functionList in
+sprintf "%s" outStr
 
 
 and writeMainFunction stmtList typemap =
