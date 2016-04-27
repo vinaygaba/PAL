@@ -1,8 +1,5 @@
-
-
-
-main(){
-
+main()
+{
   pdfVar : pdf;
 
   pageVar : page;
@@ -13,29 +10,37 @@ main(){
 
   tupleVar : tuple(pdfVar, pageVar);
 
-  intVar : int = 0;
-
-  height : int = 700;
-
-  lengthOfString : int;
-
-  lengthOfString = length(stringVar);
-
-  while(lengthOfString > 0)
-  {
-
-    lineVar : line(stringVar, "Times_New_Roman",12,100,height);
-
-	tupleVar =   tupleVar . lineVar;
-
-	stringVar = lineVar|_;
-
-	height = height - 30;
-
-	lengthOfString = length(stringVar);
-
-  }
+  stringVar  = write_paragraph(tupleVar, stringVar, 30, 700, 12, "Times_New_Roman",600,100);
 
   renderpdf(pdfVar,"helloworld.pdf");
 
+
 }
+
+write_paragraph(tupleVar : tuple; stringVar : string startMargin : int; startHeight : int; fontSize : int; fontType : string; endHeight : int; width : int) : string {
+
+  lengthOfString : int = length(stringVar);
+
+  while(startHeight > endHeight)
+  {
+
+  lineVar : line(stringVar,fontType,fontSize,startMargin,startHeight,width);
+
+  tupleVar = tupleVar . lineVar;
+
+  stringVar = lineVar|_;
+
+  startHeight = startHeight - 30;
+
+  lengthOfString = length(stringVar);
+
+  if(lengthOfString == 0)
+  {
+    break;
+  }
+  
+  }
+  return stringVar;
+}
+
+

@@ -1,0 +1,39 @@
+write_4grid_layout(tupleVar:tuple;stringVar:string;fontType:string;fontSize:int;)
+{
+	pageWidth : int = 595.22;
+	pageHeight : int = 842.0;
+
+	startX:int = 15;
+
+    width:int = 270;
+
+    startY: int = 800;
+
+    endHeight:int = 440;
+
+   stringVar = write_paragraph(tupleVar, stringVar, startX, startY, fontSize, fontType, endHeight,width);
+
+   if(length(stringVar) > 0){
+    startX = 310;
+    stringVar = write_paragraph(tupleVar, stringVar, startX, startY, fontSize, fontType, endHeight,width);
+  }
+
+
+  endHeight = 60;
+
+  startY = 420;
+
+   if(length(stringVar) > 0){
+    startX = 15;
+    stringVar = write_paragraph(tupleVar, stringVar, startX, startY, fontSize, fontType, endHeight,width);
+  }
+
+   if(length(stringVar) > 0){
+    startX = 310;
+    stringVar = write_paragraph(tupleVar, stringVar, startX, startY, fontSize, fontType, endHeight,width);
+  }
+
+  return stringVar;
+
+}
+
