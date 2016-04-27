@@ -1,5 +1,71 @@
 
 
+
+
+main(){
+
+pdfVar : pdf;
+
+pageVar : page;
+
+stringVar : string = "My name is DIksha. La la la al .meow meow meow. bhow bhow bhow. ksajdk askjdksajd askdjkjashd asdjlaskdj sadkjaskjd askdjaskjd asdkjhasd sajdhasduh wdkjsdjs daskjhdas askdjasd sadjkahskdjhas dlkasjdlkasd asdkjasdkhasd asdhjaskjdhasd asdkjhasjd asdkjhskdjhasd askjdhaskd asdkjhaskdj asdjhaksjdh askdjhaskjd askdjhasjd askdjhaskjhd askdjhaskdj askdjhaksjdh asdkjhas sakjwhd aslkjsad asdkjnd sakjdskjad sakjdhaksjn askdjhaskjd asdkjhasjdhas asldkjask askdjhasd askjdhaskjd askdjhaskd asdkjhaskdj askjhwda sadlkjsadb adkjhns dlkjsmd sadkjhnsd asldkjasmasd askdjahsdjas askdjhsd asdkjaskdjn sadkjhasdkjhqw sakdjhasd lkasjd asdkjhasd asdkjansdjn asdkjnasd asdkjnads dkajsh wlkwl salsdnas asdkjk";
+
+pdfVar = pdfVar . pageVar;
+
+tupleVar : tuple(pdfVar, pageVar);
+
+startX:int = 15;
+
+width:int = 270;
+
+startY: int = 700;
+
+endHeight:int = 500;
+
+fontSize:int = 12;
+
+fontType:string = "TIMES_ROMAN";
+
+stringVar = write_paragraph(tupleVar, stringVar, startX, startY, fontSize, fontType, endHeight,width);
+
+if(length(stringVar) > 0){
+  startX = 315;
+  #width = width + width;
+  stringVar = write_paragraph(tupleVar, stringVar, startX, startY, fontSize, fontType, endHeight,width);
+}
+
+renderpdf(pdfVar,"helloworld.pdf");
+
+
+}
+
+write_paragraph(tupleVar:tuple stringVar:string startMargin:int startHeight:int fontSize:int fontType:string endHeight:int width:int) : string {
+
+  lengthOfString : int = length(stringVar);
+
+  while(startHeight > endHeight)
+  {
+
+  lineVar : line(stringVar,fontType,fontSize,startMargin,startHeight,width);
+
+  tupleVar = tupleVar . lineVar;
+
+  stringVar = lineVar|_;
+
+  startHeight = startHeight - 30;
+
+  lengthOfString = length(stringVar);
+
+  if(lengthOfString == 0)
+  {
+    break;
+  }
+
+  }
+  return stringVar;
+}
+
+/*
 write_two_column_layout(tupleVar:tuple;stringVar:string;fontType:string;fontSize:int;){
 
 startX:int = 20;
@@ -47,3 +113,4 @@ endHeight:int = 20;
 
   return stringVar;
 }
+*/
