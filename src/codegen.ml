@@ -204,7 +204,10 @@ match name with
 | "readfile" -> let funcExprMap = getFuncExpressionMap exprList in
 let location = StringMap.find "1" funcExprMap in
 sprintf "\n Util.readFile(%s)" location
-| _ -> failwith "undefined function"
+| _ -> 
+let expressionListString = List.fold_left (fun a b -> a ^ (generateExpression b)^ ",") "" exprList in
+let argList = String.sub expressionListString 0 ((String.length expressionListString) - 1) in
+sprintf "\n%s(%s);" name argList 
 
 
 and writeFunctionCallStmt name exprList =
@@ -213,7 +216,10 @@ match name with
 let pdfIden =  StringMap.find "1" funcExprMap in
 let location = StringMap.find "2" funcExprMap in
 sprintf "\n%s.save(%s);\n %s.close();" pdfIden location pdfIden
-| _ -> failwith "undefined function"
+| _ -> 
+let expressionListString = List.fold_left (fun a b -> a ^ (generateExpression b)^ ",") "" exprList in
+let argList = String.sub expressionListString 0 ((String.length expressionListString) - 1) in
+sprintf "\n%s(%s);" name argList 
 
 
 and writeInitAssignStmt iden t expression =
@@ -447,6 +453,7 @@ and generateJavaProgram fileName prog =
   let statementString = generateMainFunction prog.tmainf prog.tmap in
   let decllist = prog.tdeclf in 
   let funcDeclString = generateOtherFunctions decllist prog.tmap in
+  let classBody = statementString^funcDeclString in
   let progString = sprintf "
   import java.io.File;
   import org.apache.pdfbox.pdmodel.PDDocument;
@@ -459,7 +466,7 @@ and generateJavaProgram fileName prog =
   {
     %s
   }
-" fileName statementString^funcDeclString in
+" fileName classBody in
   writeJavaProgramToFile fileName progString;
   progString
 
@@ -512,7 +519,7 @@ let formalStatementList = b.tformals in
 let functionBody = b.tbody in
 let formalsListString = generateFormalsList formalStatementList typemap in 
 let functionBodyString = writeStmtList functionBody typemap in
-sprintf"\npublic %s %s ( %s ) \n{ \n%s \n}" returnTypeString name formalsListString functionBodyString
+sprintf"\npublic static %s %s ( %s ) throws Exception \n{ \n%s \n}" returnTypeString name formalsListString functionBodyString
 
 
 and generateFormal formal typemap = 
