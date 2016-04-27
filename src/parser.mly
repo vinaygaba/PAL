@@ -57,7 +57,7 @@ func_decl_list:
 
 func_decl :
   ID LEFTPAREN decl_list RIGHTPAREN TYPEASSIGNMENT data_type body {
-    { rtype = $6 ; name = $1; formals = $3 ; body = $7; }
+    { rtype = $6 ; name = $1; formals = List.rev $3 ; body = $7; }
   }
 
 import_decl:
