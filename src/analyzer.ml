@@ -379,7 +379,7 @@ and annotate_stmt (s : Ast.statement) (env : environment) (tmap : type_map) : Sa
           (match idt with
           | Ast.ListType(lt) ->
               (match te with
-              | Ast.Int -> TMapRemove(i,ae)
+              | Ast.Int -> TListRemove(i,ae)
               | _ -> failwith "Invalid List Access")
           | _ -> failwith "Invalid assignment | Variable not List")
       | None -> failwith "Invalid assignment | Variable Not Found.")
@@ -556,5 +556,6 @@ and annotate_prog (p : Ast.program) : Sast.tprogram =
   let f = annotate_func_decls p.Ast.declf env tmap in
   let af = List.append ef f in
   let am = annotate_main_func_decl p.Ast.mainf env tmap in
+  let revMap = StringMap.fold (fun key value newMap -> StringMap.add value key newMap) tmap.map StringMap.empty in 
   Printf.printf "There there\n";
-  {tmainf = am; tdeclf = af}
+  {tmap = revMap;  tmainf = am; tdeclf = af}
