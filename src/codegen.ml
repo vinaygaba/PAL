@@ -18,6 +18,7 @@ let type_of (ae : Sast.texpression) : Ast.t =
   | TCallExpr(_, _, t) -> t
   | TBinop(_, _, _, t) -> t
 	| TIden(_,t) -> t
+  | TListAccess(_, _, t) -> t
 
 let java_from_type (ty: Ast.t) : string =
     match ty with
@@ -29,6 +30,9 @@ let writeId iden =
 
 let writeIntLit intLit =
   sprintf "new Integer(%d)" intLit
+
+let writeFloatLit floatLit  =
+  sprintf "new Float(%f)" floatLit
 
 let writeBoolLit boolLit =
   sprintf "new Boolean(%b)" boolLit
@@ -235,19 +239,25 @@ let location = "helloworld.pdf" in
 sprintf "\n%s.save(\"%s\");\n %s.close();" pdfIden location pdfIden
 | _ -> failwith "undefined function"*)
 
-
+ and writeListAccess tid texpression = 
+   let gexpr = generateExpression texpression in
+   match tid with
+   | IdTest(x) -> sprintf "%s[%s]" x gexpr 
+   | _ -> failwith "Y u no pass Id?"
 
  and generateExpression = function
      TBinop(ope1, op, ope2, _) -> writeBinop ope1 op ope2
    | TUop(op,ope1, _) -> writeUop ope1 op
    | TLitString(stringLit, _) -> writeStringLit stringLit
    | TLitInt(intLit, _) -> writeIntLit intLit
+   | TLitFloat (floatLit, _) -> writeFloatLit floatLit
    | TLitBool(boolLit, _) -> writeBoolLit boolLit
    | TCallExpr(name, exprList, _) -> writeFunctionCallExpr name exprList
    | TIden(name, _) ->
    (match name with
    |IdTest(n) -> writeId n
-  )
+    )
+   | TListAccess(tid, tex, _) -> writeListAccess tid tex
 
 
 let rec writeAssignmentStmt id expr2 =
@@ -257,8 +267,28 @@ let rec writeAssignmentStmt id expr2 =
              IdTest(n) ->  sprintf "%s = %s;\n" n e2string
             | _ -> failwith "How'd we get all the way to java with this!!!! Not a valid LHS"
 
+let rec makeLists (typeid : string) (typemap)  : string =
+      let found = StringMap.mem typeid typemap in 
+      if found
+      then let foundType = StringMap.find typeid typemap in
+      let recurseType = makeLists foundType typemap in 
+      let liststring = "List<" ^ recurseType ^ ">" in 
+      liststring 
+      else
+          (match typeid with
+          | "int" ->  "Integer"
+          | "bool" -> "Boolean"
+          | "float" -> "Float"
+          | "string" -> "String"
+          | "pdf" -> "PDDocument"
+          | "page" -> "PDPage"
+          | "line" -> "Line"
+          | "tuple" -> "Tuple"
+          | "image" -> "Image")
 
-let rec writeDeclarationStmt tid tdataType =
+
+
+let rec writeDeclarationStmt tid tdataType typemap =
   let lhs_type = java_from_type tdataType in
   match tid with
       | IdTest(name) ->
@@ -267,81 +297,134 @@ let rec writeDeclarationStmt tid tdataType =
                                   | Page -> sprintf "PDPage %s = new PDPage();\n" name
                                   | Int -> sprintf "Integer %s = new Integer(0);\n" name
                                   | Bool -> sprintf "Boolean %s = new Boolean(true);\n" name
-                                  | String -> sprintf "String %s = new String();\n" name)
-                                (*  | RType(t) -> match t with
-                                  (
-                                    RType ->
-                                    TType(x) ->  ( match x with
-                                    | "string" ->
-                                    | "int" ->
-                                    | "pdf" ->
-                                    | "page" ->
-                                    | "line" ->
-                                    | _ -> failwith "Type cannot be stored in a list"
-                                     )
-                                  ) *)
+                                  | String -> sprintf "String %s = new String();\n" name
+                                  | ListType(x) -> 
+                                    let acc = makeLists x typemap in 
+                                    sprintf "%s %s = new Array%s(); \n" acc name acc
+                                  | MapType(k,v) ->
+                                      let keytype = 
+                                      (   match k with
+                                            | Int ->  "Integer"
+                                            | Bool -> "Boolean"
+                                            | Float -> "Float"
+                                            | String -> "String"
+                                            | Pdf -> "PDDocument"
+                                            | Page -> "PDPage"
+                                            | Line -> "Line"
+                                            | Tuple -> "Tuple"
+                                            | Image -> "Image" )  in 
+                                      let valuetype =  
+                                          ( match v with
+                                            | ListType(x) -> 
+                                                      let acc = makeLists x typemap in 
+                                                      acc
+                                            | Int ->  "Integer"
+                                            | Bool -> "Boolean"
+                                            | Float -> "Float"
+                                            | String -> "String"
+                                            | Pdf -> "PDDocument"
+                                            | Page -> "PDPage"
+                                            | Line -> "Line"
+                                            | Tuple -> "Tuple"
+                                            | Image -> "Image"         ) in 
+                                          sprintf "Map<%s,%s> %s = new HashMap<%s,%s>(); \n" keytype valuetype name keytype valuetype
+
+
+                                        )
+
       | _ -> failwith "Not handled"
 
+and writeListAdd tid texpression typemap = 
+      let genexpr = generateExpression texpression in
+      match tid with 
+      | IdTest(name) -> sprintf "%s.append(%s); \n" name genexpr
+      | _ -> "Y u no use Id?"
 
- and generateStatement = function
-     TVdecl(tid, tdataType) -> writeDeclarationStmt tid tdataType
+and writeListRemove tid texpression typemap = 
+      let genexpr = generateExpression texpression in
+      match tid with 
+      | IdTest(name) -> sprintf "%s.remove(%s); \n" name genexpr
+      | _ -> "Y u no use Id?"
+
+and writeMapAdd tid texpression1 texpression2 = 
+      let genexpr1 = generateExpression texpression1 in
+      let genexpr2  = generateExpression texpression2 in
+      match tid with 
+      | IdTest(name) -> sprintf "%s.put(%s,%s); \n" name genexpr1 genexpr2
+      | _ -> "Y u no use Id?"
+
+and writeMapRemove tid texpression  = 
+      let genexpr = generateExpression texpression in
+      match tid with 
+      | IdTest(name) -> sprintf "%s.remove(%s); \n" name genexpr
+      | _ -> "Y u no use Id?"
+
+ and generateStatement tstatement typemap = 
+ match tstatement with
+     | TVdecl(tid, tdataType) -> writeDeclarationStmt tid tdataType typemap
      | TAssign(tid, tExpression ) ->  writeAssignmentStmt tid tExpression
      | TObjectCreate(tid, tspDataType, tExprList ) -> writeObjectStmt tid tspDataType tExprList
      | TCallStmt(name, exprList ) -> writeFunctionCallStmt name exprList
      | TInitAssign(iden, t, expression) -> writeInitAssignStmt iden t expression
-     | TFor(initStmt, condition, incrStmt, body) -> writeForLoopStatement initStmt condition incrStmt body
-     | TWhile(condition, body) -> writeWhileStatement condition body
-     | TIf(conditionStmtList, elsestmtList) -> writeIfBlock conditionStmtList elsestmtList
+     | TFor(initStmt, condition, incrStmt, body) -> writeForLoopStatement initStmt condition incrStmt body typemap
+     | TWhile(condition, body) -> writeWhileStatement condition body typemap
+     | TIf(conditionStmtList, elsestmtList) -> writeIfBlock conditionStmtList elsestmtList typemap
      | TControlStmt(name) -> writeControlStmt name
+     | TListDecl(tid, tdataype) -> writeDeclarationStmt tid tdataype typemap
+     | TListAdd(tid, texpr) -> writeListAdd tid texpr typemap
+     | TListRemove(tid, texpr) -> writeListRemove tid texpr typemap
+     | TMapDecl(tid, tdataype) -> writeDeclarationStmt tid tdataype typemap
+     | TMapAdd(tid, texpr1, texpr2) -> writeMapAdd tid texpr1 texpr2 
+     | TMapRemove(tid, texpr) -> writeMapRemove tid texpr 
 
-and writeStmtList stmtList =
-let outStr = List.fold_left (fun a b -> a ^ (generateStatement b)) "" stmtList in
+and writeStmtList stmtList typemap =
+let outStr = List.fold_left (fun a b -> a ^ (generateStatement b typemap)) "" stmtList in
 sprintf "%s" outStr
 
 
-and generateConditionStmt conditionalList index =
+and generateConditionStmt conditionalList index typemap =
   match conditionalList with
    [] -> []
    | a::l -> let ifExpression = generateExpression a.tcondition in
-   let body = writeStmtList a.tbody in
+   let body = writeStmtList a.tbody typemap in
     match index with
-   | 1  -> sprintf "\n if (%s)  \n{ \n %s \n}" ifExpression body :: generateConditionStmt l (index+1)
-   | _ ->  sprintf "\n else if (%s)  \n{ \n %s \n}" ifExpression body :: generateConditionStmt l (index+1)
+   | 1  -> sprintf "\n if (%s)  \n{ \n %s \n}" ifExpression body :: generateConditionStmt l (index+1) typemap
+   | _ ->  sprintf "\n else if (%s)  \n{ \n %s \n}" ifExpression body :: generateConditionStmt l (index+1) typemap
 
-and generateConditionalList conditionList =
-  let concatenatedConditionalsList =  generateConditionStmt conditionList 1 in
+and generateConditionalList conditionList typemap=
+  let concatenatedConditionalsList =  generateConditionStmt conditionList 1 typemap in
    let concatenatedConditionals = List.fold_left (fun a b -> a ^ b ) "" concatenatedConditionalsList in
     sprintf "%s" concatenatedConditionals
 
-and writeElseStmt body =
-let bodyString = writeStmtList body in
+and writeElseStmt body typemap =
+let bodyString = writeStmtList body typemap in
 sprintf " else \n{   %s \n}" bodyString
 
 
-and writeIfBlock conditionList elseBody =
-let conditionListString = generateConditionalList conditionList in
+and writeIfBlock conditionList elseBody typemap =
+let conditionListString = generateConditionalList conditionList typemap in
 match elseBody with
-Some(x) -> let elseBodyString = writeElseStmt x in
-sprintf " %s \n %s " conditionListString elseBodyString
+Some(x) -> let elseBodyString = writeElseStmt x typemap in
+sprintf " %s \n %s " conditionListString elseBodyString 
 | None -> sprintf " %s " conditionListString
 
 
-and writeForLoopStatement initStmt condition incrStmt body =
+and writeForLoopStatement initStmt condition incrStmt body typemap =
 let exprString = generateExpression condition in
-let initStmtString = generateStatement initStmt in
-let incrStmtString = generateStatement incrStmt in
+let initStmtString = generateStatement initStmt typemap in
+let incrStmtString = generateStatement incrStmt typemap in
 let incrStmtSubString = String.sub incrStmtString 0 ((String.length incrStmtString) - 2) in
-let bodyString = writeStmtList body in
+let bodyString = writeStmtList body typemap in
 sprintf "\nfor(%s %s ; %s) \n { %s \n }" initStmtString exprString incrStmtSubString bodyString
 
-and writeWhileStatement condition body =
+and writeWhileStatement condition body typemap =
 let exprString = generateExpression condition in
-let bodyString = writeStmtList body in
+let bodyString = writeStmtList body typemap in
 sprintf "\nwhile(%s ) \n { %s \n }" exprString bodyString
 
 
 and generateJavaProgram fileName prog =
-  let statementString = generateMainFunction prog.tmainf in
+  let statementString = generateMainFunction prog.tmainf prog.tmap in
   let progString = sprintf "
   import java.io.File;
   import org.apache.pdfbox.pdmodel.PDDocument;
@@ -361,8 +444,8 @@ and generateJavaProgram fileName prog =
 
 
 
-and writeMainFunction stmtList =
-let mainBody = writeStmtList stmtList in
+and writeMainFunction stmtList typemap =
+let mainBody = writeStmtList stmtList typemap in
 sprintf "  public static void main(String[] args) throws Exception
       {
         %s
@@ -370,8 +453,8 @@ sprintf "  public static void main(String[] args) throws Exception
 
 
 
-  and generateMainFunction prog =
-  let mainFunctionBody =  writeMainFunction prog.tbody in
+  and generateMainFunction prog typemap =
+  let mainFunctionBody =  writeMainFunction prog.tbody typemap in
   sprintf "%s" mainFunctionBody
 
 
