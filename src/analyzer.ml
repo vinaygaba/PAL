@@ -137,6 +137,47 @@ let find_primitive_type (t : Ast.t) (tmap : type_map) : string =
   | Ast.Image -> find_type "image" tmap
   | _ -> failwith "You're doing something wrong! This shouldn't have been called."
 
+let find_primitive_string (t : Ast.t) : string =
+  match t with
+  | Ast.Int -> "int"
+  | Ast.Bool -> "bool"
+  | Ast.Float -> "float"
+  | Ast.String -> "string"
+  | Ast.Pdf -> "pdf"
+  | Ast.Page -> "page"
+  | Ast.Line -> "line"
+  | Ast.Tuple -> "tuple"
+  | Ast.Image -> "image"
+  | _ -> failwith "Data Type Not Primitive."
+
+let find_primitive (s : string) : Ast.t =
+  match s with
+  | "int" -> Ast.Int
+  | "bool" -> Ast.Bool
+  | "float" -> Ast.Float
+  | "string" -> Ast.String
+  | "pdf" -> Ast.Pdf
+  | "page" -> Ast.Page
+  | "line" -> Ast.Line
+  | "tuple" -> Ast.Tuple
+  | "image" -> Ast.Image
+  | _ -> failwith "Data Type Not Primitive"
+
+let rec find_list_element_type (t : string) (tmap : type_map) : Ast.t =
+  let rtmap = StringMap.fold (fun key value nmap -> StringMap.add value key nmap) tmap.map StringMap.empty in
+  let found = StringMap.mem t rtmap in
+  if found
+  then
+    let ftype = StringMap.find t rtmap in
+    let f = StringMap.mem ftype rtmap in
+    if f
+    then
+      Ast.ListType(ftype)
+    else
+      let ptype = find_primitive ftype in
+      ptype
+  else Ast.ListType("")
+
 let rec annotate_expr (e : Ast.expression) (env : environment) (tmap : type_map) : Sast.texpression =
   match e with
   | Ast.LitInt(n) -> TLitInt(n, Ast.Int)
@@ -191,7 +232,8 @@ let rec annotate_expr (e : Ast.expression) (env : environment) (tmap : type_map)
               | Some(x) ->
                   (match x with
                   | Ast.ListType(s) ->
-                      TListAccess(i,ae,x)
+                      let etype = find_list_element_type s tmap in
+                      TListAccess(i,ae,etype)
                   | _ -> failwith "Variable not List")
               | None -> failwith ("Unrecognized identifier " ^ w ^ ".")))
       | _ -> failwith "Invalid List Access Expression")
@@ -246,22 +288,13 @@ and annotate_assign (i : Ast.id) (e : Ast.expression) (env : environment) (tmap 
   (match tid with
   | Some(idt) ->
       (match te with
-      | Ast.ListType(lte) ->
-          (match idt with
-          | Ast.ListType(it) ->
-              let t = find_type it tmap in
-              if t = lte then i,ae
-              else failwith "Invalid assignment."
-          | _ ->
-              let ti = find_primitive_type idt tmap in
-              if ti = lte then i,ae
-              else failwith "Invalid assignment.")
       | Ast.MapType(kdt, vdt) ->
-           if vdt = idt
-           then i,ae
-           else failwith "Invalid assignment."
+          if vdt = idt
+          then i,ae
+          else failwith "Invalid assignment."
       | _ ->
-          if idt = te then i,ae
+          if idt = te
+          then i,ae
           else failwith "Invalid assignment.")
   | None -> failwith "Invalid assignment | Variable Not Found.")
 
@@ -303,18 +336,23 @@ and annotate_list_assign (e1 : Ast.expression) (e2 : Ast.expression) (env : envi
   let ae2 = annotate_expr e2 env tmap in
   let et1 = type_of ae1 in
   let et2 = type_of ae2 in
-  (match et1 with
-  | Ast.ListType(s1) ->
-      (match et2 with
-      | Ast.ListType(s2) ->
-          let t1 = find_type s2 tmap in
-          if t1 = s1 then ae1,ae2
-          else failwith "Invalid assignment."
-      | _ ->
-          let t2 = find_primitive_type et2 tmap in
-          if t2 = s1 then ae1,ae2
-          else failwith "Invalid assignment.")
-  | _ -> failwith "Invalid Assignment | Variable not List")
+  (match ae1 with
+  | TIden(lid,lt) ->
+      let id = (match lid with IdTest(s) -> s) in
+      let ltype = find_variable env.scope id in
+      (match ltype with
+      | Some(l) ->
+          let ls = (match l with ListType(s) -> s) in
+          let etype = find_list_element_type ls tmap in
+          if etype = et2
+          then ae1,ae2
+          else failwith "Invalid Assignment | Type Mismatch"
+      | None -> failwith "List Variable Not Found")
+  | TListAccess(lid,lexpr,lt) ->
+      if lt = et2
+      then ae1,ae2
+      else failwith "Invalid Assignment | Type Mismatch"
+  | _ -> failwith "Invalid Assignment | Neither List nor ListAccess")
 
 and add_scope_variable (i : Ast.id) (d : Ast.t) (env : environment) : unit =
   match i with
@@ -556,6 +594,6 @@ and annotate_prog (p : Ast.program) : Sast.tprogram =
   let f = annotate_func_decls p.Ast.declf env tmap in
   let af = List.append ef f in
   let am = annotate_main_func_decl p.Ast.mainf env tmap in
-  let revMap = StringMap.fold (fun key value newMap -> StringMap.add value key newMap) tmap.map StringMap.empty in 
+  let revMap = StringMap.fold (fun key value newMap -> StringMap.add value key newMap) tmap.map StringMap.empty in
   Printf.printf "There there\n";
   {tmap = revMap;  tmainf = am; tdeclf = af}

@@ -357,7 +357,7 @@ and writeListAssign lexpr texpression =
       let genexpr = generateExpression texpression in
       match lexpr with
       | TListAccess(tid, texpr, t) -> let las = writeListAccess tid texpr in 
-                                      sprintf "%s = %s" las genexpr
+                                      sprintf "%s = %s;\n" las genexpr
       | _ -> "Y u no use Id?"
 
 and writeListAdd tid texpression typemap =
