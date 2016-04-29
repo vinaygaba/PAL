@@ -353,10 +353,10 @@ let rec writeDeclarationStmt tid tdataType typemap =
 
       | _ -> failwith "Not handled"
 
-and writeListAssign lexpr texpression typemap =
+and writeListAssign lexpr texpression =
       let genexpr = generateExpression texpression in
       match lexpr with
-      | ListAccess(tid, texpr, t) -> let las = writeListAccess tid texpr in 
+      | TListAccess(tid, texpr, t) -> let las = writeListAccess tid texpr in 
                                       sprintf "%s = %s" las genexpr
       | _ -> "Y u no use Id?"
 
@@ -394,7 +394,7 @@ and writeMapRemove tid texpression  =
      | TInitAssign(iden, t, expression) -> writeInitAssignStmt iden t expression
      | TFor(initStmt, condition, incrStmt, body) -> writeForLoopStatement initStmt condition incrStmt body typemap
      | TWhile(condition, body) -> writeWhileStatement condition body typemap
-     | TListAssign (lac, lvexpr) -> writeListAssignStatement lac lvexpr
+     | TListAssign (lac, lvexpr) -> writeListAssign lac lvexpr
      | TIf(conditionStmtList, elsestmtList) -> writeIfBlock conditionStmtList elsestmtList typemap
      | TControlStmt(name) -> writeControlStmt name
      | TListDecl(tid, tdataype) -> writeDeclarationStmt tid tdataype typemap
