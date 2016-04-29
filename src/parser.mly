@@ -170,7 +170,8 @@ STRING               { LitString($1) }
 | expr_stmt          { $1 }
 | expr AND    expr   { Binop($1, And,     $3) }
 | expr OR     expr   { Binop($1, Or,      $3) }
-| NOT  expr         { Uop(Not,$2) }
+| NOT  expr          { Uop(Not,$2) }
+| SUBOP expr         { Uop(Neg,$2) }
 | expr LINEBUFFER    { Uop(LineBuffer,$1) }
 | function_call     {CallExpr(fst $1,snd $1)}
 
