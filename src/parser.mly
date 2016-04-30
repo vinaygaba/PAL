@@ -89,8 +89,6 @@ stmt:
   | RETURN expr SEMICOLON                                           { Ret($2) }
   | function_call  SEMICOLON                                                 { CallStmt(fst $1,snd $1) }
   | v_decl                                                          { ($1) }
-  | list_decl                                                       { ($1) }
-  | decl SEMICOLON                                                  { ($1) }
   | WHILELOOP LEFTPAREN expr_stmt RIGHTPAREN body                   { While($3, $5) }
   | ID TYPEASSIGNMENT sp_data_type LEFTPAREN expr_list RIGHTPAREN SEMICOLON  { ObjectCreate(Ast.IdTest($1), $3, $5) }
   | IF LEFTPAREN expr_stmt RIGHTPAREN body elifs else_opt {If({condition = $3; body = $5} :: $6, $7)}
@@ -111,9 +109,6 @@ elifs:
 else_opt:
   | {None}
   | ELSE body {Some($2)}
-
-list_decl:
-  | decl SEMICOLON                           { ($1) }
 
 recr_data_type:
   | sp_data_type                                                               { (Ast.TType($1)) }
@@ -144,8 +139,7 @@ STRINGD                                                             { String }
 | PDFD                                                              { Pdf }
 | PAGED                                                             { Page }
 
-list_data_type:
-LISTD { List }
+
 
 sp_data_type:
 LINED { Line }
