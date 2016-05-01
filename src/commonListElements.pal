@@ -1,0 +1,31 @@
+main() {
+    l1 : list int;
+    l1 += 1;
+    l1 += 2;
+    l1 += 3;
+    l1 += 4;
+    l1 += 5;
+
+    l2 : list int;
+    l2 += 2;
+    l2 += 4;
+    l2 += 5;
+    l2 += 6;
+    l2 += 7;
+
+    iter : int;
+    m : map int, bool;
+    for (iter = 0; iter < 5; iter = iter + 1) {
+        m += l1[0],true;
+    }
+
+    cl : list int;
+    for (iter = 0; iter < 5; iter = iter + 1) {
+        found : bool;
+        found = false;
+        found = m:=l2[iter];
+        if (found == true) {
+            cl += l2[iter];
+        }
+    }
+}

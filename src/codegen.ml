@@ -59,8 +59,9 @@ let rec writeBinop expr1 op expr2 =
   let e1 = generateExpression expr1 and e2 = generateExpression expr2 in
     let type1 = type_of expr1 in
      let type2 = type_of expr2 in
-     let writeBinopHelper e1 op e2 = match op with
-      Add -> sprintf "%s + %s" e1 e2
+     let writeBinopHelper e1 op e2 = 
+     (match op with
+        Add -> sprintf "%s + %s" e1 e2
       | Sub -> sprintf "%s - %s" e1 e2
       | Mul -> sprintf "%s * %s" e1 e2
       | Div -> sprintf "%s / %s" e1 e2
@@ -70,28 +71,33 @@ let rec writeBinop expr1 op expr2 =
       | Leq -> sprintf "%s <= %s" e1 e2
       | Greater -> sprintf "%s > %s" e1 e2
       | Geq -> sprintf "%s >= %s" e1 e2
-      | Concat ->
-      match type1 with
-      | Pdf -> (match type2 with
-      | Page -> sprintf "Util.addPageToPDF(%s,%s);\n" e1 e2
-      | _ -> failwith "Not handled"
-      )
-      | Tuple -> (match type2 with
-      | Line ->
-      let var = e2^"contentStream" in
-      sprintf "Util.addLineToTuple(%s,%s)" e1 e2
-      | Image ->
-      sprintf "Util.addImageToTuple(%s, %s)" e1 e2
-      | _ -> failwith "Not handled"
-      )
-      | _ -> failwith "Something went wrong!"
+      | Mod -> sprintf "%s || %s" e1 e2 
+      | And -> sprintf "%s && %s" e1 e2
+      | Or -> sprintf "%s || %s" e1 e2
+      | Swap -> sprintf "%s || %s" e1 e2
+      | Append -> sprintf "%s || %s" e1 e2
+      | Concat -> 
+                match type1 with
+                | Pdf -> 
+                        (match type2 with
+                          | Page -> sprintf "Util.addPageToPDF(%s,%s);\n" e1 e2
+                          | _ -> failwith "Not handled")
+      | Tuple -> 
+      (match type2 with
+          | Line ->
+                sprintf "Util.addLineToTuple(%s,%s)" e1 e2
+          | Image ->
+                sprintf "Util.addImageToTuple(%s, %s)" e1 e2
+          | _ -> failwith "Not handled" )
+      | _ -> failwith "Something went wrong!")
     in writeBinopHelper e1 op e2
 
 and writeUop expr1 op =
   let e1 = generateExpression expr1 in
-  let type1 = type_of expr1 in
   let writeUopHelper e1 op = match op with
     | LineBuffer -> sprintf "%s.getRemainingText();" e1
+    | Neg -> sprintf "-%s" e1
+    | Not -> sprintf "!%s" e1
   in writeUopHelper e1 op
 
 and writeObjectStmt tid tspDataType tExprList =
@@ -198,6 +204,7 @@ match name with
     | String ->  sprintf "%s.length()" name
     | ListType(x) -> sprintf "%s.size()" name
     | MapType(t,x) -> sprintf "%s.size()" name
+    | _ -> failwith "How dare you ask for length of this type?"
   )
   | _ -> failwith "expecting an identifier"
  )
@@ -255,13 +262,11 @@ sprintf "\n%s.save(\"%s\");\n %s.close();" pdfIden location pdfIden
    let gexpr = generateExpression texpression in
    match tid with
    | IdTest(x) -> sprintf "%s[%s]" x gexpr
-   | _ -> failwith "Y u no pass Id?"
 
  and writeMapAccess tid texpression = 
    let gexpr = generateExpression texpression in
    match tid with
    | IdTest(x) -> sprintf "%s.get(%s)" x gexpr 
-   | _ -> failwith "Y u no pass Id?"
 
  and generateExpression = function
      TBinop(ope1, op, ope2, _) -> writeBinop ope1 op ope2
@@ -280,12 +285,10 @@ sprintf "\n%s.save(\"%s\");\n %s.close();" pdfIden location pdfIden
 
 
 let rec writeAssignmentStmt id expr2 =
-        let lhs_type = java_from_type (type_of expr2) in
         let e2string = generateExpression expr2 in
         match id with
              IdTest(n) ->  sprintf "%s = %s;\n" n e2string
-            | _ -> failwith "How'd we get all the way to java with this!!!! Not a valid LHS"
-
+         
 let rec makeLists (typeid : string) (typemap)  : string =
       let found = StringMap.mem typeid typemap in
       if found
@@ -303,18 +306,19 @@ let rec makeLists (typeid : string) (typemap)  : string =
           | "page" -> "PDPage"
           | "line" -> "Line"
           | "tuple" -> "Tuple"
-          | "image" -> "Image")
+          | "image" -> "Image"
+          | _ -> failwith "Type not found" )
 
 
 
 let rec writeDeclarationStmt tid tdataType typemap =
-  let lhs_type = java_from_type tdataType in
   match tid with
       | IdTest(name) ->
                         (match tdataType with
                                   | Pdf -> sprintf "PDDocument %s = new PDDocument();\n" name
                                   | Page -> sprintf "PDPage %s = new PDPage();\n" name
                                   | Int -> sprintf "Integer %s = new Integer(0);\n" name
+                                  | Float -> sprintf "Float %s = new Float(0.0); \n" name
                                   | Bool -> sprintf "Boolean %s = new Boolean(true);\n" name
                                   | String -> sprintf "String %s = new String();\n" name
                                   | ListType(x) ->
@@ -331,7 +335,8 @@ let rec writeDeclarationStmt tid tdataType typemap =
                                             | Page -> "PDPage"
                                             | Line -> "Line"
                                             | Tuple -> "Tuple"
-                                            | Image -> "Image" )  in
+                                            | Image -> "Image" 
+                                            | _ -> failwith "Can't use Lists or Maps as keys")  in
                                       let valuetype =
                                           ( match v with
                                             | ListType(x) ->
@@ -345,38 +350,42 @@ let rec writeDeclarationStmt tid tdataType typemap =
                                             | Page -> "PDPage"
                                             | Line -> "Line"
                                             | Tuple -> "Tuple"
-                                            | Image -> "Image"         ) in
+                                            | Image -> "Image"         
+                                            | _ -> failwith "Can't put map type as value type") in
                                           sprintf "Map<%s,%s> %s = new HashMap<%s,%s>(); \n" keytype valuetype name keytype valuetype
 
 
-                                        )
+                                     | _ -> failwith "Can't declare list, tuple or image"   )
 
-      | _ -> failwith "Not handled"
+
+and writeListAssign lexpr texpression =
+      let genexpr = generateExpression texpression in
+      match lexpr with
+      | TListAccess(tid, texpr, t) -> let las = writeListAccess tid texpr in 
+                                      sprintf "%s = %s;\n" las genexpr
+      | _ -> "Y u no use Id?"
 
 and writeListAdd tid texpression typemap =
       let genexpr = generateExpression texpression in
       match tid with
       | IdTest(name) -> sprintf "%s.append(%s); \n" name genexpr
-      | _ -> "Y u no use Id?"
 
 and writeListRemove tid texpression typemap =
       let genexpr = generateExpression texpression in
       match tid with
       | IdTest(name) -> sprintf "%s.remove(%s); \n" name genexpr
-      | _ -> "Y u no use Id?"
 
 and writeMapAdd tid texpression1 texpression2 =
       let genexpr1 = generateExpression texpression1 in
       let genexpr2  = generateExpression texpression2 in
       match tid with
       | IdTest(name) -> sprintf "%s.put(%s,%s); \n" name genexpr1 genexpr2
-      | _ -> "Y u no use Id?"
 
 and writeMapRemove tid texpression  =
       let genexpr = generateExpression texpression in
       match tid with
       | IdTest(name) -> sprintf "%s.remove(%s); \n" name genexpr
-      | _ -> "Y u no use Id?"
+
 
  and generateStatement tstatement typemap =
  match tstatement with
@@ -387,6 +396,7 @@ and writeMapRemove tid texpression  =
      | TInitAssign(iden, t, expression) -> writeInitAssignStmt iden t expression
      | TFor(initStmt, condition, incrStmt, body) -> writeForLoopStatement initStmt condition incrStmt body typemap
      | TWhile(condition, body) -> writeWhileStatement condition body typemap
+     | TListAssign (lac, lvexpr) -> writeListAssign lac lvexpr
      | TIf(conditionStmtList, elsestmtList) -> writeIfBlock conditionStmtList elsestmtList typemap
      | TControlStmt(name) -> writeControlStmt name
      | TListDecl(tid, tdataype) -> writeDeclarationStmt tid tdataype typemap
@@ -485,7 +495,7 @@ match typ with
   | Image -> "Image"  
   | ListType(l) -> makeLists l typemap
   | MapType(k,v) ->    let keytype = 
-                                      (   match k with
+                                      (match k with
                                             | Int ->  "Integer"
                                             | Bool -> "Boolean"
                                             | Float -> "Float"
@@ -494,7 +504,8 @@ match typ with
                                             | Page -> "PDPage"
                                             | Line -> "Line"
                                             | Tuple -> "Tuple"
-                                            | Image -> "Image" )  in 
+                                            | Image -> "Image" 
+                                            | _ -> "Key type can't be list or map")  in 
                                       let valuetype =  
                                           ( match v with
                                             | ListType(x) -> 
@@ -508,7 +519,8 @@ match typ with
                                             | Page -> "PDPage"
                                             | Line -> "Line"
                                             | Tuple -> "Tuple"
-                                            | Image -> "Image"         )  in "Map<" ^keytype ^","^valuetype^">"
+                                            | Image -> "Image"   
+                                            | _  -> "value type can't be map"      )  in "Map<" ^keytype ^","^valuetype^">"
 
 
 and generateFunction (b : Sast.tfunc_decl) typemap =
@@ -524,24 +536,23 @@ sprintf"\npublic static %s %s ( %s ) throws Exception \n{ \n%s \n}" returnTypeSt
 
 and generateFormal formal typemap = 
 match formal with 
-| TVdecl(id,t) -> 
-(
-let name = match id with
-| IdTest(n) -> n in
-let jtype = getJavaType t typemap in sprintf "%s %s" jtype name )
-| TListDecl(id,t) -> (
-let name = match id with
-| IdTest(n) -> n in
-let jtype = getJavaType t typemap in sprintf "%s %s" jtype name )
-| TMapDecl(id,t) -> (
-let name = match id with
-| IdTest(n) -> n in
-let jtype = getJavaType t typemap in sprintf "%s %s" jtype name )
-| TObjectCreate(id,t,exprList) -> (
-let name = match id with
-| IdTest(n) -> n in
-let jtype = getJavaType t typemap in sprintf "%s %s" jtype name )
-
+    | TVdecl(id,t) -> 
+               (let name = match id with
+                            | IdTest(n) -> n in
+                            let jtype = getJavaType t typemap in sprintf "%s %s" jtype name )
+    | TListDecl(id,t) -> 
+                (let name = match id with
+                            | IdTest(n) -> n in
+                            let jtype = getJavaType t typemap in sprintf "%s %s" jtype name )
+    | TMapDecl(id,t) -> 
+                (let name = match id with
+                            | IdTest(n) -> n in
+                            let jtype = getJavaType t typemap in sprintf "%s %s" jtype name )
+    | TObjectCreate(id,t,exprList) -> 
+                (let name = match id with
+                            | IdTest(n) -> n in
+                            let jtype = getJavaType t typemap in sprintf "%s %s" jtype name )
+    | _ -> failwith "What formals do you want bruh?"
 
 
 

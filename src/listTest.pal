@@ -1,0 +1,33 @@
+main() {
+    i : int;
+    l : list int;
+    ll : list list int;
+    lll : list list list int;
+
+    l[0] = 1;
+    l += 1;
+    l[0] = i;
+    l += i;
+    i = l[0];
+    ll[0] = l;
+    ll += l;
+    l = ll[0];
+    lll[0] = ll;
+    lll += ll;
+    ll = lll[0];
+
+    m : map int,int;
+    m += 1,1;
+    m += i,i;
+    m += l[0],i;
+    m += i,l[0];
+    m -= l[0];
+
+    mm : map int, list int;
+    mm += l[0],l;
+    mm += l[0],ll[0];
+
+    mmmm : map int, list list list int;
+    mmmm += l[0],lll;
+    lll = mmmm:=l[0];
+}
