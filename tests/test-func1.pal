@@ -10,9 +10,7 @@ main()
 	pdfVar : pdf;
 	pageVar : page;
 	pdfVar = pdfVar.pageVar;
-	intvar : int;
 	tupleVar : tuple(pdfVar, pageVar);
-	linevar : line(intVar, "Times_New_Roman" , 12 , 100, 700);
-
+	linevar : line("intVar", "Times_New_Roman" , 12 , 100, 700, 500);
 	renderpdf(pdfVar, "test-func1.pdf");
 }

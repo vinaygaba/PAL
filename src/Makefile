@@ -16,6 +16,7 @@ make :
 	ocamlc -c pal.ml
 	ocamlc -o pal sast.cmo parser.cmo lexer.cmo analyzer.cmo codegen.cmo pal.cmo
 
+
 .PHONY : clean
 clean :
 	rm -f pal parser.ml parser.mli lexer.ml bin/*.class \
@@ -33,6 +34,10 @@ diff :
 		touch ../test/output.pdf
 		mv helloworld.pdf ../test/output.pdf
 		cd ../test/;./diff.sh
+
+.PHONY : runall
+runall :
+		cd ../test/;./runalltests.sh
 
 
 #javac -cp ".:pdfbox.jar" Output.java
