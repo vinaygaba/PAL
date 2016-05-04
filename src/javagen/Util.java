@@ -11,6 +11,13 @@ import java.io.FileReader;
 import java.io.IOException;
 import com.giaybac.traprange.PDFTableExtractor;
 import com.giaybac.traprange.entity.Table;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+
 import org.jfree.chart.ChartFactory;
 
 import org.jfree.chart.ChartUtilities;
