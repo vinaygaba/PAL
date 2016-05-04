@@ -59,7 +59,7 @@ let rec writeBinop expr1 op expr2 =
   let e1 = generateExpression expr1 and e2 = generateExpression expr2 in
     let type1 = type_of expr1 in
      let type2 = type_of expr2 in
-     let writeBinopHelper e1 op e2 = 
+     let writeBinopHelper e1 op e2 =
      (match op with
         Add -> sprintf "%s + %s" e1 e2
       | Sub -> sprintf "%s - %s" e1 e2
@@ -71,18 +71,18 @@ let rec writeBinop expr1 op expr2 =
       | Leq -> sprintf "%s <= %s" e1 e2
       | Greater -> sprintf "%s > %s" e1 e2
       | Geq -> sprintf "%s >= %s" e1 e2
-      | Mod -> sprintf "%s || %s" e1 e2 
+      | Mod -> sprintf "%s || %s" e1 e2
       | And -> sprintf "%s && %s" e1 e2
       | Or -> sprintf "%s || %s" e1 e2
       | Swap -> sprintf "%s || %s" e1 e2
       | Append -> sprintf "%s || %s" e1 e2
-      | Concat -> 
+      | Concat ->
                 match type1 with
-                | Pdf -> 
+                | Pdf ->
                         (match type2 with
                           | Page -> sprintf "Util.addPageToPDF(%s,%s);\n" e1 e2
                           | _ -> failwith "Not handled")
-      | Tuple -> 
+      | Tuple ->
       (match type2 with
           | Line ->
                 sprintf "Util.addLineToTuple(%s,%s)" e1 e2
@@ -211,14 +211,18 @@ match name with
 | "readfile" -> let funcExprMap = getFuncExpressionMap exprList in
 let location = StringMap.find "1" funcExprMap in
 sprintf "\n Util.readFile(%s)" location
+| "drawpiechart" -> let funcExprMapForPieChart = getFuncExpressionMap exprList in
+let dataList = StringMap.find "1" funcExprMapForPieChart in
+let attributeMap = StringMap.find "2" funcExprMapForPieChart in
+sprintf "\n Util.drawPieChart(%s, %s)" dataList attributeMap
 | "readtable" -> let funcExprMapForTable = getFuncExpressionMap exprList in
 let location = StringMap.find "1" funcExprMapForTable in
 let pagenumberList = StringMap.find "2" funcExprMapForTable in
 sprintf "\n Util.readTable(%s, %s)" location pagenumberList
-| _ -> 
+| _ ->
 let expressionListString = List.fold_left (fun a b -> a ^ (generateExpression b)^ ",") "" exprList in
 let argList = String.sub expressionListString 0 ((String.length expressionListString) - 1) in
-sprintf "\n%s(%s);" name argList 
+sprintf "\n%s(%s);" name argList
 
 
 and writeFunctionCallStmt name exprList =
@@ -227,10 +231,10 @@ match name with
 let pdfIden =  StringMap.find "1" funcExprMap in
 let location = StringMap.find "2" funcExprMap in
 sprintf "\n%s.save(%s);\n %s.close();" pdfIden location pdfIden
-| _ -> 
+| _ ->
 let expressionListString = List.fold_left (fun a b -> a ^ (generateExpression b)^ ",") "" exprList in
 let argList = String.sub expressionListString 0 ((String.length expressionListString) - 1) in
-sprintf "\n%s(%s);" name argList 
+sprintf "\n%s(%s);" name argList
 
 
 and writeInitAssignStmt iden t expression =
@@ -267,10 +271,10 @@ sprintf "\n%s.save(\"%s\");\n %s.close();" pdfIden location pdfIden
    match tid with
    | IdTest(x) -> sprintf "%s[%s]" x gexpr
 
- and writeMapAccess tid texpression = 
+ and writeMapAccess tid texpression =
    let gexpr = generateExpression texpression in
    match tid with
-   | IdTest(x) -> sprintf "%s.get(%s)" x gexpr 
+   | IdTest(x) -> sprintf "%s.get(%s)" x gexpr
 
  and generateExpression = function
      TBinop(ope1, op, ope2, _) -> writeBinop ope1 op ope2
@@ -292,7 +296,7 @@ let rec writeAssignmentStmt id expr2 =
         let e2string = generateExpression expr2 in
         match id with
              IdTest(n) ->  sprintf "%s = %s;\n" n e2string
-         
+
 let rec makeLists (typeid : string) (typemap)  : string =
       let found = StringMap.mem typeid typemap in
       if found
@@ -339,7 +343,7 @@ let rec writeDeclarationStmt tid tdataType typemap =
                                             | Page -> "PDPage"
                                             | Line -> "Line"
                                             | Tuple -> "Tuple"
-                                            | Image -> "Image" 
+                                            | Image -> "Image"
                                             | _ -> failwith "Can't use Lists or Maps as keys")  in
                                       let valuetype =
                                           ( match v with
@@ -354,7 +358,7 @@ let rec writeDeclarationStmt tid tdataType typemap =
                                             | Page -> "PDPage"
                                             | Line -> "Line"
                                             | Tuple -> "Tuple"
-                                            | Image -> "Image"         
+                                            | Image -> "Image"
                                             | _ -> failwith "Can't put map type as value type") in
                                           sprintf "Map<%s,%s> %s = new HashMap<%s,%s>(); \n" keytype valuetype name keytype valuetype
 
@@ -365,7 +369,7 @@ let rec writeDeclarationStmt tid tdataType typemap =
 and writeListAssign lexpr texpression =
       let genexpr = generateExpression texpression in
       match lexpr with
-      | TListAccess(tid, texpr, t) -> let las = writeListAccess tid texpr in 
+      | TListAccess(tid, texpr, t) -> let las = writeListAccess tid texpr in
                                       sprintf "%s = %s;\n" las genexpr
       | _ -> "Y u no use Id?"
 
@@ -407,8 +411,8 @@ and writeMapRemove tid texpression  =
      | TListAdd(tid, texpr) -> writeListAdd tid texpr typemap
      | TListRemove(tid, texpr) -> writeListRemove tid texpr typemap
      | TMapDecl(tid, tdataype) -> writeDeclarationStmt tid tdataype typemap
-     | TMapAdd(tid, texpr1, texpr2) -> writeMapAdd tid texpr1 texpr2 
-     | TMapRemove(tid, texpr) -> writeMapRemove tid texpr 
+     | TMapAdd(tid, texpr1, texpr2) -> writeMapAdd tid texpr1 texpr2
+     | TMapRemove(tid, texpr) -> writeMapRemove tid texpr
      | TRet(texpr,t) -> writeReturnStatement texpr
 
 
@@ -465,7 +469,7 @@ sprintf "\nwhile(%s ) \n { %s \n }" exprString bodyString
 
 and generateJavaProgram fileName prog =
   let statementString = generateMainFunction prog.tmainf prog.tmap in
-  let decllist = prog.tdeclf in 
+  let decllist = prog.tdeclf in
   let funcDeclString = generateOtherFunctions decllist prog.tmap in
   let classBody = statementString^funcDeclString in
   let progString = sprintf "
@@ -486,8 +490,8 @@ and generateJavaProgram fileName prog =
 
 
 
-and getJavaType typ typemap = 
-match typ with 
+and getJavaType typ typemap =
+match typ with
   | Int ->  "Integer"
   | Bool -> "Boolean"
   | Float -> "Float"
@@ -496,9 +500,9 @@ match typ with
   | Page -> "PDPage"
   | Line -> "Line"
   | Tuple -> "Tuple"
-  | Image -> "Image"  
+  | Image -> "Image"
   | ListType(l) -> makeLists l typemap
-  | MapType(k,v) ->    let keytype = 
+  | MapType(k,v) ->    let keytype =
                                       (match k with
                                             | Int ->  "Integer"
                                             | Bool -> "Boolean"
@@ -508,12 +512,12 @@ match typ with
                                             | Page -> "PDPage"
                                             | Line -> "Line"
                                             | Tuple -> "Tuple"
-                                            | Image -> "Image" 
-                                            | _ -> "Key type can't be list or map")  in 
-                                      let valuetype =  
+                                            | Image -> "Image"
+                                            | _ -> "Key type can't be list or map")  in
+                                      let valuetype =
                                           ( match v with
-                                            | ListType(x) -> 
-                                                      let acc = makeLists x typemap in 
+                                            | ListType(x) ->
+                                                      let acc = makeLists x typemap in
                                                       acc
                                             | Int ->  "Integer"
                                             | Bool -> "Boolean"
@@ -523,36 +527,36 @@ match typ with
                                             | Page -> "PDPage"
                                             | Line -> "Line"
                                             | Tuple -> "Tuple"
-                                            | Image -> "Image"   
+                                            | Image -> "Image"
                                             | _  -> "value type can't be map"      )  in "Map<" ^keytype ^","^valuetype^">"
 
 
 and generateFunction (b : Sast.tfunc_decl) typemap =
 let name = b.name in
-let returnType = b.rtype in 
+let returnType = b.rtype in
 let returnTypeString = getJavaType returnType typemap in
-let formalStatementList = b.tformals in 
+let formalStatementList = b.tformals in
 let functionBody = b.tbody in
-let formalsListString = generateFormalsList formalStatementList typemap in 
+let formalsListString = generateFormalsList formalStatementList typemap in
 let functionBodyString = writeStmtList functionBody typemap in
 sprintf"\npublic static %s %s ( %s ) throws Exception \n{ \n%s \n}" returnTypeString name formalsListString functionBodyString
 
 
-and generateFormal formal typemap = 
-match formal with 
-    | TVdecl(id,t) -> 
+and generateFormal formal typemap =
+match formal with
+    | TVdecl(id,t) ->
                (let name = match id with
                             | IdTest(n) -> n in
                             let jtype = getJavaType t typemap in sprintf "%s %s" jtype name )
-    | TListDecl(id,t) -> 
+    | TListDecl(id,t) ->
                 (let name = match id with
                             | IdTest(n) -> n in
                             let jtype = getJavaType t typemap in sprintf "%s %s" jtype name )
-    | TMapDecl(id,t) -> 
+    | TMapDecl(id,t) ->
                 (let name = match id with
                             | IdTest(n) -> n in
                             let jtype = getJavaType t typemap in sprintf "%s %s" jtype name )
-    | TObjectCreate(id,t,exprList) -> 
+    | TObjectCreate(id,t,exprList) ->
                 (let name = match id with
                             | IdTest(n) -> n in
                             let jtype = getJavaType t typemap in sprintf "%s %s" jtype name )
@@ -560,7 +564,7 @@ match formal with
 
 
 
-and generateFormalsList formalStatementList typemap = 
+and generateFormalsList formalStatementList typemap =
 let outStr = List.fold_left (fun a b -> a ^ (generateFormal b typemap)^ ",") "" formalStatementList in
 let arg = String.sub outStr 0 ((String.length outStr) - 1) in
 sprintf "%s" arg
