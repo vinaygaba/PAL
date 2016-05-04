@@ -82,14 +82,23 @@ let initialize_types(tmap : type_map) =
   tmap.map <- typeMap
 
 
-let initialize_predefined_functions (env : environment) =  
-    let lengthfn = ("length", Ast.Int) in 
+let initialize_predefined_functions (env : environment) =
+    let lengthfn = ("length", Ast.Int) in
     env.scope.functions <- lengthfn :: env.scope.functions;
-    (* let lengthfn = ("getpages", Ast.Page list) in 
+    (* let lengthfn = ("getpages", Ast.Page list) in
     env.scope.functions <- lengthfn :: env.scope.functions); *)
-   
-    let readfn = ("readfile", Ast.String) in 
+    let readtable = ("readtable", Ast.String) in
+    env.scope.functions <- readtable :: env.scope.functions;
+
+    let drawpiechart = ("drawpiechart", Ast.Int) in
+    env.scope.functions <- drawpiechart :: env.scope.functions;
+
+    let drawbarchart = ("drawbarchart", Ast.Int) in
+    env.scope.functions <- drawbarchart :: env.scope.functions;
+
+    let readfn = ("readfile", Ast.String) in
     env.scope.functions <- readfn :: env.scope.functions;;
+
 
 let nest_scope (env : environment) : environment =
   let s = {variables = []; functions = []; parent = Some(env.scope)} in
@@ -197,13 +206,9 @@ let rec annotate_expr (e : Ast.expression) (env : environment) (tmap : type_map)
     let ae2 = annotate_expr e2 env tmap in
     let t1 = type_of ae1 in
     let t2 = type_of ae2 in
+    if t1 = t2
+    then
       (match o with
-        | Ast.Concat ->
-          (match t1, t2 with
-            | (Ast.Pdf, Ast.Page) -> TBinop(ae1,o,ae2,t1)
-            | (Ast.Tuple, Ast.Line) -> TBinop(ae1,o,ae2,t1)
-            | (Ast.Tuple,Ast.Image) -> TBinop(ae1,o,ae2,t1)
-            | _ -> failwith "Oops")
         | Ast.Add
         | Ast.Sub
         | Ast.Div
@@ -218,7 +223,17 @@ let rec annotate_expr (e : Ast.expression) (env : environment) (tmap : type_map)
         | Ast.Greater
         | Ast.And
         | Ast.Or
-        | Ast.Geq -> TBinop(ae1,o,ae2,Ast.Bool))
+        | Ast.Geq -> TBinop(ae1,o,ae2,Ast.Bool)
+        | _ -> failwith "How you concat two same things?")
+    else
+     (match o with
+        | Ast.Concat ->
+          (match t1, t2 with
+            | (Ast.Pdf, Ast.Page) -> TBinop(ae1,o,ae2,t1)
+            | (Ast.Tuple, Ast.Line) -> TBinop(ae1,o,ae2,t1)
+            | (Ast.Tuple,Ast.Image) -> TBinop(ae1,o,ae2,t1)
+            | _ -> failwith "Oops")
+        | _ -> failwith "Incompatible types")
 
   | Ast.ListAccess(i,e) ->
       let ae = annotate_expr e env tmap in
@@ -262,7 +277,7 @@ let rec annotate_expr (e : Ast.expression) (env : environment) (tmap : type_map)
           let ae = annotate_expr e env tmap in
           let t = type_of ae in
           match u with
-          | LineBuffer -> TUop(u, ae, Ast.String)
+          | Ast.LineBuffer -> TUop(u, ae, Ast.String)
           | _ -> TUop(u, ae, t)
 
 and annotate_recr_type (rd : Ast.recr_t) (tmap : type_map) : string =
@@ -334,15 +349,14 @@ and annotate_map_remove (i : Ast.id) (e : Ast.expression) (env : environment) (t
 and annotate_list_assign (e1 : Ast.expression) (e2 : Ast.expression) (env : environment) (tmap : type_map) : Sast.texpression * Sast.texpression =
   let ae1 = annotate_expr e1 env tmap in
   let ae2 = annotate_expr e2 env tmap in
-  let et1 = type_of ae1 in
   let et2 = type_of ae2 in
   (match ae1 with
   | TIden(lid,lt) ->
-      let id = (match lid with IdTest(s) -> s) in
+      let id = (match lid with Ast.IdTest(s) -> s) in
       let ltype = find_variable env.scope id in
       (match ltype with
       | Some(l) ->
-          let ls = (match l with ListType(s) -> s) in
+          let ls = (match l with Ast.ListType(s) -> s | _ -> failwith "Should have been a list type") in
           let etype = find_list_element_type ls tmap in
           if etype = et2
           then ae1,ae2
@@ -532,14 +546,13 @@ and annotate_main_func_decl (mdecl : Ast.main_func_decl) (env : environment) (tm
 
 and annotate_import_statement (istmt : Ast.import_stmt) (env : environment) (tmap : type_map) : Sast.tprogram =
   (match istmt with
-  | Import(s) ->
+  | Ast.Import(s) ->
       let l = String.length s in
       let sl = 1 in
       let el = l-2 in
       let is = String.sub s sl el in
       let aip = parse_file is in
-      aip
-  | _ -> failwith "Invalid Import Statement")
+      aip)
 
 and annotate_cond (cond: Ast.conditional) (env : environment) (tmap : type_map) : Sast.tconditional =
   let ae = annotate_expr cond.Ast.condition env tmap in
@@ -573,15 +586,15 @@ and parse_file (fname : string) : Sast.tprogram =
   let annotatedProgram = annotate_prog program in
   annotatedProgram
 
-and extract_function (itp : Sast.tprogram) (env : environment) : Sast.tfunc_decl list = 
+and extract_function (itp : Sast.tprogram) (env : environment) : Sast.tfunc_decl list =
 	let fdecls = itp.tdeclf in
-	List.map (fun f ->  env.scope.functions <- (f.name , f.rtype) :: env.scope.functions) fdecls;
+	let _  = List.map (fun f ->  env.scope.functions <- (f.name , f.rtype) :: env.scope.functions) fdecls in
 	fdecls
 
-and extract_functions (itps : Sast.tprogram list) (env : environment) : Sast.tfunc_decl list = 
+and extract_functions (itps : Sast.tprogram list) (env : environment) : Sast.tfunc_decl list =
 	let l = List.map (fun f -> extract_function f env) itps in
 	let tf = [] in
-	List.fold_left (fun acc x -> x :: acc) tf l;
+	let _  = List.fold_left (fun acc x -> x :: acc) tf l in
 	tf
 
 and annotate_prog (p : Ast.program) : Sast.tprogram =
