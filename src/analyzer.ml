@@ -81,14 +81,21 @@ let initialize_types(tmap : type_map) =
   let typeMap = StringMap.add "tuple" tupletype typeMap in
   let lstype = next_type_var() in
   let typeMap = StringMap.add "AD" lstype typeMap in
+  let lpagetype = next_type_var() in 
+  let typeMap = StringMap.add "AF" lpagetype typeMap in 
+  let lpdftype = next_type_var() in 
+  let typeMap = StringMap.add "AE" lpdftype typeMap in
+
   tmap.map <- typeMap
 
 
 let initialize_predefined_functions (env : environment) =
     let lengthfn = ("length", Ast.Int) in
     env.scope.functions <- lengthfn :: env.scope.functions;
-    (* let lengthfn = ("getpages", Ast.Page list) in
-    env.scope.functions <- lengthfn :: env.scope.functions); *)
+    let getpagesfn = ("getpages", Ast.ListType("AK")) in
+    env.scope.functions <- getpagesfn :: env.scope.functions; 
+    let splitfn = ("split", Ast.ListType("AJ")) in
+    env.scope.functions <- splitfn :: env.scope.functions; 
     let readtable = ("readtable", Ast.ListType("AI")) in
     env.scope.functions <- readtable :: env.scope.functions;
 
