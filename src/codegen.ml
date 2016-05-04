@@ -118,8 +118,8 @@ let idstring =
           sprintf "Line %s = new Line();\n %s.setFont(%s);\n %s.setText(%s);\n %s.setXcod(%s);\n %s.setYcod(%s);\n %s.setFontSize(%s);\n %s.setWidth(%s);\n" idstring idstring font idstring drawString idstring xcod idstring ycod idstring fontSize idstring width)
  | Tuple ->
  let exprMapForTuple = getExpressionMap tExprList in
- let pdfIden = StringMap.find "2" exprMapForTuple in
- let pageIden = StringMap.find "1" exprMapForTuple in
+ let pdfIden = StringMap.find "1" exprMapForTuple in
+ let pageIden = StringMap.find "2" exprMapForTuple in
   sprintf "Tuple %s = new Tuple(%s,%s);\n" idstring pdfIden pageIden
  | Image ->  (match tExprList with
           [] -> sprintf "\nFile file = new File(\"\"); \nImage %s = new Image(file,%s,%s,%s,%s);\n" idstring "800" "600" "100" "600"
@@ -212,12 +212,12 @@ match name with
 let location = StringMap.find "1" funcExprMap in
 sprintf "\n Util.readFile(%s)" location
 | "drawpiechart" -> let funcExprMapForPieChart = getFuncExpressionMap exprList in
-let dataList = StringMap.find "1" funcExprMapForPieChart in
-let attributeMap = StringMap.find "2" funcExprMapForPieChart in
+let dataList = StringMap.find "2" funcExprMapForPieChart in
+let attributeMap = StringMap.find "1" funcExprMapForPieChart in
 sprintf "\n Util.drawPieChart(%s, %s)" dataList attributeMap
 | "readtable" -> let funcExprMapForTable = getFuncExpressionMap exprList in
-let location = StringMap.find "1" funcExprMapForTable in
-let pagenumberList = StringMap.find "2" funcExprMapForTable in
+let location = StringMap.find "2" funcExprMapForTable in
+let pagenumberList = StringMap.find "1" funcExprMapForTable in
 sprintf "\n Util.readTable(%s, %s)" location pagenumberList
 | "getpages" -> let funcExprMap = getFuncExpressionMap exprList in 
 let pdffile = StringMap.find "1" funcExprMap in

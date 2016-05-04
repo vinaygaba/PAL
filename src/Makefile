@@ -24,9 +24,9 @@ clean :
 .PHONY : compile
 compile :
 
-	javac -cp "javagen/.:javagen/pdfbox.jar" javagen/Output.java
+	javac -cp "javagen/.:javagen/jars/*" javagen/Output.java
 
-	java -cp "javagen/.:javagen/pdfbox.jar" Output
+	java -cp "javagen/.:javagen/jars/*" Output
 
 .PHONY : diff
 diff :

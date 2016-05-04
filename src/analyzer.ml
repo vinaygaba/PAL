@@ -99,10 +99,10 @@ let initialize_predefined_functions (env : environment) =
     let readtable = ("readtable", Ast.ListType("AI")) in
     env.scope.functions <- readtable :: env.scope.functions;
 
-    let drawpiechart = ("drawpiechart", Ast.Int) in
+    let drawpiechart = ("drawpiechart", Ast.Image) in
     env.scope.functions <- drawpiechart :: env.scope.functions;
 
-    let drawbarchart = ("drawbarchart", Ast.Int) in
+    let drawbarchart = ("drawbarchart", Ast.Image) in
     env.scope.functions <- drawbarchart :: env.scope.functions;
 
     let readfn = ("readfile", Ast.String) in
