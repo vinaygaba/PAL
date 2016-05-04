@@ -99,20 +99,24 @@ public static Tuple addImageToTuple(Tuple tuple, Image image) throws Exception
 
         PDFTableExtractor extractor = (new PDFTableExtractor()).setSource(location);
 
-        List<List> lists = new ArrayList<List>();
+        List<List<String>> lists = new ArrayList<List<String>>();
         for(Integer j : pageNumbers)
         {
           extractor.addPage(j);
 
           List<Table> extract = extractor.extract();
           String csv = extract.get(0).toString();
+          System.out.println(csv);
 
           String[] line = csv.split("\n");
-          for(int i = 0; i < line.length; i++)
+          for(int i = 0; i < line.length - 1; i++)
           {
             String[] splits = line[i].split(";");
             List<String> asList = Arrays.asList(splits);
+
             lists.add(asList);
+            
+            
           }
 
         }
@@ -152,7 +156,6 @@ public static Tuple addImageToTuple(Tuple tuple, Image image) throws Exception
 
 
   public static Image drawPieChart(List<List<String>> data, Map<String, String> attributes) {
-
 		try {
 
 			DefaultPieDataset pieDataset = new DefaultPieDataset();
@@ -191,19 +194,22 @@ public static Tuple addImageToTuple(Tuple tuple, Image image) throws Exception
 			List<String> subList;
 			for (int i = 0; i < data.size(); i++) {
 				subList = data.get(i);
-				pieDataset.setValue(subList.get(0), Integer.parseInt(subList.get(1)));
+				pieDataset.setValue(subList.get(0), Integer.parseInt(subList.get(1).trim()));
 			}
 			// Create the chart
 			JFreeChart chart = ChartFactory.createPieChart3D(chartTitle, pieDataset, true, true, true);
 
-			ChartUtilities.saveChartAsPNG(new File(imageName), chart, height, width);
+			ChartUtilities.saveChartAsPNG(new File(imageName), chart, width, height);
 
-			Image image = new Image(new File(imageName), height, width, xcod, ycod);
+      System.out.println("Image saved");
+
+			Image image = new Image(new File(imageName), width, height, xcod, ycod);
 
 			return image;
 
 		}catch(Exception e)
     {
+      e.printStackTrace();
       return null;
     }
   }
