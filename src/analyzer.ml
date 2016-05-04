@@ -586,12 +586,20 @@ and parse_file (fname : string) : Sast.tprogram =
   let annotatedProgram = annotate_prog program in
   annotatedProgram
 
-and extract_function (itp : Sast.tprogram) (env : environment) : Sast.tfunc_decl list =
+and extract_function (itp : Sast.tprogram) (env : environment) (tmap : type_map) : Sast.tfunc_decl list =
+    let m = StringMap.fold (fun key value newMap -> StringMap.add value key newMap) itp.tmap StringMap.empty in
+    let mergedMap = StringMap.merge (fun k v1 v2 ->
+                           match v1,v2 with
+                           | Some(v1), Some(v2) -> Some(v2)
+                           | Some(v1), None -> Some(v1)
+                           | None, Some(v2) -> Some(v2)
+                           | _ -> None) m tmap.map in
+    tmap.map <- mergedMap;
 	let fdecls = itp.tdeclf in
 	let _  = List.map (fun f ->  env.scope.functions <- (f.name , f.rtype) :: env.scope.functions) fdecls in
 	fdecls
 
-and extract_functions (itps : Sast.tprogram list) (env : environment) : Sast.tfunc_decl list =
+and extract_functions (itps : Sast.tprogram list) (env : environment) (tmap : type_map) : Sast.tfunc_decl list =
 	let l = List.map (fun f -> extract_function f env) itps in
 	let tf = [] in
 	let _  = List.fold_left (fun acc x -> x :: acc) tf l in
@@ -603,7 +611,7 @@ and annotate_prog (p : Ast.program) : Sast.tprogram =
   let tmap = new_map() in
   initialize_types tmap;
   let ai = annotate_import_statements p.Ast.ilist env tmap in
-  let ef = extract_functions ai env in
+  let ef = extract_functions ai env tmap in
   let f = annotate_func_decls p.Ast.declf env tmap in
   let af = List.append ef f in
   let am = annotate_main_func_decl p.Ast.mainf env tmap in
