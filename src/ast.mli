@@ -64,7 +64,7 @@ type import_stmt =
   | Import of string
 
 type func_decl = {
-  rtype : t;
+  rtype : recr_t;
   name : string;
   formals : statement list;
   body : statement list;

@@ -56,7 +56,7 @@ func_decl_list:
   | func_decl_list func_decl        { $2::$1 }
 
 func_decl :
-  ID LEFTPAREN decl_list RIGHTPAREN TYPEASSIGNMENT data_type body {
+  ID LEFTPAREN decl_list RIGHTPAREN TYPEASSIGNMENT recr_data_type body {
     { rtype = $6 ; name = $1; formals = List.rev $3 ; body = $7; }
   }
 
@@ -138,8 +138,6 @@ STRINGD                                                             { String }
 | BOOLD                                                             { Bool }
 | PDFD                                                              { Pdf }
 | PAGED                                                             { Page }
-
-
 
 sp_data_type:
 LINED { Line }

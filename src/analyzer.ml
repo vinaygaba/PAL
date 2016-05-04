@@ -533,12 +533,16 @@ and annotate_stmt (s : Ast.statement) (env : environment) (tmap : type_map) : Sa
       | _ -> failwith "Invalid For Statement.")
 
 and annotate_func_decl (fdecl : Ast.func_decl) (env : environment) (tmap : type_map) : Sast.tfunc_decl =
-  env.scope.functions <- (fdecl.Ast.name , fdecl.Ast.rtype) :: env.scope.functions;
+  let retType =
+  (match fdecl.Ast.rtype with
+  | Ast.TType(t) -> t
+  | Ast.RType(r) -> let art = annotate_recr_type r tmap in Ast.ListType(art)) in
+  env.scope.functions <- (fdecl.Ast.name , retType) :: env.scope.functions;
   let s = {variables = []; functions = []; parent = Some(env.scope)} in
   let fenv = {scope = s} in
   let aes = annotate_stmts fdecl.Ast.formals fenv tmap in
   let asts = annotate_stmts fdecl.Ast.body fenv tmap in
-  {rtype = fdecl.Ast.rtype; name = fdecl.Ast.name; tformals = aes; tbody = asts}
+  {rtype = retType; name = fdecl.Ast.name; tformals = aes; tbody = asts}
 
 and annotate_main_func_decl (mdecl : Ast.main_func_decl) (env : environment) (tmap : type_map) : Sast.tmain_func_decl =
   let asts = annotate_stmts mdecl.Ast.body env tmap in
