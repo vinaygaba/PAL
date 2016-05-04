@@ -24,9 +24,9 @@ clean :
 .PHONY : compile
 compile :
 
-	javac -cp "javagen/.:javagen/jars/*" javagen/Output.java
+	javac -cp "javagen/.:javagen/pdfbox.jar:javagen/jfreechart-1.0.19.jar:javagen/jcommon-1.0.23.jar:javagen/traprange.lastest.jar" javagen/Output.java
 
-	java -cp "javagen/.:javagen/jars/*" Output
+	java -cp "javagen/.:javagen/pdfbox.jar:javagen/jfreechart-1.0.19.jar:javagen/jcommon-1.0.23.jar:javagen/traprange.lastest.jar" Output
 
 .PHONY : diff
 diff :

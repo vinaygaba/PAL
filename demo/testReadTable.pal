@@ -6,17 +6,25 @@ main()
 	tupleVar : tuple(pdfVar, pageVar);
 
 	table : list list string;
-	properties : map string string
 	location : string = "/Users/dikshavanvari/Desktop/pie.pdf";
 	pagenumbers : list int;
-	pagenumbers[0] = 1;
+	pagenumbers[0] = 0;
+	
 	table = readtable(location,pagenumbers);
+
+
+	properties : map string,string;
+	
 	properties += "ChartTitle","Test Pie Chart";
-	properties += "Height","400";
+	
+	properties += "Height","200";
 	properties += "Width","300";
-	properties += "X","200"
-	properties += "Y","600"
-	chartimage: image = drawpiechart(table,properties);
+	properties += "X","200";
+	properties += "Y","500";
+	
+
+	chartimage : image;
+	chartimage = drawbarchart(table,properties);
 
 	tupleVar = tupleVar . chartimage;
 	renderpdf(pdfVar,"helloworld.pdf");

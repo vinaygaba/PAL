@@ -23,23 +23,23 @@ Tuple tupleVar = new Tuple(pdfVar,pageVar);
 List<List<String>> table = new ArrayList<List<String>>(); 
 
 String location = "/Users/dikshavanvari/Desktop/pie.pdf";List<Integer> pagenumbers = new ArrayList<Integer>(); 
-pagenumbers[new Integer(0)] = new Integer(1);
+pagenumbers.add(0,0);
 table = 
  Util.readTable(location, pagenumbers);
 Map<String,String> properties = new HashMap<String,String>(); 
 properties.put("ChartTitle","Test Pie Chart"); 
-properties.put("Height","400"); 
+properties.put("Height","200"); 
 properties.put("Width","300"); 
 properties.put("X","200"); 
-properties.put("Y","600"); 
+properties.put("Y","500"); 
 
 File file = new File(""); 
 Image chartimage = new Image(file,800,600,100,600);
 chartimage = 
- Util.drawPieChart(table, properties);
+ Util.drawBarChart(table, properties);
 tupleVar = Util.addImageToTuple(tupleVar, chartimage);
 
-"helloworld.pdf".save(pdfVar);
- "helloworld.pdf".close();
+pdfVar.save("helloworld.pdf");
+ pdfVar.close();
       }  
   }

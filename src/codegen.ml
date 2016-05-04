@@ -30,7 +30,7 @@ let writeId iden =
    sprintf "%s" iden
 
 let writeIntLit intLit =
-  sprintf "new Integer(%d)" intLit
+  sprintf "%d" intLit
 
 let writeFloatLit floatLit  =
   sprintf "new Float(%f)" floatLit
@@ -215,6 +215,10 @@ sprintf "\n Util.readFile(%s)" location
 let dataList = StringMap.find "2" funcExprMapForPieChart in
 let attributeMap = StringMap.find "1" funcExprMapForPieChart in
 sprintf "\n Util.drawPieChart(%s, %s)" dataList attributeMap
+| "drawbarchart" -> let funcExprMapForPieChart = getFuncExpressionMap exprList in
+let dataList = StringMap.find "2" funcExprMapForPieChart in
+let attributeMap = StringMap.find "1" funcExprMapForPieChart in
+sprintf "\n Util.drawBarChart(%s, %s)" dataList attributeMap
 | "readtable" -> let funcExprMapForTable = getFuncExpressionMap exprList in
 let location = StringMap.find "2" funcExprMapForTable in
 let pagenumberList = StringMap.find "1" funcExprMapForTable in
@@ -235,8 +239,8 @@ sprintf "\n%s(%s);" name argList
 and writeFunctionCallStmt name exprList =
 match name with
 | "renderpdf" -> let funcExprMap = getFuncExpressionMap exprList in
-let pdfIden =  StringMap.find "1" funcExprMap in
-let location = StringMap.find "2" funcExprMap in
+let pdfIden =  StringMap.find "2" funcExprMap in
+let location = StringMap.find "1" funcExprMap in
 sprintf "\n%s.save(%s);\n %s.close();" pdfIden location pdfIden
 | _ ->
 let expressionListString = List.fold_left (fun a b -> a ^ (generateExpression b)^ ",") "" exprList in
@@ -375,11 +379,10 @@ let rec writeDeclarationStmt tid tdataType typemap =
 
 and writeListAssign lexpr texpression =
       let genexpr = generateExpression texpression in
-      match lexpr with
-      | TListAccess(tid, texpr, t) -> let las = writeListAccess tid texpr in
-                                      sprintf "%s = %s;\n" las genexpr
-      | _ -> "Y u no use Id?"
-
+      (match lexpr with
+      | TListAccess(tid, texpr, t) -> (match tid with 
+                                      | IdTest(name) -> let texprs = generateExpression texpr in sprintf "%s.add(%s,%s);\n" name texprs genexpr)
+      | _ -> "Not a list access" )                              
 and writeListAdd tid texpression typemap =
       let genexpr = generateExpression texpression in
       match tid with
