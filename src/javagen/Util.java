@@ -11,6 +11,14 @@ import java.io.FileReader;
 import java.io.IOException;
 import com.giaybac.traprange.PDFTableExtractor;
 import com.giaybac.traprange.entity.Table;
+import org.jfree.chart.ChartFactory;
+
+import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.JFreeChart;
+
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.general.DefaultPieDataset;
 
 public class Util{
 
@@ -187,6 +195,65 @@ public static Tuple addImageToTuple(Tuple tuple, Image image) throws Exception
 			return image;
 
 		}
+
+    public static Image drawBarChart(List<List<String>> data, HashMap<String, String> attributes) {
+
+		try {
+
+			DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+			int width = 400; /* Width of the image */
+			int height = 300; /* Height of the image */
+			String chartTitle = "Chart Title";
+			String imageName = "imageName.png";
+			String xaxis = "X-Axis";
+			String yaxis = "Y-Axis";
+			int xcod = 100;
+			int ycod = 700;
+
+			if (attributes.containsKey("ChartTitle")) {
+				chartTitle = attributes.get("ChartTitle");
+			}
+
+			if (attributes.containsKey("Height")) {
+				height = Integer.parseInt(attributes.get("Height"));
+			}
+
+			if (attributes.containsKey("Width")) {
+				width = Integer.parseInt(attributes.get("Width"));
+			}
+
+			if (attributes.containsKey("ImageName")) {
+				imageName = attributes.get("ImageName") + ".png";
+			}
+
+			if (attributes.containsKey("X")) {
+				xcod = Integer.parseInt(attributes.get("X"));
+			}
+
+			if (attributes.containsKey("Y")) {
+				ycod = Integer.parseInt(attributes.get("Y"));
+			}
+
+			for (int i = 0; i < data.size(); i++) {
+				List<String> subList = data.get(i);
+				dataset.addValue(Double.parseDouble(subList.get(1)), xaxis, subList.get(0));
+
+			}
+
+			JFreeChart barChart = ChartFactory.createBarChart(chartTitle, xaxis, yaxis, dataset,
+					PlotOrientation.VERTICAL, true, true, false);
+
+			ChartUtilities.saveChartAsJPEG(new File(imageName), barChart, width, height);
+
+			Image image = new Image(new File(imageName), height, width, xcod, ycod);
+
+			return image;
+		}
+
+		catch (Exception e) {
+			return null;
+		}
+	}
 
 
 }
