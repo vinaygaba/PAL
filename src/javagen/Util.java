@@ -9,6 +9,8 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import com.giaybac.traprange.PDFTableExtractor;
+import com.giaybac.traprange.entity.Table;
 
 public class Util{
 
@@ -78,6 +80,32 @@ public static Tuple addImageToTuple(Tuple tuple, Image image) throws Exception
  return tuple;  
 
 }
+
+
+ public static List<List> readTable(String location, List<Integer> pageNumbers){
+      
+        PDFTableExtractor extractor = (new PDFTableExtractor()).setSource(location);
+             
+        List<List> lists = new ArrayList<List>();
+        for(Integer j : pageNumbers)
+        {
+          extractor.addPage(j);
+         
+          List<Table> extract = extractor.extract();
+          String csv = extract.get(0).toString();
+       
+          String[] line = csv.split("\n");
+          for(int i = 0; i < line.length; i++)
+          {
+            String[] splits = line[i].split(";");
+            List<String> asList = Arrays.asList(splits);
+            lists.add(asList);
+          }
+        
+        }
+         
+        return lists;
+  }
 
 
   public static String readFile(String location) throws Exception{
