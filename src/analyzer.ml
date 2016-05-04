@@ -79,6 +79,8 @@ let initialize_types(tmap : type_map) =
   let typeMap = StringMap.add "line" linetype typeMap in
   let tupletype = next_type_var() in
   let typeMap = StringMap.add "tuple" tupletype typeMap in
+  let lstype = next_type_var() in
+  let typeMap = StringMap.add "AD" lstype typeMap in
   tmap.map <- typeMap
 
 
@@ -87,7 +89,7 @@ let initialize_predefined_functions (env : environment) =
     env.scope.functions <- lengthfn :: env.scope.functions;
     (* let lengthfn = ("getpages", Ast.Page list) in
     env.scope.functions <- lengthfn :: env.scope.functions); *)
-    let readtable = ("readtable", Ast.String) in
+    let readtable = ("readtable", Ast.ListType("AI")) in
     env.scope.functions <- readtable :: env.scope.functions;
 
     let drawpiechart = ("drawpiechart", Ast.Int) in
