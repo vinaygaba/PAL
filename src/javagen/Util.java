@@ -32,7 +32,7 @@ public class Util{
     PDFont font = PDType1Font.TIMES_ROMAN;
     int[] array = possibleWrapPoints(line.getText());
     // Define a text content stream using the selected font, moving the cursor and drawing the text "Hello World"
-   
+
    for (int i =0; i < array.length; i++ ) {
       float width = font.getStringWidth(line.getText().substring(start,array[i])) / 1000 * line.getFontSize();
         if ( start <= end && width > pwidth ) {
@@ -71,29 +71,26 @@ public static Tuple addImageToTuple(Tuple tuple, Image image) throws Exception
 {
  PDImageXObject pdIMage = PDImageXObject.createFromFileByContent(image.getFile(), tuple.getDocument());
  PDPageContentStream contentStream = new PDPageContentStream(tuple.getDocument(), tuple.getPage(), true, true);
-
- 
  contentStream.drawImage(pdIMage, image.getXCood(), image.getYCood(), image.getHeight(), image.getWidth());
- 
  contentStream.close();
-    
- return tuple;  
+
+ return tuple;
 
 }
 
 
  public static List<List> readTable(String location, List<Integer> pageNumbers){
-      
+
         PDFTableExtractor extractor = (new PDFTableExtractor()).setSource(location);
-             
+
         List<List> lists = new ArrayList<List>();
         for(Integer j : pageNumbers)
         {
           extractor.addPage(j);
-         
+
           List<Table> extract = extractor.extract();
           String csv = extract.get(0).toString();
-       
+
           String[] line = csv.split("\n");
           for(int i = 0; i < line.length; i++)
           {
@@ -101,9 +98,9 @@ public static Tuple addImageToTuple(Tuple tuple, Image image) throws Exception
             List<String> asList = Arrays.asList(splits);
             lists.add(asList);
           }
-        
+
         }
-         
+
         return lists;
   }
 
@@ -136,5 +133,60 @@ public static Tuple addImageToTuple(Tuple tuple, Image image) throws Exception
           ret[i] = ret[i-1] + split[i].length();
       return ret;
   }
+
+
+  public static Image drawPieChart(List<List<String>> data, HashMap<String, String> attributes) {
+
+		try {
+
+			DefaultPieDataset pieDataset = new DefaultPieDataset();
+			int width = 400; /* Width of the image */
+			int height = 300; /* Height of the image */
+			String chartTitle = "Chart Title";
+			String imageName = "imageName.png";
+			int xcod = 100;
+			int ycod = 700;
+
+			if (attributes.containsKey("ChartTitle")) {
+				chartTitle = attributes.get("ChartTitle");
+			}
+
+			if (attributes.containsKey("Height")) {
+				height = Integer.parseInt(attributes.get("Height"));
+			}
+
+			if (attributes.containsKey("Width")) {
+				width = Integer.parseInt(attributes.get("Width"));
+			}
+
+			if (attributes.containsKey("ImageName")) {
+				imageName = attributes.get("ImageName") + ".png";
+			}
+
+			if (attributes.containsKey("X")) {
+				xcod = Integer.parseInt(attributes.get("X"));
+			}
+
+			if (attributes.containsKey("Y")) {
+				ycod = Integer.parseInt(attributes.get("Y"));
+			}
+
+			System.out.println(data.size());
+			List<String> subList;
+			for (int i = 0; i < data.size(); i++) {
+				subList = data.get(i);
+				pieDataset.setValue(subList.get(0), Integer.parseInt(subList.get(1)));
+			}
+			// Create the chart
+			JFreeChart chart = ChartFactory.createPieChart3D(chartTitle, pieDataset, true, true, true);
+
+			ChartUtilities.saveChartAsPNG(new File(imageName), chart, height, width);
+
+			Image image = new Image(new File(imageName), height, width, xcod, ycod);
+
+			return image;
+
+		}
+
 
 }
