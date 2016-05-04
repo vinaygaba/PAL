@@ -219,6 +219,13 @@ sprintf "\n Util.drawPieChart(%s, %s)" dataList attributeMap
 let location = StringMap.find "1" funcExprMapForTable in
 let pagenumberList = StringMap.find "2" funcExprMapForTable in
 sprintf "\n Util.readTable(%s, %s)" location pagenumberList
+| "getpages" -> let funcExprMap = getFuncExpressionMap exprList in 
+let pdffile = StringMap.find "1" funcExprMap in
+sprintf "\n Util.getPages(%s)" pdffile
+| "split" -> let funcExprMap = getFuncExpressionMap exprList in
+let pdffile = StringMap.find "1" funcExprMap in
+let varList = StringMap.find "2" funcExprMap in
+sprintf "\n Util.split(%s,%s)" pdffile varList
 | _ ->
 let expressionListString = List.fold_left (fun a b -> a ^ (generateExpression b)^ ",") "" exprList in
 let argList = String.sub expressionListString 0 ((String.length expressionListString) - 1) in
@@ -480,6 +487,11 @@ and generateJavaProgram fileName prog =
   import org.apache.pdfbox.pdmodel.font.PDFont;
   import org.apache.pdfbox.pdmodel.PDPageContentStream;
   import org.apache.pdfbox.pdmodel.font.PDType1Font;
+  import java.util.ArrayList;
+  import java.util.Arrays;
+  import java.util.List;
+  import java.util.HashMap;
+  import java.util.Map;  
   public class %s
   {
     %s
