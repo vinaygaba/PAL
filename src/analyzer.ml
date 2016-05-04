@@ -91,10 +91,10 @@ let initialize_predefined_functions (env : environment) =
     env.scope.functions <- readtable :: env.scope.functions;
 
     let drawpiechart = ("drawpiechart", Ast.Int) in
-    env.scope.functions <- readtable :: env.scope.functions;
+    env.scope.functions <- drawpiechart :: env.scope.functions;
 
     let drawbarchart = ("drawbarchart", Ast.Int) in
-    env.scope.functions <- readtable :: env.scope.functions;
+    env.scope.functions <- drawbarchart :: env.scope.functions;
 
     let readfn = ("readfile", Ast.String) in
     env.scope.functions <- readfn :: env.scope.functions;;
