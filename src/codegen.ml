@@ -109,12 +109,12 @@ let idstring =
           [] -> sprintf "Line %s = new Line();\n %s.setFont(\"TIMES_ROMAN\");\n %s.setText(\"Hello World\");\n %s.setXcod(100);\n %s.setYcod(700);\n %s.setFontSize(12);\n %s.setWidth(500);\n" idstring idstring idstring idstring idstring idstring idstring
           | _ ->
           let exprMapForLine = getExpressionMap tExprList in
-          let drawString =  StringMap.find "6" exprMapForLine in
-          let font = StringMap.find "5" exprMapForLine in
-          let fontSize = StringMap.find "4" exprMapForLine in
-          let xcod = StringMap.find "3" exprMapForLine in
-          let ycod = StringMap.find "2" exprMapForLine in
-          let width = StringMap.find "1" exprMapForLine in
+          let drawString =  StringMap.find "1" exprMapForLine in
+          let font = StringMap.find "2" exprMapForLine in
+          let fontSize = StringMap.find "3" exprMapForLine in
+          let xcod = StringMap.find "4" exprMapForLine in
+          let ycod = StringMap.find "5" exprMapForLine in
+          let width = StringMap.find "6" exprMapForLine in
           sprintf "Line %s = new Line();\n %s.setFont(%s);\n %s.setText(%s);\n %s.setXcod(%s);\n %s.setYcod(%s);\n %s.setFontSize(%s);\n %s.setWidth(%s);\n" idstring idstring font idstring drawString idstring xcod idstring ycod idstring fontSize idstring width)
  | Tuple ->
  let exprMapForTuple = getExpressionMap tExprList in

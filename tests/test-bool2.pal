@@ -24,7 +24,7 @@ main()
 
 
 	tupleVar : tuple(pdfVar, pageVar);
-	linevar : line(stringVar, "Times_New_Roman" , 12 , 100, 700);
+	linevar : line(stringVar, "Times_New_Roman" , 12 , 100, 700,500);
 
 	renderpdf(pdfVar, "test-bool2.pdf");
 }
