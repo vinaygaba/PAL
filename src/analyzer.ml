@@ -82,14 +82,23 @@ let initialize_types(tmap : type_map) =
   tmap.map <- typeMap
 
 
-let initialize_predefined_functions (env : environment) =  
-    let lengthfn = ("length", Ast.Int) in 
+let initialize_predefined_functions (env : environment) =
+    let lengthfn = ("length", Ast.Int) in
     env.scope.functions <- lengthfn :: env.scope.functions;
-    (* let lengthfn = ("getpages", Ast.Page list) in 
+    (* let lengthfn = ("getpages", Ast.Page list) in
     env.scope.functions <- lengthfn :: env.scope.functions); *)
-   
-    let readfn = ("readfile", Ast.String) in 
+    let readtable = ("readtable", Ast.String) in
+    env.scope.functions <- readtable :: env.scope.functions;
+
+    let drawpiechart = ("drawpiechart", Ast.Int) in
+    env.scope.functions <- readtable :: env.scope.functions;
+
+    let drawbarchart = ("drawbarchart", Ast.Int) in
+    env.scope.functions <- readtable :: env.scope.functions;
+
+    let readfn = ("readfile", Ast.String) in
     env.scope.functions <- readfn :: env.scope.functions;;
+
 
 let nest_scope (env : environment) : environment =
   let s = {variables = []; functions = []; parent = Some(env.scope)} in
@@ -198,8 +207,8 @@ let rec annotate_expr (e : Ast.expression) (env : environment) (tmap : type_map)
     let t1 = type_of ae1 in
     let t2 = type_of ae2 in
     if t1 = t2
-    then 
-      (match o with 
+    then
+      (match o with
         | Ast.Add
         | Ast.Sub
         | Ast.Div
@@ -577,12 +586,12 @@ and parse_file (fname : string) : Sast.tprogram =
   let annotatedProgram = annotate_prog program in
   annotatedProgram
 
-and extract_function (itp : Sast.tprogram) (env : environment) : Sast.tfunc_decl list = 
+and extract_function (itp : Sast.tprogram) (env : environment) : Sast.tfunc_decl list =
 	let fdecls = itp.tdeclf in
 	let _  = List.map (fun f ->  env.scope.functions <- (f.name , f.rtype) :: env.scope.functions) fdecls in
 	fdecls
 
-and extract_functions (itps : Sast.tprogram list) (env : environment) : Sast.tfunc_decl list = 
+and extract_functions (itps : Sast.tprogram list) (env : environment) : Sast.tfunc_decl list =
 	let l = List.map (fun f -> extract_function f env) itps in
 	let tf = [] in
 	let _  = List.fold_left (fun acc x -> x :: acc) tf l in
