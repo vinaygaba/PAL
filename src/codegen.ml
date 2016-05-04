@@ -211,6 +211,10 @@ match name with
 | "readfile" -> let funcExprMap = getFuncExpressionMap exprList in
 let location = StringMap.find "1" funcExprMap in
 sprintf "\n Util.readFile(%s)" location
+| "readtable" -> let funcExprMapForTable = getFuncExpressionMap exprList in
+let location = StringMap.find "1" funcExprMapForTable in
+let pagenumberList = StringMap.find "2" funcExprMapForTable in
+sprintf "\n Util.readTable(%s, %s)" location pagenumberList
 | _ -> 
 let expressionListString = List.fold_left (fun a b -> a ^ (generateExpression b)^ ",") "" exprList in
 let argList = String.sub expressionListString 0 ((String.length expressionListString) - 1) in
@@ -579,6 +583,11 @@ sprintf "  public static void main(String[] args) throws Exception
   and generateMainFunction prog typemap =
   let mainFunctionBody =  writeMainFunction prog.tbody typemap in
   sprintf "%s" mainFunctionBody
+
+
+
+
+
 
 
 
