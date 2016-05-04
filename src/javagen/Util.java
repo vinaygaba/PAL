@@ -243,7 +243,7 @@ public static Tuple addImageToTuple(Tuple tuple, Image image) throws Exception
 			JFreeChart barChart = ChartFactory.createBarChart(chartTitle, xaxis, yaxis, dataset,
 					PlotOrientation.VERTICAL, true, true, false);
 
-			ChartUtilities.saveChartAsJPEG(new File(imageName), barChart, width, height);
+			ChartUtilities.saveChartAsPNG(new File(imageName), barChart, width, height);
 
 			Image image = new Image(new File(imageName), height, width, xcod, ycod);
 
