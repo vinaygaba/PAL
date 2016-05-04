@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.*;
 
 
 import org.jfree.chart.ChartFactory;
@@ -94,7 +95,7 @@ public static Tuple addImageToTuple(Tuple tuple, Image image) throws Exception
 }
 
 
- public static List<List> readTable(String location, List<Integer> pageNumbers){
+ public static List<List<String>> readTable(String location, List<Integer> pageNumbers){
 
         PDFTableExtractor extractor = (new PDFTableExtractor()).setSource(location);
 
@@ -150,7 +151,7 @@ public static Tuple addImageToTuple(Tuple tuple, Image image) throws Exception
   }
 
 
-  public static Image drawPieChart(List<List<String>> data, HashMap<String, String> attributes) {
+  public static Image drawPieChart(List<List<String>> data, Map<String, String> attributes) {
 
 		try {
 
@@ -201,9 +202,13 @@ public static Tuple addImageToTuple(Tuple tuple, Image image) throws Exception
 
 			return image;
 
-		}
+		}catch(Exception e)
+    {
+      return null;
+    }
+  }
 
-    public static Image drawBarChart(List<List<String>> data, HashMap<String, String> attributes) {
+    public static Image drawBarChart(List<List<String>> data, Map<String, String> attributes) {
 
 		try {
 
@@ -255,9 +260,7 @@ public static Tuple addImageToTuple(Tuple tuple, Image image) throws Exception
 			Image image = new Image(new File(imageName), height, width, xcod, ycod);
 
 			return image;
-		}
-
-		catch (Exception e) {
+		}catch (Exception e) {
 			return null;
 		}
 	}
