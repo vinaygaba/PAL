@@ -98,7 +98,8 @@ let initialize_predefined_functions (env : environment) =
     env.scope.functions <- splitfn :: env.scope.functions; 
     let readtable = ("readtable", Ast.ListType("AI")) in
     env.scope.functions <- readtable :: env.scope.functions;
-
+    let readtable = ("readtext", Ast.String) in
+    env.scope.functions <- readtable :: env.scope.functions;
     let drawpiechart = ("drawpiechart", Ast.Image) in
     env.scope.functions <- drawpiechart :: env.scope.functions;
 

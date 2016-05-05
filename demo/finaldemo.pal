@@ -1,0 +1,22 @@
+import ("stdlib.pal");
+
+main()
+{
+  pdfVar : pdf;
+
+  pageVar : page;
+
+  pagenumbers : list int;
+
+  pagenumbers[0] = 1;
+  pagenumbers[1] = 2;
+
+  stringVar : string = readtext("/Users/dikshavanvari/Desktop/hw3_dhv2108.pdf",pagenumbers);
+
+  tupleVar : tuple(pdfVar, pageVar);
+
+  stringVar = write_paragraph(tupleVar, stringVar, 100, 700, 12, "Times_Now_Roman", 100, 600);
+
+  renderpdf(pdfVar,"finaldemooutput.pdf");
+
+}
