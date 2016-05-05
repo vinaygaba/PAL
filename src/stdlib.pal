@@ -118,7 +118,7 @@ write_4grid_layout(tupleVar:tuple, stringVar:string, fontType:string, fontSize:i
 
 }
 
-write_pages(stringVar : string, fontSize : int, fontType : string) : pdf{
+write_pages(stringVar : string, fontSize : int, fontType : string, layoutType:string) : pdf{
 
   listVar:list pdf;
   pdfVar:pdf;
@@ -127,9 +127,17 @@ write_pages(stringVar : string, fontSize : int, fontType : string) : pdf{
     pdfVar = pdfVar . pageVar;
     tupleVar:tuple(pdfVar,pageVar);
 
-    stringVar = write_two_column_layout(tupleVar,stringVar,fontType,fontSize);
-    #listVar += pdfVar;
+    if(layoutType == "TWO_COLUMN"){
+      stringVar = write_two_column_layout(tupleVar,stringVar,fontType,fontSize);
+    } elif(layoutType == "THREE_COLUMN"){
+      stringVar = write_three_column_layout(tupleVar,stringVar,fontType,fontSize);
+    } else{
+      stringVar = write_4grid_layout(tupleVar,stringVar,fontType,fontSize);
+    }
+
   }
+
+
 
   return pdfVar;
 }

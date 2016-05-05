@@ -265,6 +265,7 @@ match t with
 | String -> sprintf "\nString %s = %s;" name expressionString
 | Bool -> sprintf "\nBoolean %s = %s;" name expressionString
 | Float -> sprintf "\nFloat %s = %s;" name expressionString
+| Pdf -> sprintf "\nPDDocument %s = %s" name expressionString
 | _ -> failwith "initialization not possible for this type"
 
 
