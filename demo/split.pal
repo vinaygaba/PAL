@@ -1,0 +1,38 @@
+main()
+{
+
+pdfVar : pdf;
+pdfVar = loadpdf("/Users/dikshavanvari/Desktop/hw3_dhv2108.pdf");
+
+pages : list page;
+
+pdfs : list pdf;
+
+pages = getpages(pdfVar);
+
+
+splitnumbers : list int;
+
+splitnumbers[0] = 2;
+splitnumbers[1] = 4;
+splitnumbers[2] = 6;
+
+pdfs = split(pdfVar, splitnumbers);
+
+pdfnames : list string;
+
+pdfnames[0] = "1.pdf";
+pdfnames[1] = "2.pdf";
+pdfnames[2] = "3.pdf";
+pdfnames[3] = "4.pdf"; 
+
+	i: int;
+
+	lengthoflist : int;
+	lengthoflist = length(pdfs);
+
+	for(i = 0 ; i < lengthoflist; i = i + 1)
+	{
+		renderpdf(pdfs[i],pdfnames[i]);
+	}
+}

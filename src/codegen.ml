@@ -208,7 +208,7 @@ match name with
   )
   | _ -> failwith "expecting an identifier"
  )
-| "readfile" -> let funcExprMap = getFuncExpressionMap exprList in
+| "readtextfile" -> let funcExprMap = getFuncExpressionMap exprList in
 let location = StringMap.find "1" funcExprMap in
 sprintf "\n Util.readFile(%s)" location
 | "drawpiechart" -> let funcExprMapForPieChart = getFuncExpressionMap exprList in
@@ -223,17 +223,20 @@ sprintf "\n Util.drawBarChart(%s, %s)" dataList attributeMap
 let location = StringMap.find "2" funcExprMapForTable in
 let pagenumberList = StringMap.find "1" funcExprMapForTable in
 sprintf "\n Util.readTable(%s, %s)" location pagenumberList
-| "readtext" -> let funcExprMapForTable = getFuncExpressionMap exprList in
+| "readtextfrompdf" -> let funcExprMapForTable = getFuncExpressionMap exprList in
 let location = StringMap.find "2" funcExprMapForTable in
 let pagenumberList = StringMap.find "1" funcExprMapForTable in
 sprintf "\n Util.readTextFromPdf(%s, %s)" location pagenumberList
 | "getpages" -> let funcExprMap = getFuncExpressionMap exprList in 
 let pdffile = StringMap.find "1" funcExprMap in
 sprintf "\n Util.getPages(%s)" pdffile
+| "loadpdf" -> let funcExprMap = getFuncExpressionMap exprList in 
+let pdffile = StringMap.find "1" funcExprMap in
+sprintf "\n Util.loadPdf(%s)" pdffile
 | "split" -> let funcExprMap = getFuncExpressionMap exprList in
 let pdffile = StringMap.find "1" funcExprMap in
 let varList = StringMap.find "2" funcExprMap in
-sprintf "\n Util.split(%s,%s)" pdffile varList
+sprintf "\n Util.splitPdf(%s,%s)" pdffile varList
 | _ ->
 let expressionListString = List.fold_left (fun a b -> a ^ (generateExpression b)^ ",") "" exprList in
 let argList = String.sub expressionListString 0 ((String.length expressionListString) - 1) in
@@ -284,7 +287,7 @@ sprintf "\n%s.save(\"%s\");\n %s.close();" pdfIden location pdfIden
  and writeListAccess tid texpression =
    let gexpr = generateExpression texpression in
    match tid with
-   | IdTest(x) -> sprintf "%s[%s]" x gexpr
+   | IdTest(x) -> sprintf "%s.get(%s)" x gexpr
 
  and writeMapAccess tid texpression =
    let gexpr = generateExpression texpression in
