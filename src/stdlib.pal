@@ -1,6 +1,6 @@
 main()
 {
-  
+
 }
 
 write_paragraph(tupleVar : tuple, stringVar : string, startMargin : int, startHeight : int, fontSize : int, fontType : string, endHeight : int, width : int) : string {
@@ -24,7 +24,7 @@ write_paragraph(tupleVar : tuple, stringVar : string, startMargin : int, startHe
   {
     break;
   }
-  
+
   }
   return stringVar;
   }
@@ -84,7 +84,7 @@ endHeight:int = 400;
 write_4grid_layout(tupleVar:tuple, stringVar:string, fontType:string, fontSize:int) : string
 {
 
-  startX:int = 20;
+    startX:int = 20;
 
     width:int = 240;
 
@@ -118,4 +118,18 @@ write_4grid_layout(tupleVar:tuple, stringVar:string, fontType:string, fontSize:i
 
 }
 
+write_pages(stringVar : string, fontSize : int, fontType : string) : pdf{
 
+  listVar:list pdf;
+  pdfVar:pdf;
+  while(length(stringVar) > 0){
+    pageVar:page;
+    pdfVar = pdfVar . pageVar;
+    tupleVar:tuple(pdfVar,pageVar);
+
+    stringVar = write_two_column_layout(tupleVar,stringVar,fontSize,fontType);
+    #listVar += pdfVar;
+  }
+
+  return pdfVar;
+}

@@ -304,27 +304,21 @@ public static Tuple addImageToTuple(Tuple tuple, Image image) throws Exception
 
       case "TIME_ROMAN" : return PDType1Font.TIMES_ROMAN;
 
-
       case "COURIER": return PDType1Font.COURIER;
 
       case "COURIER_BOLD" : return PDType1Font.COURIER_BOLD;
-
 
       case "COURIER_BOLD_OBLIQUE" : return PDType1Font.COURIER_BOLD_OBLIQUE;
 
       case "COURIER_OBLIQUE" : return PDType1Font.COURIER_OBLIQUE;
 
-
       case "HELVETICA" : return PDType1Font.HELVETICA;
 
-
       case "HELVETICA_BOLD" : return PDType1Font.HELVETICA_BOLD;
-
 
       case "HELVETICA_BOLD_OBLIQUE" : return PDType1Font.HELVETICA_BOLD_OBLIQUE;
 
       case "HELVETICA_OBLIQUE" : return PDType1Font.HELVETICA_OBLIQUE;
-
 
       case "SYMBOL": return PDType1Font.SYMBOL;
 
@@ -334,9 +328,10 @@ public static Tuple addImageToTuple(Tuple tuple, Image image) throws Exception
 
       case "TIMES_ITALIC" : return PDType1Font.TIMES_ITALIC;
 
-
       case "ZAPF_DINGBATS" : return PDType1Font.ZAPF_DINGBATS;
-                      
+
+      default : return PDType1Font.TIMES_ROMAN;
+
     }
 
     return PDType1Font.TIMES_ROMAN;
@@ -352,10 +347,10 @@ public static Tuple addImageToTuple(Tuple tuple, Image image) throws Exception
       {
         PDPage next = iterator.next();
         listOfPages.add(next);
-        
-      }      
-      return listOfPages; 
- } 
+
+      }
+      return listOfPages;
+ }
 
 public static List<PDDocument> splitPdf(List<Integer> splits,PDDocument document) throws Exception{
 
@@ -391,9 +386,10 @@ public static List<PDDocument> splitPdf(List<Integer> splits,PDDocument document
 
 public static PDDocument loadPdf(String filename) throws Exception{
 
-    File file = new File(filename);   
+    File file = new File(filename);
     PDDocument document = PDDocument.load(file);
     return document;
 }
+
 
 }
