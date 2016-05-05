@@ -27,6 +27,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
+import org.apache.pdfbox.text.PDFTextStripper;
 
 public class Util{
 
@@ -212,6 +213,25 @@ public static Tuple addImageToTuple(Tuple tuple, Image image) throws Exception
       e.printStackTrace();
       return null;
     }
+  }
+
+
+
+  public static String readTextFromPdf(String location, List<Integer> pageNumbers) throws Exception{
+
+      File file = new File(location);
+      StringBuffer buff = new StringBuffer();
+
+      for(Integer i : pageNumbers)
+      {
+          PDDocument document = PDDocument.load(file);
+          PDFTextStripper pdfStripper = new PDFTextStripper();
+          pdfStripper.setStartPage(1);
+          pdfStripper.setEndPage(3);
+          buff.append(pdfStripper.getText(document));
+       }
+
+       return buff.toString();
   }
 
     public static Image drawBarChart(List<List<String>> data, Map<String, String> attributes) {

@@ -223,6 +223,10 @@ sprintf "\n Util.drawBarChart(%s, %s)" dataList attributeMap
 let location = StringMap.find "2" funcExprMapForTable in
 let pagenumberList = StringMap.find "1" funcExprMapForTable in
 sprintf "\n Util.readTable(%s, %s)" location pagenumberList
+| "readtext" -> let funcExprMapForTable = getFuncExpressionMap exprList in
+let location = StringMap.find "2" funcExprMapForTable in
+let pagenumberList = StringMap.find "1" funcExprMapForTable in
+sprintf "\n Util.readTextFromPdf(%s, %s)" location pagenumberList
 | "getpages" -> let funcExprMap = getFuncExpressionMap exprList in 
 let pdffile = StringMap.find "1" funcExprMap in
 sprintf "\n Util.getPages(%s)" pdffile
