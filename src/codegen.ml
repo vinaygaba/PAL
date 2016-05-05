@@ -30,7 +30,7 @@ let writeId iden =
    sprintf "%s" iden
 
 let writeIntLit intLit =
-  sprintf "new Integer(%d)" intLit
+  sprintf "%d" intLit
 
 let writeFloatLit floatLit  =
   sprintf "new Float(%f)" floatLit
@@ -109,17 +109,17 @@ let idstring =
           [] -> sprintf "Line %s = new Line();\n %s.setFont(\"TIMES_ROMAN\");\n %s.setText(\"Hello World\");\n %s.setXcod(100);\n %s.setYcod(700);\n %s.setFontSize(12);\n %s.setWidth(500);\n" idstring idstring idstring idstring idstring idstring idstring
           | _ ->
           let exprMapForLine = getExpressionMap tExprList in
-          let drawString =  StringMap.find "6" exprMapForLine in
-          let font = StringMap.find "5" exprMapForLine in
-          let fontSize = StringMap.find "4" exprMapForLine in
-          let xcod = StringMap.find "3" exprMapForLine in
-          let ycod = StringMap.find "2" exprMapForLine in
-          let width = StringMap.find "1" exprMapForLine in
+          let drawString =  StringMap.find "1" exprMapForLine in
+          let font = StringMap.find "2" exprMapForLine in
+          let fontSize = StringMap.find "3" exprMapForLine in
+          let xcod = StringMap.find "4" exprMapForLine in
+          let ycod = StringMap.find "5" exprMapForLine in
+          let width = StringMap.find "6" exprMapForLine in
           sprintf "Line %s = new Line();\n %s.setFont(%s);\n %s.setText(%s);\n %s.setXcod(%s);\n %s.setYcod(%s);\n %s.setFontSize(%s);\n %s.setWidth(%s);\n" idstring idstring font idstring drawString idstring xcod idstring ycod idstring fontSize idstring width)
  | Tuple ->
  let exprMapForTuple = getExpressionMap tExprList in
- let pdfIden = StringMap.find "2" exprMapForTuple in
- let pageIden = StringMap.find "1" exprMapForTuple in
+ let pdfIden = StringMap.find "1" exprMapForTuple in
+ let pageIden = StringMap.find "2" exprMapForTuple in
   sprintf "Tuple %s = new Tuple(%s,%s);\n" idstring pdfIden pageIden
  | Image ->  (match tExprList with
           [] -> sprintf "\nFile file = new File(\"\"); \nImage %s = new Image(file,%s,%s,%s,%s);\n" idstring "800" "600" "100" "600"
@@ -212,12 +212,16 @@ match name with
 let location = StringMap.find "1" funcExprMap in
 sprintf "\n Util.readFile(%s)" location
 | "drawpiechart" -> let funcExprMapForPieChart = getFuncExpressionMap exprList in
-let dataList = StringMap.find "1" funcExprMapForPieChart in
-let attributeMap = StringMap.find "2" funcExprMapForPieChart in
+let dataList = StringMap.find "2" funcExprMapForPieChart in
+let attributeMap = StringMap.find "1" funcExprMapForPieChart in
 sprintf "\n Util.drawPieChart(%s, %s)" dataList attributeMap
+| "drawbarchart" -> let funcExprMapForPieChart = getFuncExpressionMap exprList in
+let dataList = StringMap.find "2" funcExprMapForPieChart in
+let attributeMap = StringMap.find "1" funcExprMapForPieChart in
+sprintf "\n Util.drawBarChart(%s, %s)" dataList attributeMap
 | "readtable" -> let funcExprMapForTable = getFuncExpressionMap exprList in
-let location = StringMap.find "1" funcExprMapForTable in
-let pagenumberList = StringMap.find "2" funcExprMapForTable in
+let location = StringMap.find "2" funcExprMapForTable in
+let pagenumberList = StringMap.find "1" funcExprMapForTable in
 sprintf "\n Util.readTable(%s, %s)" location pagenumberList
 | "getpages" -> let funcExprMap = getFuncExpressionMap exprList in 
 let pdffile = StringMap.find "1" funcExprMap in
@@ -235,8 +239,8 @@ sprintf "\n%s(%s);" name argList
 and writeFunctionCallStmt name exprList =
 match name with
 | "renderpdf" -> let funcExprMap = getFuncExpressionMap exprList in
-let pdfIden =  StringMap.find "1" funcExprMap in
-let location = StringMap.find "2" funcExprMap in
+let pdfIden =  StringMap.find "2" funcExprMap in
+let location = StringMap.find "1" funcExprMap in
 sprintf "\n%s.save(%s);\n %s.close();" pdfIden location pdfIden
 | _ ->
 let expressionListString = List.fold_left (fun a b -> a ^ (generateExpression b)^ ",") "" exprList in
@@ -375,11 +379,10 @@ let rec writeDeclarationStmt tid tdataType typemap =
 
 and writeListAssign lexpr texpression =
       let genexpr = generateExpression texpression in
-      match lexpr with
-      | TListAccess(tid, texpr, t) -> let las = writeListAccess tid texpr in
-                                      sprintf "%s = %s;\n" las genexpr
-      | _ -> "Y u no use Id?"
-
+      (match lexpr with
+      | TListAccess(tid, texpr, t) -> (match tid with 
+                                      | IdTest(name) -> let texprs = generateExpression texpr in sprintf "%s.add(%s,%s);\n" name texprs genexpr)
+      | _ -> "Not a list access" )                              
 and writeListAdd tid texpression typemap =
       let genexpr = generateExpression texpression in
       match tid with

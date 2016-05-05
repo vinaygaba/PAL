@@ -10,17 +10,17 @@ main()
 
 	tupleVar : tuple(pdfVar, pageVar);
 
-	lineVar42 : line("42","Times_New_Roman",12,100,700);
+	lineVar42 : line("42","Times_New_Roman",12,100,700, 500);
 
-	lineVar17 : line("17","Times_New_Roman",12,100,700);
+	lineVar17 : line("17","Times_New_Roman",12,100,700, 500);
 
 	while(intVar > 0)
 	{
-		tupleVar = tupleVar.line42;
+		tupleVar = tupleVar.lineVar42;
 		intVar = intVar - 1;
 	}
 		
-	tupleVar = tupleVar.line17;
+	tupleVar = tupleVar.lineVar17;
 
 	renderPdf(pdfVar,"test-while1.pdf");
 

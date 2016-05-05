@@ -5,8 +5,8 @@ main()
 
 	pdfVar = pdfVar.pageVar;
 
-	lineVar42 : line("42", "Times_New_Roman",12,100,700);
-	lineVar17 : line("17", "Times_New_Roman",12,100,500);
+	lineVar42 : line("42", "Times_New_Roman",12,100,700,500);
+	lineVar17 : line("17", "Times_New_Roman",12,100,500,500);
 
 
 	tupleVar : tupleVar(pdfVar,pageVar);

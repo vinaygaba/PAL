@@ -1,0 +1,22 @@
+bool sum(int a)
+{
+	if(a > 5)
+	return true;
+}
+
+main()
+{
+	pdfVar : pdf;
+	pageVar : page;
+	pdfVar = pdfVar.pageVar;
+	stringVar : string;
+	stringVar = "Failure";
+	if(sum(6))
+	{
+		stringVar = "Success";
+	}
+	tupleVar : tuple(pdfVar, pageVar);
+	linevar : line(stringVar, "Times_New_Roman" , 12 , 100, 700, 500);
+
+	renderpdf(pdfVar, "test-func2.pdf");
+}
