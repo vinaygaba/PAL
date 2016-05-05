@@ -11,7 +11,7 @@ main()
 
 
 	tupleVar : tuple(pdfVar,pageVar);
-	
+
 	if(false == false)
 	{
 	tupleVar = tupleVar.lineVar42;
@@ -22,6 +22,6 @@ main()
 	}
 	tupleVar = tupleVar.lineVar8;
 
-	renderPdf(pdfVar,"test-if4.pdf");
+	renderpdf(pdfVar,"test-if4.pdf");
 
 }

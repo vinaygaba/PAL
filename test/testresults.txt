@@ -1,0 +1,12 @@
+Test Case:test-arith1     Result:Passed
+Test Case:test-arith2     Result:Passed
+Test Case:test-bool1     Result:Passed
+Test Case:test-bool2     Result:Passed
+Test Case:test-bool3     Result:Passed
+Test Case:test-for1     Result:Passed
+Test Case:test-func1     Result:Passed
+Test Case:test-if1     Result:Passed
+Test Case:test-if2     Result:Passed
+Test Case:test-if3     Result:Passed
+Test Case:test-if4     Result:Passed
+Test Case:test-string-var1     Result:Passed

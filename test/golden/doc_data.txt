@@ -1,0 +1,8 @@
+PdfID0: 834325f6bf21bf1f685cae256aa97447
+PdfID1: 834325f6bf21bf1f685cae256aa97447
+NumberOfPages: 1
+PageMediaBegin
+PageMediaNumber: 1
+PageMediaRotation: 0
+PageMediaRect: 0 0 612 792
+PageMediaDimensions: 612 792

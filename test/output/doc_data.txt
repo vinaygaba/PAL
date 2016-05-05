@@ -1,0 +1,8 @@
+PdfID0: a7b7f97761c574bad59e479b9e95fa65
+PdfID1: a7b7f97761c574bad59e479b9e95fa65
+NumberOfPages: 1
+PageMediaBegin
+PageMediaNumber: 1
+PageMediaRotation: 0
+PageMediaRect: 0 0 612 792
+PageMediaDimensions: 612 792
