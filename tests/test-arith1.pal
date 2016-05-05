@@ -7,6 +7,6 @@ main()
 	intVar = 39 + 3;
 	tupleVar : tuple(pdfVar, pageVar);
 	linevar : line("ABCD", "Times_New_Roman" , 12 , 100, 700, 600);
-	 
+	tupleVar = tupleVar . linevar; 
 	renderpdf(pdfVar, "test-arith1.pdf");
 }
