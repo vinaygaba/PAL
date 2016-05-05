@@ -615,9 +615,8 @@ and extract_function (itp : Sast.tprogram) (env : environment) (tmap : type_map)
 
 and extract_functions (itps : Sast.tprogram list) (env : environment) (tmap : type_map) : Sast.tfunc_decl list =
 	let l = List.map (fun f -> extract_function f env tmap) itps in
-	let tf = [] in
-	let _  = List.fold_left (fun acc x -> x :: acc) tf l in
-	tf
+	let atf = List.fold_left (fun acc x -> List.append acc x) [] l in
+	atf
 
 and annotate_prog (p : Ast.program) : Sast.tprogram =
   let env = new_env() in
