@@ -4,6 +4,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.PDPageTree;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import java.io.BufferedReader;
@@ -48,6 +49,11 @@ public class Util{
 
     PDFont font = getFontFromString(line.getFont());
     int[] array = possibleWrapPoints(line.getText());
+
+
+    line.setText(line.getText().replaceAll("\n", " " ));
+    line.setText(line.getText().replaceAll("\t", " "));
+    line.setText(line.getText().replaceAll("\r", " "));
     // Define a text content stream using the selected font, moving the cursor and drawing the text "Hello World"
 
    for (int i =0; i < array.length; i++ ) {
@@ -335,5 +341,59 @@ public static Tuple addImageToTuple(Tuple tuple, Image image) throws Exception
 
     return PDType1Font.TIMES_ROMAN;
   }
+
+
+ public static List<PDPage> getPages(PDDocument document) throws Exception{
+
+      PDPageTree pages = document.getPages();
+      List<PDPage> listOfPages = new ArrayList<PDPage>();
+      Iterator<PDPage> iterator = pages.iterator();
+      while(iterator.hasNext())
+      {
+        PDPage next = iterator.next();
+        listOfPages.add(next);
+        
+      }      
+      return listOfPages; 
+ } 
+
+public static List<PDDocument> splitPdf(List<Integer> splits,PDDocument document) throws Exception{
+
+
+  List<PDPage> listOfPages = Util.getPages(document);
+  List<PDDocument> listOfDocuments = new ArrayList<PDDocument>();
+  PDDocument newDocument = null;
+      int lastSplit = 0;
+      int j = 0;
+      for(Integer i : splits)
+      {
+         newDocument = new PDDocument();
+        for(j =lastSplit; j < i; j++ )
+        {
+          PDPage page = listOfPages.get(j);
+          newDocument.addPage(page);
+        }
+        lastSplit = j;
+        listOfDocuments.add(newDocument);
+      }
+
+       newDocument = new PDDocument();
+      for(int k = j ; k < listOfPages.size(); k++)
+      {
+        newDocument.addPage(listOfPages.get(k));
+      }
+
+      listOfDocuments.add(newDocument);
+
+      return listOfDocuments;
+  }
+
+
+public static PDDocument loadPdf(String filename) throws Exception{
+
+    File file = new File(filename);   
+    PDDocument document = PDDocument.load(file);
+    return document;
+}
 
 }

@@ -92,21 +92,21 @@ let initialize_types(tmap : type_map) =
 let initialize_predefined_functions (env : environment) =
     let lengthfn = ("length", Ast.Int) in
     env.scope.functions <- lengthfn :: env.scope.functions;
-    let getpagesfn = ("getpages", Ast.ListType("AK")) in
+    let getpagesfn = ("getpages", Ast.ListType("AF")) in
     env.scope.functions <- getpagesfn :: env.scope.functions; 
-    let splitfn = ("split", Ast.ListType("AJ")) in
+    let splitfn = ("split", Ast.ListType("AE")) in
     env.scope.functions <- splitfn :: env.scope.functions; 
     let readtable = ("readtable", Ast.ListType("AI")) in
     env.scope.functions <- readtable :: env.scope.functions;
-    let readtable = ("readtext", Ast.String) in
-    env.scope.functions <- readtable :: env.scope.functions;
+    let readtextfrompdf = ("readtextfrompdf", Ast.String) in
+    env.scope.functions <- readtextfrompdf :: env.scope.functions;
     let drawpiechart = ("drawpiechart", Ast.Image) in
     env.scope.functions <- drawpiechart :: env.scope.functions;
-
     let drawbarchart = ("drawbarchart", Ast.Image) in
     env.scope.functions <- drawbarchart :: env.scope.functions;
-
-    let readfn = ("readfile", Ast.String) in
+    let loadpdf = ("loadpdf", Ast.Pdf) in
+    env.scope.functions <- loadpdf :: env.scope.functions;
+    let readfn = ("readtextfile", Ast.String) in
     env.scope.functions <- readfn :: env.scope.functions;;
 
 

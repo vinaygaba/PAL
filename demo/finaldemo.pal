@@ -6,6 +6,8 @@ main()
 
   pageVar : page;
 
+  pdfVar = pdfVar.pageVar;
+
   pagenumbers : list int;
 
   pagenumbers[0] = 1;
@@ -15,7 +17,7 @@ main()
 
   tupleVar : tuple(pdfVar, pageVar);
 
-  stringVar = write_paragraph(tupleVar, stringVar, 100, 700, 12, "Times_Now_Roman", 100, 600);
+  stringVar = write_paragraph(tupleVar, stringVar, 50, 700, 12, "COURIER_OBLIQUE", 100, 500);
 
   renderpdf(pdfVar,"finaldemooutput.pdf");
 
