@@ -130,6 +130,9 @@ expr_stmt:
 | expr LEQ    expr                                                { Binop($1, Leq,     $3) }
 | expr GT     expr                                                { Binop($1, Greater, $3) }
 | expr GEQ    expr                                                { Binop($1, Geq,     $3) }
+| expr AND expr                                                   { Binop($1, And, $3)}
+| expr OR expr                                                    { Binop($1, Or, $3)}
+
 
 data_type:
 STRINGD                                                             { String }
@@ -160,8 +163,6 @@ STRING               { LitString($1) }
 | expr MODOP expr    { Binop($1, Mod,     $3) }
 | LEFTPAREN expr RIGHTPAREN { $2 }
 | expr_stmt          { $1 }
-| expr AND    expr   { Binop($1, And,     $3) }
-| expr OR     expr   { Binop($1, Or,      $3) }
 | NOT  expr          { Uop(Not,$2) }
 | SUBOP expr         { Uop(Neg,$2) }
 | expr LINEBUFFER    { Uop(LineBuffer,$1) }

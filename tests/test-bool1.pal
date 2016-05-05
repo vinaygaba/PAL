@@ -5,20 +5,16 @@ main()
 	pdfVar = pdfVar.pageVar;
 	stringVar : string;
 	stringVar = "Failure";
-	boolvar1 : bool;
-	boolvar1 = true;
-	boolvar2 : bool;
-	boolvar2 = false;
 	
-	tupleVar : tuple(pdfVar, pageVar);
-	linevar : line("intVar", "Times_New_Roman" , 12 , 100, 700, 500);
+	tupleVar : tuple (pdfVar, pageVar);
+	linevar : line ("intVar", "Times_New_Roman" , 12 , 100, 700, 500);
 
-	if(boolvar1 && boolvar1)
+	if(true && false)
 	{
 		stringVar = "Success";
 	}
 	 
-	if(boolvar1 && boolvar2)
+	if(true || false)
 	{
 		stringVar = "Failure";
 	}
