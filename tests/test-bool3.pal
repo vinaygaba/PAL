@@ -7,11 +7,11 @@ main()
 	stringVar = "Failure";
 	
 
-	if (!true) 
+	if (!true == true) 
 	{
 		stringVar = "Failure";
 	}
-	if (!false) 
+	if (!false == true) 
 	{
 		stringVar = "Success";
 	}

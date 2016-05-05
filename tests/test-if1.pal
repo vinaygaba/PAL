@@ -9,14 +9,14 @@ main()
 	lineVar17 : line("17", "Times_New_Roman",12,100,500,500);
 
 
-	tupleVar : tupleVar(pdfVar,pageVar);
+	tupleVar : tuple(pdfVar,pageVar);
 	
-	if(true)
+	if(true == true)
 	{
-	tupleVar = tupleVar.line42;
+	tupleVar = tupleVar.lineVar42;
 	}
 
-	tupleVar = tupleVar.line17;
+	tupleVar = tupleVar.lineVar17;
 
 	renderPdf(pdfVar,"test-if1.pdf");
 

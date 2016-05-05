@@ -15,7 +15,7 @@ main()
 	
 	if (true || false) 
 	{
-		stringVar = "Success"	
+		stringVar = "Success";
 	}
 	if (false || false) 
 	{
