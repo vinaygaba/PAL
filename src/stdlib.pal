@@ -39,7 +39,7 @@ width:int = 230;
 
 startY: int = 700;
 
-endHeight:int = 500;
+endHeight:int = 50;
 
   stringVar = write_paragraph(tupleVar, stringVar, startX, startY, fontSize, fontType, endHeight,width);
 
@@ -61,7 +61,7 @@ width:int = 150;
 
 startY: int = 700;
 
-endHeight:int = 400;
+endHeight:int = 50;
 
   stringVar = write_paragraph(tupleVar, stringVar, startX, startY, fontSize, fontType, endHeight,width);
 
@@ -127,7 +127,7 @@ write_pages(stringVar : string, fontSize : int, fontType : string) : pdf{
     pdfVar = pdfVar . pageVar;
     tupleVar:tuple(pdfVar,pageVar);
 
-    stringVar = write_two_column_layout(tupleVar,stringVar,fontSize,fontType);
+    stringVar = write_two_column_layout(tupleVar,stringVar,fontType,fontSize);
     #listVar += pdfVar;
   }
 

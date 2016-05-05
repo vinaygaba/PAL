@@ -333,8 +333,6 @@ public static Tuple addImageToTuple(Tuple tuple, Image image) throws Exception
       default : return PDType1Font.TIMES_ROMAN;
 
     }
-
-    return PDType1Font.TIMES_ROMAN;
   }
 
 
