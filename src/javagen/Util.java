@@ -46,7 +46,7 @@ public class Util{
     int end = 0;
     PDPageContentStream contentStream = new PDPageContentStream(tuple.getDocument(), tuple.getPage(), true, true);
 
-    PDFont font = PDType1Font.TIMES_ROMAN;
+    PDFont font = getFontFromString(line.getFont());
     int[] array = possibleWrapPoints(line.getText());
     // Define a text content stream using the selected font, moving the cursor and drawing the text "Hello World"
 
@@ -55,7 +55,7 @@ public class Util{
         if ( start <= end && width > pwidth ) {
 
            contentStream.beginText();
-           contentStream.setFont(PDType1Font.TIMES_ROMAN, line.getFontSize());
+           contentStream.setFont(font, line.getFontSize());
            contentStream.moveTextPositionByAmount( line.getXcod(), line.getYcod() );
            end = array[i];
            contentStream.drawString(line.getText().substring(start,end));
@@ -69,7 +69,7 @@ public class Util{
         else if(i == array.length - 1)
         {
            contentStream.beginText();
-           contentStream.setFont(PDType1Font.TIMES_ROMAN, line.getFontSize());
+           contentStream.setFont(font, line.getFontSize());
            contentStream.moveTextPositionByAmount( line.getXcod(), line.getYcod() );
            end = array[i];
            contentStream.drawString(line.getText().substring(start,end));
@@ -116,8 +116,8 @@ public static Tuple addImageToTuple(Tuple tuple, Image image) throws Exception
             List<String> asList = Arrays.asList(splits);
 
             lists.add(asList);
-            
-            
+
+
           }
 
         }
@@ -291,5 +291,49 @@ public static Tuple addImageToTuple(Tuple tuple, Image image) throws Exception
 		}
 	}
 
+
+  public static PDFont getFontFromString(String font){
+
+    switch(font){
+
+      case "TIME_ROMAN" : return PDType1Font.TIMES_ROMAN;
+
+
+      case "COURIER": return PDType1Font.COURIER;
+
+      case "COURIER_BOLD" : return PDType1Font.COURIER_BOLD;
+
+
+      case "COURIER_BOLD_OBLIQUE" : return PDType1Font.COURIER_BOLD_OBLIQUE;
+
+      case "COURIER_OBLIQUE" : return PDType1Font.COURIER_OBLIQUE;
+
+
+      case "HELVETICA" : return PDType1Font.HELVETICA;
+
+
+      case "HELVETICA_BOLD" : return PDType1Font.HELVETICA_BOLD;
+
+
+      case "HELVETICA_BOLD_OBLIQUE" : return PDType1Font.HELVETICA_BOLD_OBLIQUE;
+
+      case "HELVETICA_OBLIQUE" : return PDType1Font.HELVETICA_OBLIQUE;
+
+
+      case "SYMBOL": return PDType1Font.SYMBOL;
+
+      case "TIMES_BOLD" : return PDType1Font.TIMES_BOLD;
+
+      case "TIMES_BOLD_ITALIC" : return PDType1Font.TIMES_BOLD_ITALIC;
+
+      case "TIMES_ITALIC" : return PDType1Font.TIMES_ITALIC;
+
+
+      case "ZAPF_DINGBATS" : return PDType1Font.ZAPF_DINGBATS;
+                      
+    }
+
+    return PDType1Font.TIMES_ROMAN;
+  }
 
 }
