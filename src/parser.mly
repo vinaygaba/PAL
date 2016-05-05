@@ -57,7 +57,7 @@ func_decl_list:
 
 func_decl :
   ID LEFTPAREN decl_list RIGHTPAREN TYPEASSIGNMENT recr_data_type body {
-    { rtype = $6 ; name = $1; formals = List.rev $3 ; body = $7; }
+    { rtype = $6 ; name = $1; formals = $3 ; body = $7; }
   }
 
 import_decl:
@@ -81,7 +81,7 @@ body:
    LEFTBRACE stmt_list RIGHTBRACE { List.rev $2 }
 
 function_call:
-     ID LEFTPAREN expr_list RIGHTPAREN                     { ($1,List.rev $3) }
+     ID LEFTPAREN expr_list RIGHTPAREN                     { ($1, $3) }
 
 stmt:
   | assign_stmt SEMICOLON                                           { $1 }
