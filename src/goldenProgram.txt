@@ -27,5 +27,5 @@ main() {
       }
   }
   
-  s = func(i,s);
+  i = func0(i);
 }

@@ -604,7 +604,7 @@ and extract_function (itp : Sast.tprogram) (env : environment) (tmap : type_map)
     let m = StringMap.fold (fun key value newMap -> StringMap.add value key newMap) itp.tmap StringMap.empty in
     let mergedMap = StringMap.merge (fun k v1 v2 ->
                            match v1,v2 with
-                           | Some(v1), Some(v2) -> Some(v2)
+                           | Some(v1), Some(v2) -> Some(v1)
                            | Some(v1), None -> Some(v1)
                            | None, Some(v2) -> Some(v2)
                            | _ -> None) m tmap.map in
