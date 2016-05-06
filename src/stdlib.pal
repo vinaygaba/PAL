@@ -119,8 +119,6 @@ write_4grid_layout(tupleVar:tuple, stringVar:string, fontType:string, fontSize:i
 }
 
 write_pages(stringVar : string, fontSize : int, fontType : string, layoutType:string) : pdf{
-
-  listVar:list pdf;
   pdfVar:pdf;
   while(length(stringVar) > 0){
     pageVar:page;
@@ -136,8 +134,5 @@ write_pages(stringVar : string, fontSize : int, fontType : string, layoutType:st
     }
 
   }
-
-
-
   return pdfVar;
 }

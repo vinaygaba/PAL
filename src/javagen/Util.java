@@ -153,7 +153,7 @@ public static Tuple addImageToTuple(Tuple tuple, Image image) throws Exception
 
 
     static  int[]  possibleWrapPoints(String text) {
-      String[] split = text.split("(?<=\\W)");
+      String[] split = text.split("(.*?)");
       int[] ret = new int[split.length];
       ret[0] = split[0].length();
       for ( int i = 1 ; i < split.length ; i++ )

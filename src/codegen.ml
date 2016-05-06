@@ -394,7 +394,7 @@ and writeListAssign lexpr texpression =
 and writeListAdd tid texpression typemap =
       let genexpr = generateExpression texpression in
       match tid with
-      | IdTest(name) -> sprintf "%s.append(%s); \n" name genexpr
+      | IdTest(name) -> sprintf "%s.add(%s); \n" name genexpr
 
 and writeListRemove tid texpression typemap =
       let genexpr = generateExpression texpression in
