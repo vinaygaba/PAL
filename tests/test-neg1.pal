@@ -1,0 +1,23 @@
+main()
+{
+	pdfVar : pdf;
+	pageVar : page;
+	pdfVar = pdfVar.pageVar;
+	intVar : int;
+	intVar = -9 + -8;
+	stringVar : string;
+	if(intVar == -17)
+	{
+		stringVar = "Pass";
+	}
+	else
+	{
+		stringVar = "Fail";
+	}
+
+	tupleVar : tuple(pdfVar, pageVar);
+	linevar : line(stringVar, "Times_New_Roman" , 12 , 100, 700, 600);
+	tupleVar = tupleVar . linevar; 
+	renderpdf(pdfVar, "test-neg1.pdf");
+
+}
