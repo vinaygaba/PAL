@@ -1,0 +1,24 @@
+main()
+{
+	pdfVar : pdf;
+	pageVar : page;
+	pdfVar = pdfVar.pageVar;
+	intVar : int = 1;
+  stringVar : string = "Done";
+  tupleVar : tuple(pdfVar,pageVar);
+
+  while(intVar < 5){
+    intVar = intVar + 1;
+
+    if(intVar == 5){
+      stringVar = "Done";
+    }
+  }
+
+  lineVar : line(stringVar, "HELVETICA_BOLD_OBLIQUE",12,100,700,500);
+
+	tupleVar = tupleVar.lineVar;
+
+	renderpdf(pdfVar,"test-while1.pdf");
+
+}

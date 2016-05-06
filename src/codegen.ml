@@ -227,10 +227,10 @@ sprintf "\n Util.readTable(%s, %s)" location pagenumberList
 let location = StringMap.find "2" funcExprMapForTable in
 let pagenumberList = StringMap.find "1" funcExprMapForTable in
 sprintf "\n Util.readTextFromPdf(%s, %s)" location pagenumberList
-| "getpages" -> let funcExprMap = getFuncExpressionMap exprList in 
+| "getpages" -> let funcExprMap = getFuncExpressionMap exprList in
 let pdffile = StringMap.find "1" funcExprMap in
 sprintf "\n Util.getPages(%s)" pdffile
-| "loadpdf" -> let funcExprMap = getFuncExpressionMap exprList in 
+| "loadpdf" -> let funcExprMap = getFuncExpressionMap exprList in
 let pdffile = StringMap.find "1" funcExprMap in
 sprintf "\n Util.loadPdf(%s)" pdffile
 | "split" -> let funcExprMap = getFuncExpressionMap exprList in
@@ -246,8 +246,8 @@ sprintf "\n%s(%s);" name argList
 and writeFunctionCallStmt name exprList =
 match name with
 | "renderpdf" -> let funcExprMap = getFuncExpressionMap exprList in
-let pdfIden =  StringMap.find "2" funcExprMap in
-let location = StringMap.find "1" funcExprMap in
+let pdfIden =  StringMap.find "1" funcExprMap in
+let location = StringMap.find "2" funcExprMap in
 sprintf "\n%s.save(%s);\n %s.close();" pdfIden location pdfIden
 | _ ->
 let expressionListString = List.fold_left (fun a b -> a ^ (generateExpression b)^ ",") "" exprList in
@@ -265,6 +265,7 @@ match t with
 | String -> sprintf "\nString %s = %s;" name expressionString
 | Bool -> sprintf "\nBoolean %s = %s;" name expressionString
 | Float -> sprintf "\nFloat %s = %s;" name expressionString
+| Pdf -> sprintf "\nPDDocument %s = %s" name expressionString
 | _ -> failwith "initialization not possible for this type"
 
 
@@ -387,13 +388,13 @@ let rec writeDeclarationStmt tid tdataType typemap =
 and writeListAssign lexpr texpression =
       let genexpr = generateExpression texpression in
       (match lexpr with
-      | TListAccess(tid, texpr, t) -> (match tid with 
+      | TListAccess(tid, texpr, t) -> (match tid with
                                       | IdTest(name) -> let texprs = generateExpression texpr in sprintf "%s.add(%s,%s);\n" name texprs genexpr)
-      | _ -> "Not a list access" )                              
+      | _ -> "Not a list access" )
 and writeListAdd tid texpression typemap =
       let genexpr = generateExpression texpression in
       match tid with
-      | IdTest(name) -> sprintf "%s.append(%s); \n" name genexpr
+      | IdTest(name) -> sprintf "%s.add(%s); \n" name genexpr
 
 and writeListRemove tid texpression typemap =
       let genexpr = generateExpression texpression in
@@ -501,7 +502,7 @@ and generateJavaProgram fileName prog =
   import java.util.Arrays;
   import java.util.List;
   import java.util.HashMap;
-  import java.util.Map;  
+  import java.util.Map;
   public class %s
   {
     %s

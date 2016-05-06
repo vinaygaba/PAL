@@ -1,0 +1,21 @@
+main()
+{
+	pdfVar : pdf;
+	pageVar : page;
+	pdfVar = pdfVar.pageVar;
+  tupleVar : tuple(pdfVar,pageVar);
+  listVar:list string;
+
+  listVar += "Hello";
+  listVar += "This";
+  listVar += "Is";
+  listVar += "Our";
+  listVar += "PLT";
+  listVar += "Project";
+
+  lineVar : line(listVar[4], "HELVETICA_BOLD_OBLIQUE",12,100,700,500);
+	tupleVar = tupleVar.lineVar;
+
+	renderpdf(pdfVar,"test-listadd2.pdf");
+
+}
