@@ -1,0 +1,19 @@
+main()
+{
+	pdfVar : pdf;
+	pageVar : page;
+	pdfVar = pdfVar.pageVar;
+  tupleVar : tuple(pdfVar,pageVar);
+  mapVar:map string,string;
+
+  mapVar += "Hello","World";
+  mapVar += "PLT","Project";
+  mapVar += "COMS","4115";
+  stringVar:string = "COMS";
+  
+  lineVar : line(mapVar:= stringVar, "HELVETICA_BOLD_OBLIQUE",12,100,700,500);
+	tupleVar = tupleVar.lineVar;
+
+	renderpdf(pdfVar,"test-mapfind1.pdf");
+
+}
