@@ -1,0 +1,19 @@
+main()
+{
+	pdfVar : pdf;
+	pageVar : page;
+	pdfVar = pdfVar.pageVar;
+  tupleVar : tuple(pdfVar,pageVar);
+  mapVar:map string,string;
+
+  mapVar += "Hello","World";
+  mapVar += "1","2";
+
+  mapVar -= "1";
+
+  lineVar : line(mapVar:= "Hello", "HELVETICA_BOLD_OBLIQUE",12,100,700,500);
+	tupleVar = tupleVar.lineVar;
+
+	renderpdf(pdfVar,"test-mapremove1.pdf");
+
+}
