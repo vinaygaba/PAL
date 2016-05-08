@@ -1,0 +1,19 @@
+import ("stdlib.pal");
+
+main()
+{
+
+  pdfVar : pdf;
+
+  pageVar : page;
+
+  stringVar : string = "This is a test string to test whether the paragraph will be correctly printed. What you should be expecting to see is that the write_paragraph method should automatically take care of turning this into a paragraph.This is a test string to test whether the paragraph will be correctly printed. What you should be expecting to see is that the write_paragraph method should automatically take care of turning this into a paragraph";
+
+  pdfVar = pdfVar . pageVar;
+
+  tupleVar : tuple(pdfVar, pageVar);
+
+  stringVar  = write_paragraph(tupleVar, stringVar, 30, 700, 12, "TIMES_ROMAN",400,600);
+
+  renderpdf(pdfVar,"test-writeparagraph1.pdf");
+}
