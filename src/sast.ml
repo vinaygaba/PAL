@@ -33,6 +33,7 @@ type tstatement =
   | TMapRemove of Ast.id * texpression
   | TListAdd of Ast.id * texpression
   | TListRemove of Ast.id * texpression
+  | TListInit of Ast.id * Ast.t * texpression list
 
   and tconditional = {
     tcondition : texpression;

@@ -11,7 +11,7 @@ type recr_t =
   | TType of t
   | RType of recr_t
 
-and t = Int | Bool | Float | String | Pdf | Page | Line | Tuple | Image | ListType of string | MapType of t * t
+and t = Int | Bool | Float | String | Pdf | Page | Line | Tuple | Image   | ListType of string | MapType of t * t
 
 type var_decl =  id * t
 
@@ -47,6 +47,7 @@ type statement =
   | MapDecl of map_decl
   | InitAssign of id * t * expression
   | ObjectCreate of id * t * expression list
+  | ListInit of id * t * expression list
   | For of statement * expression * statement * statement list
   | CallStmt of string * expression list
   | MapAdd of id * expression * expression

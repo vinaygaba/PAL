@@ -8,6 +8,67 @@ module StringMap = Map.Make(String);;
   HELPERS
 ************)
 
+
+let rec getJavaType typ typemap =
+match typ with
+  | Int ->  "Integer"
+  | Bool -> "Boolean"
+  | Float -> "Float"
+  | String -> "String"
+  | Pdf -> "PDDocument"
+  | Page -> "PDPage"
+  | Line -> "Line"
+  | Tuple -> "Tuple"
+  | Image -> "Image"
+  | ListType(l) -> makeLists l typemap
+  | MapType(k,v) ->    let keytype =
+                                      (match k with
+                                            | Int ->  "Integer"
+                                            | Bool -> "Boolean"
+                                            | Float -> "Float"
+                                            | String -> "String"
+                                            | Pdf -> "PDDocument"
+                                            | Page -> "PDPage"
+                                            | Line -> "Line"
+                                            | Tuple -> "Tuple"
+                                            | Image -> "Image"
+                                            | _ -> "Key type can't be list or map")  in
+                                      let valuetype =
+                                          ( match v with
+                                            | ListType(x) ->
+                                                      let acc = makeLists x typemap in
+                                                      acc
+                                            | Int ->  "Integer"
+                                            | Bool -> "Boolean"
+                                            | Float -> "Float"
+                                            | String -> "String"
+                                            | Pdf -> "PDDocument"
+                                            | Page -> "PDPage"
+                                            | Line -> "Line"
+                                            | Tuple -> "Tuple"
+                                            | Image -> "Image"
+                                            | _  -> "value type can't be map"      )  in "Map<" ^keytype ^","^valuetype^">"
+
+and makeLists (typeid : string) (typemap)  : string =
+      let found = StringMap.mem typeid typemap in
+      if found
+      then let foundType = StringMap.find typeid typemap in
+      let recurseType = makeLists foundType typemap in
+      let liststring = "List<" ^ recurseType ^ ">" in
+      liststring
+      else
+          (match typeid with
+          | "int" ->  "Integer"
+          | "bool" -> "Boolean"
+          | "float" -> "Float"
+          | "string" -> "String"
+          | "pdf" -> "PDDocument"
+          | "page" -> "PDPage"
+          | "line" -> "Line"
+          | "tuple" -> "Tuple"
+          | "image" -> "Image"
+          | _ -> failwith "Type not found" )
+
 let type_of (ae : Sast.texpression) : Ast.t =
   match ae with
   | TLitInt(_, t) -> t
@@ -134,6 +195,16 @@ let idstring =
            sprintf "\nFile %s = new File(\"%s\"); \nImage %s = new Image(%s,%s,%s,%s,%s);\n" fileVar fileLoc idstring fileVar height width xcood ycood)
  | _ -> failwith "Something went wrong")
 
+and writeListInit tid tdataype tExprList typemap =
+let idstring =
+  (match tid with
+   | IdTest(s) ->  s ) in
+    let ttype = getJavaType tdataype typemap in
+    let expressionListString = List.fold_left (fun a b -> a ^ (generateExpression b)^ ",") "" tExprList in
+    let argList = String.sub expressionListString 0 ((String.length expressionListString) - 1) in
+    sprintf "List<%s> %s = new ArrayList<%s>(Arrays.asList(%s));\n" ttype idstring ttype argList
+
+
 
  (*and writeObjectStmt tid tspDataType tExprList =
  let idstring =
@@ -237,6 +308,11 @@ sprintf "\n Util.loadPdf(%s)" pdffile
 let pdffile = StringMap.find "1" funcExprMap in
 let varList = StringMap.find "2" funcExprMap in
 sprintf "\n Util.splitPdf(%s,%s)" pdffile varList
+| "substr" -> let funcExprMap = getFuncExpressionMap exprList in
+let stringVar = StringMap.find "1" funcExprMap in
+let startIndex = StringMap.find "2" funcExprMap in
+let endIndex = StringMap.find "3" funcExprMap in
+sprintf "\n Util.substr(%s,%s,%s)" stringVar startIndex endIndex
 | _ ->
 let expressionListString = List.fold_left (fun a b -> a ^ (generateExpression b)^ ",") "" exprList in
 let argList = String.sub expressionListString 0 ((String.length expressionListString) - 1) in
@@ -316,25 +392,6 @@ let rec writeAssignmentStmt id expr2 =
         match id with
              IdTest(n) ->  sprintf "%s = %s;\n" n e2string
 
-let rec makeLists (typeid : string) (typemap)  : string =
-      let found = StringMap.mem typeid typemap in
-      if found
-      then let foundType = StringMap.find typeid typemap in
-      let recurseType = makeLists foundType typemap in
-      let liststring = "List<" ^ recurseType ^ ">" in
-      liststring
-      else
-          (match typeid with
-          | "int" ->  "Integer"
-          | "bool" -> "Boolean"
-          | "float" -> "Float"
-          | "string" -> "String"
-          | "pdf" -> "PDDocument"
-          | "page" -> "PDPage"
-          | "line" -> "Line"
-          | "tuple" -> "Tuple"
-          | "image" -> "Image"
-          | _ -> failwith "Type not found" )
 
 
 
@@ -432,6 +489,7 @@ and writeMapRemove tid texpression  =
      | TMapAdd(tid, texpr1, texpr2) -> writeMapAdd tid texpr1 texpr2
      | TMapRemove(tid, texpr) -> writeMapRemove tid texpr
      | TRet(texpr,t) -> writeReturnStatement texpr
+     | TListInit(tid, tdatatype, tExprList ) -> writeListInit tid tdatatype tExprList typemap
 
 
 and writeReturnStatement tExpression =
@@ -513,45 +571,7 @@ and generateJavaProgram fileName prog =
 
 
 
-and getJavaType typ typemap =
-match typ with
-  | Int ->  "Integer"
-  | Bool -> "Boolean"
-  | Float -> "Float"
-  | String -> "String"
-  | Pdf -> "PDDocument"
-  | Page -> "PDPage"
-  | Line -> "Line"
-  | Tuple -> "Tuple"
-  | Image -> "Image"
-  | ListType(l) -> makeLists l typemap
-  | MapType(k,v) ->    let keytype =
-                                      (match k with
-                                            | Int ->  "Integer"
-                                            | Bool -> "Boolean"
-                                            | Float -> "Float"
-                                            | String -> "String"
-                                            | Pdf -> "PDDocument"
-                                            | Page -> "PDPage"
-                                            | Line -> "Line"
-                                            | Tuple -> "Tuple"
-                                            | Image -> "Image"
-                                            | _ -> "Key type can't be list or map")  in
-                                      let valuetype =
-                                          ( match v with
-                                            | ListType(x) ->
-                                                      let acc = makeLists x typemap in
-                                                      acc
-                                            | Int ->  "Integer"
-                                            | Bool -> "Boolean"
-                                            | Float -> "Float"
-                                            | String -> "String"
-                                            | Pdf -> "PDDocument"
-                                            | Page -> "PDPage"
-                                            | Line -> "Line"
-                                            | Tuple -> "Tuple"
-                                            | Image -> "Image"
-                                            | _  -> "value type can't be map"      )  in "Map<" ^keytype ^","^valuetype^">"
+
 
 
 and generateFunction (b : Sast.tfunc_decl) typemap =
