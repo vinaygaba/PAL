@@ -616,8 +616,12 @@ match formal with
 
 and generateFormalsList formalStatementList typemap =
 let outStr = List.fold_left (fun a b -> a ^ (generateFormal b typemap)^ ",") "" formalStatementList in
-let arg = String.sub outStr 0 ((String.length outStr) - 1) in
-sprintf "%s" arg
+let len = String.length outStr in
+if len > 0
+then
+  let arg = String.sub outStr 0 ((String.length outStr) - 1) in
+  sprintf "%s" arg
+else sprintf ""
 
 
 and generateOtherFunctions functionList typemap =

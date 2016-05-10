@@ -16,3 +16,7 @@ func2 (i : int, s : string, l : list list tuple) : int{
     m : map int,string;
     return 1;
 }
+
+func3 () : int {
+    return 1;
+}
