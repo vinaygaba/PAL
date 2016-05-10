@@ -1,0 +1,25 @@
+import ("stdlib.pal");
+
+main()
+{
+  pdfVar : pdf;
+
+  pageVar : page;
+
+  pdfVar = pdfVar.pageVar;
+
+  textPageNumbers : list int(1,3,4);
+
+  chartPageNumber : list int(2);
+
+  filepath :string = "/Users/vinaygaba/Desktop/test.pdf"
+
+  stringVar : string = readtextfrompdf(filepath,pagenumbers);
+
+  tupleVar : tuple(pdfVar, pageVar);
+
+  stringVar = write_4grid_layout(tupleVar, stringVar,"COURIER_OBLIQUE", 14);
+
+  renderpdf(pdfVar,"finaldemooutput.pdf");
+
+}
