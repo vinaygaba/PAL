@@ -389,5 +389,10 @@ public static PDDocument loadPdf(String filename) throws Exception{
     return document;
 }
 
+public static String substr(String s, int startIndex, int endIndex) throws Exception{
+
+    return s.substring(startIndex,endIndex);
+}
+
 
 }

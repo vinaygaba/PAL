@@ -107,7 +107,9 @@ let initialize_predefined_functions (env : environment) =
     let loadpdf = ("loadpdf", Ast.Pdf) in
     env.scope.functions <- loadpdf :: env.scope.functions;
     let readfn = ("readtextfile", Ast.String) in
-    env.scope.functions <- readfn :: env.scope.functions;;
+    env.scope.functions <- readfn :: env.scope.functions;
+    let substr = ("substr", Ast.String) in
+    env.scope.functions <- substr :: env.scope.functions;;
 
 
 let nest_scope (env : environment) : environment =
@@ -393,6 +395,19 @@ and add_scope_variable (i : Ast.id) (d : Ast.t) (env : environment) : unit =
 
 and annotate_stmt (s : Ast.statement) (env : environment) (tmap : type_map) : Sast.tstatement =
   match s with
+  | Ast.ListInit(e,d,el) -> (match d with
+                                | Ast.String
+                                | Ast.Int
+                                | Ast.Bool
+                                | Ast.Pdf
+                                | Ast.Page
+                                | Ast.Float ->
+                                    add_scope_variable e d env;
+                                  let ad = d in
+                                  let ael = annotate_exprs el env tmap in
+                                  let ttt = TListInit(e,ad,ael) in
+                                  ttt
+                                | _ -> failwith "Invalid Object Type.")
   | Ast.Ret(e) ->
       let ae = annotate_expr e env tmap in
       let typ = type_of ae in

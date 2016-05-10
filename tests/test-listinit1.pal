@@ -1,0 +1,13 @@
+main()
+{	
+	listvar : list int(1,2,3,4);
+	pdfVar : pdf;
+	pageVar : page;
+	pdfVar = pdfVar.pageVar;
+	intVar : int;
+	intVar = 39 + 3;
+	tupleVar : tuple(pdfVar, pageVar);
+	linevar : line("ABCD", "Times_New_Roman" , 12 , 100, 700, 600);
+	tupleVar = tupleVar . linevar; 
+	renderpdf(pdfVar, "test-listinit1.pdf");
+}

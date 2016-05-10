@@ -87,11 +87,12 @@ stmt:
   | assign_stmt SEMICOLON                                           { $1 }
   | FORLOOP LEFTPAREN assign_stmt SEMICOLON expr_stmt SEMICOLON assign_stmt RIGHTPAREN body { For($3, $5, $7, $9) }
   | RETURN expr SEMICOLON                                           { Ret($2) }
-  | function_call  SEMICOLON                                                 { CallStmt(fst $1,snd $1) }
+  | function_call  SEMICOLON                                        { CallStmt(fst $1,snd $1) }
   | v_decl                                                          { ($1) }
   | WHILELOOP LEFTPAREN expr_stmt RIGHTPAREN body                   { While($3, $5) }
   | ID TYPEASSIGNMENT sp_data_type LEFTPAREN expr_list RIGHTPAREN SEMICOLON  { ObjectCreate(Ast.IdTest($1), $3, $5) }
-  | IF LEFTPAREN expr_stmt RIGHTPAREN body elifs else_opt {If({condition = $3; body = $5} :: $6, $7)}
+  | ID TYPEASSIGNMENT LISTD data_type LEFTPAREN expr_list RIGHTPAREN SEMICOLON  { ListInit(Ast.IdTest($1), $4, $6) }
+  | IF LEFTPAREN expr_stmt RIGHTPAREN body elifs else_opt           {If({condition = $3; body = $5} :: $6, $7)}
   | ID ADDOP ASSIGN expr COMMA expr SEMICOLON                       { MapAdd(Ast.IdTest($1), $4, $6) }
   | ID SUBOP ASSIGN expr SEMICOLON                                  { MapRemove(Ast.IdTest($1), $4) }
   | ID ADDOP ASSIGN expr SEMICOLON                                  { ListAdd(Ast.IdTest($1), $4) }
