@@ -7,6 +7,7 @@ func0 (i : int) : int {
 
 func1 (i : int, s : string) : string {
     i = func0(i);
+    s = s + i;
     return s;
 }
 

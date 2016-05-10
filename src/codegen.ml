@@ -122,7 +122,14 @@ let rec writeBinop expr1 op expr2 =
      let type2 = type_of expr2 in
      let writeBinopHelper e1 op e2 =
      (match op with
-        Add -> sprintf "%s + %s" e1 e2
+        Add ->
+            if type1 = type2
+              then sprintf "%s + %s" e1 e2
+            else
+              (match type1, type2 with
+              | (Ast.String, Ast.Int) -> sprintf "%s + Integer.toString(%s)" e1 e2
+              | (Ast.Int, Ast.String) -> sprintf "Integer.toString(%s) + %s" e1 e2
+              | _ -> failwith "Invalid Concatenation")
       | Sub -> sprintf "%s - %s" e1 e2
       | Mul -> sprintf "%s * %s" e1 e2
       | Div -> sprintf "%s / %s" e1 e2

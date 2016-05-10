@@ -245,6 +245,11 @@ let rec annotate_expr (e : Ast.expression) (env : environment) (tmap : type_map)
             | (Ast.Tuple, Ast.Line) -> TBinop(ae1,o,ae2,t1)
             | (Ast.Tuple,Ast.Image) -> TBinop(ae1,o,ae2,t1)
             | _ -> failwith "Oops")
+        | Ast.Add ->
+          (match t1,t2 with
+            | (Ast.String, Ast.Int) -> TBinop(ae1,o,ae2,t1)
+            | (Ast.Int, Ast.String) -> TBinop(ae1,o,ae2,t2)
+            | _ -> failwith "Invalid Concatenation")
         | _ -> failwith "Incompatible types")
 
   | Ast.ListAccess(i,e) ->
