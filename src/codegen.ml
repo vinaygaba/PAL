@@ -325,6 +325,28 @@ let expressionListString = List.fold_left (fun a b -> a ^ (generateExpression b)
 let argList = String.sub expressionListString 0 ((String.length expressionListString) - 1) in
 sprintf "\n%s(%s);" name argList
 
+and gPE s t =
+   match t with
+   Ast.Int -> let e = "Integer.toString(" ^ s ^ ")" in e
+   | Ast.Float -> let e = "Float.toString(" ^ s ^ ")" in e
+   | Ast.Bool -> let e = "Boolean.toString(" ^ s ^ ")" in e
+   | Ast.String -> s
+   | _ -> failwith "Invalid Print Type"
+
+and generatePrintExpression = function
+  TBinop(ope1, op, ope2, t) -> let w = writeBinop ope1 op ope2 in let g = gPE w t in g
+   | TUop(op,ope1, t) -> let w = writeUop ope1 op in let g = gPE w t in g
+   | TLitString(stringLit, t) -> let w = writeStringLit stringLit in let g = gPE w t in g
+   | TLitInt(intLit, t) -> let w = writeIntLit intLit in let g = gPE w t in g
+   | TLitFloat (floatLit, t) -> let w = writeFloatLit floatLit in let g = gPE w t in g
+   | TLitBool(boolLit, t) -> let w = writeBoolLit boolLit in let g = gPE w t in g
+   | TCallExpr(name, exprList, t) -> let w = writeFunctionCallExpr name exprList in let g = gPE w t in g
+   | TIden(name, t) ->
+   (match name with
+   |IdTest(n) -> let w = writeId n in let g = gPE w t in g
+    )
+   | TListAccess(tid, tex, t) -> let w = writeListAccess tid tex in let g = gPE w t in g
+   | TMapAccess (tid, tex, t) -> let w = writeMapAccess tid tex in let g = gPE w t in g
 
 and writeFunctionCallStmt name exprList =
 match name with
@@ -332,6 +354,10 @@ match name with
 let pdfIden =  StringMap.find "1" funcExprMap in
 let location = StringMap.find "2" funcExprMap in
 sprintf "\n%s.save(%s);\n %s.close();" pdfIden location pdfIden
+| "print" ->
+    let expressionListString = List.fold_left (fun a b -> a ^ (generatePrintExpression b)^ ",") "" exprList in
+    let argList = String.sub expressionListString 0 ((String.length expressionListString) - 1) in
+    sprintf "System.out.printf(%s);\n" argList
 | _ ->
 let expressionListString = List.fold_left (fun a b -> a ^ (generateExpression b)^ ",") "" exprList in
 let argList = String.sub expressionListString 0 ((String.length expressionListString) - 1) in

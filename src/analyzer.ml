@@ -108,6 +108,10 @@ let initialize_predefined_functions (env : environment) =
     env.scope.functions <- loadpdf :: env.scope.functions;
     let readfn = ("readtextfile", Ast.String) in
     env.scope.functions <- readfn :: env.scope.functions;
+    let renderpdf = ("renderpdf", Ast.Int) in
+    env.scope.functions <- renderpdf :: env.scope.functions;
+    let print = ("print", Ast.Int) in
+    env.scope.functions <- print :: env.scope.functions;
     let substr = ("substr", Ast.String) in
     env.scope.functions <- substr :: env.scope.functions;;
 
@@ -438,8 +442,12 @@ and annotate_stmt (s : Ast.statement) (env : environment) (tmap : type_map) : Sa
       TListAssign(ae1,ae2)
   | Ast.CallStmt(e, elist) ->
       let ae = e in
-      let aelist = List.map (fun x -> annotate_expr x env tmap) elist in
-      TCallStmt(ae, aelist)
+      let aet = find_function env.scope ae in
+      (match aet with
+      | Some(t) ->
+          let aelist = List.map (fun x -> annotate_expr x env tmap) elist in
+          TCallStmt(ae, aelist)
+      | None -> failwith "Function Not in Scope")
   | Ast.ListDecl(e,rd) ->
       let ard = annotate_recr_type rd tmap in
       let ld = Ast.ListType(ard) in

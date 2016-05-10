@@ -18,5 +18,10 @@ func2 (i : int, s : string, l : list list tuple) : int{
 }
 
 func3 () : int {
+    i :  int;
+    b : bool;
+    l : list int;
+    f : float;
+    print("Anshuman: %s %s %s %s %s", i + 1, b, l[0], f + 0.1, (1 *2 + 4 - 9));
     return 1;
 }
