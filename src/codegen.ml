@@ -288,32 +288,32 @@ match name with
  )
 | "readtextfile" -> let funcExprMap = getFuncExpressionMap exprList in
 let location = StringMap.find "1" funcExprMap in
-sprintf "\n Util.readFile(%s)" location
+sprintf "\n Util.readFile(%s)\n" location
 | "drawpiechart" -> let funcExprMapForPieChart = getFuncExpressionMap exprList in
-let dataList = StringMap.find "2" funcExprMapForPieChart in
-let attributeMap = StringMap.find "1" funcExprMapForPieChart in
-sprintf "\n Util.drawPieChart(%s, %s)" dataList attributeMap
+let dataList = StringMap.find "1" funcExprMapForPieChart in
+let attributeMap = StringMap.find "2" funcExprMapForPieChart in
+sprintf "\n Util.drawPieChart(%s, %s)\n" dataList attributeMap
 | "drawbarchart" -> let funcExprMapForPieChart = getFuncExpressionMap exprList in
-let dataList = StringMap.find "2" funcExprMapForPieChart in
-let attributeMap = StringMap.find "1" funcExprMapForPieChart in
-sprintf "\n Util.drawBarChart(%s, %s)" dataList attributeMap
+let dataList = StringMap.find "1" funcExprMapForPieChart in
+let attributeMap = StringMap.find "2" funcExprMapForPieChart in
+sprintf "\n Util.drawBarChart(%s, %s)\n" dataList attributeMap
 | "readtable" -> let funcExprMapForTable = getFuncExpressionMap exprList in
-let location = StringMap.find "2" funcExprMapForTable in
-let pagenumberList = StringMap.find "1" funcExprMapForTable in
-sprintf "\n Util.readTable(%s, %s)" location pagenumberList
+let location = StringMap.find "1" funcExprMapForTable in
+let pagenumberList = StringMap.find "2" funcExprMapForTable in
+sprintf "\n Util.readTable(%s, %s)\n" location pagenumberList
 | "readtextfrompdf" -> let funcExprMapForTable = getFuncExpressionMap exprList in
-let location = StringMap.find "2" funcExprMapForTable in
-let pagenumberList = StringMap.find "1" funcExprMapForTable in
-sprintf "\n Util.readTextFromPdf(%s, %s)" location pagenumberList
+let location = StringMap.find "1" funcExprMapForTable in
+let pagenumberList = StringMap.find "2" funcExprMapForTable in
+sprintf "\n Util.readTextFromPdf(%s, %s)\n" location pagenumberList
 | "getpages" -> let funcExprMap = getFuncExpressionMap exprList in
 let pdffile = StringMap.find "1" funcExprMap in
-sprintf "\n Util.getPages(%s)" pdffile
+sprintf "\n Util.getPages(%s)\n" pdffile
 | "loadpdf" -> let funcExprMap = getFuncExpressionMap exprList in
 let pdffile = StringMap.find "1" funcExprMap in
-sprintf "\n Util.loadPdf(%s)" pdffile
+sprintf "\n Util.loadPdf(%s)\n" pdffile
 | "split" -> let funcExprMap = getFuncExpressionMap exprList in
-let pdffile = StringMap.find "1" funcExprMap in
-let varList = StringMap.find "2" funcExprMap in
+let pdffile = StringMap.find "2" funcExprMap in
+let varList = StringMap.find "1" funcExprMap in
 sprintf "\n Util.splitPdf(%s,%s)" pdffile varList
 | "substr" -> let funcExprMap = getFuncExpressionMap exprList in
 let stringVar = StringMap.find "1" funcExprMap in

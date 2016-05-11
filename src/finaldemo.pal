@@ -1,25 +1,112 @@
 import ("stdlib.pal");
 
+/*In this code snippet, we will read text from a .txt file, render text from the first two pages in a column layout
+on the first page of the pdf. The text file contains a table on the 2nd page which we will read and convert to a
+bar chart and a pie chart and render these charts on the 2nd page of our pdf. The text that follows this table in the .txt
+file will be rendered in a column layout on the pdf. We will then split the rendered pdf into two pdfs, one with all the text
+and one with the charts.
+*/
+
 main()
 {
+
+ 
   pdfVar : pdf;
 
+  textpagenumbers : list int(1,2);
+
+  filepath : string = "input.pdf";
+
+  content : string = readtextfrompdf(filepath,textpagenumbers);
+
+  pdfVar = write_pages(content, 12, "COURIER_OBLIQUE", "TWO_COLUMN");
+
+
+
+
+
+  #A list of lists to read the table. Each row will be a list, each column being read as string
+  table : list list string;
+
+  #List of page numbers to read the table from
+  tablepagenumbers : list int(3);
+
+  #Read table in a list of lists of string
+  table = readtable(filepath,tablepagenumbers);
+
+  #Declare a map to hold properties for the chart
+  properties : map string,string;
+
+  properties += "ChartTitle","PLT Assignment 3 Statistics";
+  
+  properties += "Height","250";
+  properties += "Width","300";
+  properties += "X","150";
+  properties += "Y","500";
+  
+  chartimage : image;
+
+  chartimage = drawbarchart(table,properties);
+
+  #Create a page to draw this image on
   pageVar : page;
 
-  pdfVar = pdfVar.pageVar;
-
-  textPageNumbers : list int(1,3,4);
-
-  chartPageNumber : list int(2);
-
-  filepath :string = "/Users/vinaygaba/Desktop/test.pdf"
-
-  stringVar : string = readtextfrompdf(filepath,pagenumbers);
+  #Add page to pdf
+  pdfVar = pdfVar . pageVar;
 
   tupleVar : tuple(pdfVar, pageVar);
 
-  stringVar = write_4grid_layout(tupleVar, stringVar,"COURIER_OBLIQUE", 14);
+  tupleVar = tupleVar . chartimage;
 
+
+
+
+
+  properties += "X","200";
+  properties += "Y","100";
+
+  chartimage = drawpiechart(table,properties);
+
+  tupleVar = tupleVar . chartimage;
+
+  pagenumbers : list int(4);
+  content = readtextfrompdf(filepath,pagenumbers);
+
+
+
+  pageforthreecolumnlayout : page;
+  pdfVar = pdfVar . pageforthreecolumnlayout;
+  texttuple : tuple(pdfVar, pageforthreecolumnlayout);
+
+  content = write_three_column_layout(texttuple, content, "HELVETICA", 12);
+  
   renderpdf(pdfVar,"finaldemooutput.pdf");
+
+  
+
+
+  pdfVar = loadpdf("finaldemooutput.pdf");
+
+  pdfs : list pdf;
+
+  splitnumbers : list int(4,5);
+
+  pdfs = split(pdfVar, splitnumbers);
+
+  i: int;
+
+  lengthoflist : int;
+  lengthoflist = length(pdfs);
+
+  for(i = 0 ; i < lengthoflist; i = i + 1)
+  {
+    renderpdf(pdfs[i],"split"+i+".pdf");
+  }
+
+
+
+
+
+
 
 }

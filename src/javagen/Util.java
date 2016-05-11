@@ -94,7 +94,7 @@ public static Tuple addImageToTuple(Tuple tuple, Image image) throws Exception
 {
  PDImageXObject pdIMage = PDImageXObject.createFromFileByContent(image.getFile(), tuple.getDocument());
  PDPageContentStream contentStream = new PDPageContentStream(tuple.getDocument(), tuple.getPage(), true, true);
- contentStream.drawImage(pdIMage, image.getXCood(), image.getYCood(), image.getHeight(), image.getWidth());
+ contentStream.drawImage(pdIMage, image.getXCood(), image.getYCood(), image.getWidth(), image.getHeight());
  contentStream.close();
 
  return tuple;
@@ -109,14 +109,13 @@ public static Tuple addImageToTuple(Tuple tuple, Image image) throws Exception
         List<List<String>> lists = new ArrayList<List<String>>();
         for(Integer j : pageNumbers)
         {
-          extractor.addPage(j);
+          extractor.addPage(j-1);
 
           List<Table> extract = extractor.extract();
           String csv = extract.get(0).toString();
-          System.out.println(csv);
-
-          String[] line = csv.split("\n");
-          for(int i = 0; i < line.length - 1; i++)
+       
+          String[] line = csv.trim().split("\n");
+          for(int i = 0; i < line.length; i++)
           {
             String[] splits = line[i].split(";");
             List<String> asList = Arrays.asList(splits);
@@ -127,7 +126,30 @@ public static Tuple addImageToTuple(Tuple tuple, Image image) throws Exception
           }
 
         }
+        boolean flag = false;
+        List<Integer> listsToBeRemoved = new ArrayList<Integer>();
+      
 
+        int i = 0;
+        for(List<String> list: lists)
+        {
+          for(String str : list)
+          {
+            if(str.trim().length() == 0)
+              flag = true;
+              break;
+          }
+
+          if(flag)
+            listsToBeRemoved.add(i);
+          flag = false;
+          i++;
+        }
+
+        for(i = listsToBeRemoved.size()-1; i >=0; i--)
+        {
+          lists.remove(i);
+        }
         return lists;
   }
 
@@ -197,7 +219,6 @@ public static Tuple addImageToTuple(Tuple tuple, Image image) throws Exception
 				ycod = Integer.parseInt(attributes.get("Y"));
 			}
 
-			System.out.println(data.size());
 			List<String> subList;
 			for (int i = 0; i < data.size(); i++) {
 				subList = data.get(i);
@@ -207,8 +228,6 @@ public static Tuple addImageToTuple(Tuple tuple, Image image) throws Exception
 			JFreeChart chart = ChartFactory.createPieChart3D(chartTitle, pieDataset, true, true, true);
 
 			ChartUtilities.saveChartAsPNG(new File(imageName), chart, width, height);
-
-      System.out.println("Image saved");
 
 			Image image = new Image(new File(imageName), width, height, xcod, ycod);
 
@@ -232,8 +251,8 @@ public static Tuple addImageToTuple(Tuple tuple, Image image) throws Exception
       {
           PDDocument document = PDDocument.load(file);
           PDFTextStripper pdfStripper = new PDFTextStripper();
-          pdfStripper.setStartPage(1);
-          pdfStripper.setEndPage(3);
+          pdfStripper.setStartPage(i);
+          pdfStripper.setEndPage(i);
           buff.append(pdfStripper.getText(document));
        }
 
@@ -289,10 +308,11 @@ public static Tuple addImageToTuple(Tuple tuple, Image image) throws Exception
 
 			ChartUtilities.saveChartAsPNG(new File(imageName), barChart, width, height);
 
-			Image image = new Image(new File(imageName), height, width, xcod, ycod);
+			Image image = new Image(new File(imageName), height, width, xcod, ycod );
 
 			return image;
 		}catch (Exception e) {
+      e.printStackTrace();
 			return null;
 		}
 	}
