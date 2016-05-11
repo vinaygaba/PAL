@@ -10,9 +10,12 @@ and one with the charts.
 main()
 {
 
- 
+
   pdfVar : pdf;
 
+
+
+  #read text from first two pages of raw pdf and render in column layout on output pdf
   textpagenumbers : list int(1,2);
 
   filepath : string = "input.pdf";
@@ -25,20 +28,15 @@ main()
 
 
 
-  #A list of lists to read the table. Each row will be a list, each column being read as string
+  #read table from raw pdf and convert to bar chart
   table : list list string;
-
-  #List of page numbers to read the table from
   tablepagenumbers : list int(3);
 
-  #Read table in a list of lists of string
   table = readtable(filepath,tablepagenumbers);
 
-  #Declare a map to hold properties for the chart
   properties : map string,string;
 
   properties += "ChartTitle","PLT Assignment 3 Statistics";
-  
   properties += "Height","250";
   properties += "Width","300";
   properties += "X","150";
@@ -47,8 +45,6 @@ main()
   chartimage : image;
 
   chartimage = drawbarchart(table,properties);
-
-  #Create a page to draw this image on
   pageVar : page;
 
   #Add page to pdf
@@ -61,7 +57,8 @@ main()
 
 
 
-
+  #read table from raw pdf and convert to pie chart chart
+  
   properties += "X","200";
   properties += "Y","100";
 
@@ -69,10 +66,14 @@ main()
 
   tupleVar = tupleVar . chartimage;
 
+
+
+
+
+  #read page 3 form raw pdf and write exactly one page in 3 column layout on output pdf
+
   pagenumbers : list int(4);
   content = readtextfrompdf(filepath,pagenumbers);
-
-
 
   pageforthreecolumnlayout : page;
   pdfVar = pdfVar . pageforthreecolumnlayout;
@@ -82,8 +83,13 @@ main()
   
   renderpdf(pdfVar,"finaldemooutput.pdf");
 
-  
 
+
+
+
+  #load rendered pdf and split at page numbers 4 and 5. Expected: All two column layout pages
+  #go in the first split, the image page in the 2nd split and the 3 column layout in the
+  #third split
 
   pdfVar = loadpdf("finaldemooutput.pdf");
 
@@ -102,11 +108,6 @@ main()
   {
     renderpdf(pdfs[i],"split"+i+".pdf");
   }
-
-
-
-
-
 
 
 }
