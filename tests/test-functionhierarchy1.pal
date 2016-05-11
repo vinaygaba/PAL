@@ -1,0 +1,38 @@
+main() {
+    i : int;
+    s : string;
+    l : list tuple;
+    ll : list list tuple;
+    pdfvar : pdf;
+    pagevar : page;
+    pdfvar = pdfvar.pagevar;
+    tuplevar : tuple(pdfvar,pagevar);
+
+    i = 0;
+    s = "Function HIerarchy Checked";
+    l += tuplevar;
+    ll += l;
+
+    func2(i,s,ll);
+
+    renderpdf(pdfvar,"test-functionhierarchy1.pdf");
+}
+
+func0 (i : int) : int {
+    return i;
+}
+
+func1 (i : int, s : string) : string {
+    i = func0(i);
+    s = s + i;
+    return s;
+}
+
+func2 (i : int, s : string, l : list list tuple) : int{
+    s = func1(i,s);
+    linevar : line(s,"TIME_NEW_ROMAN",12,10,700,650);
+    l_ : list tuple;
+    l_ = l[i];
+    l_[0] = l_[0].linevar;
+    return 1;
+}

@@ -1,0 +1,38 @@
+main() {
+    l1 : list int;
+    l2 : list int;
+    l3 : list int;
+
+    ll : list list int;
+
+    iter : int;
+
+    for (iter = 1; iter <= 3; iter = iter + 1) {
+        l1 += iter;
+        l2 += iter + 3;
+        l3 += iter + 6;
+    }
+
+    ll += l1;
+    ll += l2;
+    ll += l3;
+
+    result : string = "Result: ";
+
+    for (iter = 0; iter < 3; iter = iter + 1) {
+        it : int;
+        l : list int;
+        l = ll[iter];
+        for (it = 0; it < 3; it = it + 1) {
+            result = result + l[it];
+        }
+    }
+
+    pdfvar : pdf;
+    pagevar : page;
+    pdfvar = pdfvar.pagevar;
+    tuplevar : tuple(pdfvar,pagevar);
+    linevar : line(result, "TIME_NEW_ROMAN", 12, 10, 600, 650);
+    tuplevar = tuplevar.linevar;
+    renderpdf(pdfvar,"test-listhierarchy1.pdf");
+}

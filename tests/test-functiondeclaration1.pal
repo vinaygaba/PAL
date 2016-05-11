@@ -1,0 +1,21 @@
+main() {
+    i : int;
+    s : string;
+    pdfvar : pdf;
+    pagevar : page;
+    pdfvar = pdfvar.pagevar;
+    t : tuple(pdfvar,pagevar);
+
+    i = 0;
+    s = "Function Declaration Checked";
+
+    func(i,s,t);
+
+    renderpdf(pdfvar,"test-functiondeclaration1.pdf");
+}
+
+func (i : int, s : string, t : tuple) : int{
+    l : line(s,"TIME_NEW_ROMAN",12,10,700,650);
+    t = t.l;
+    return 1;
+}

@@ -1,0 +1,15 @@
+main() {
+    i : int;
+    i = ((1 * (2 + 3) / 4 * 5 + 6 - 7) * (8 / 9 * 10 + (11 - 12) * 15 / 16 * 17 + 18) * 19 - 20);
+
+    result : string = "Result: ";
+    result = result + i;
+    pdfvar : pdf;
+    pagevar : page;
+    pdfvar = pdfvar.pagevar;
+    tuplevar : tuple(pdfvar,pagevar);
+    linevar : line(result, "TIME_NEW_ROMAN", 12, 10, 700, 650);
+    tuplevar = tuplevar.linevar;
+    renderpdf(pdfvar,"test-operators2.pdf");
+}
+

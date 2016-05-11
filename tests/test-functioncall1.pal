@@ -1,0 +1,28 @@
+main() {
+    i : int;
+    s : string;
+    l : list tuple;
+    ll : list list tuple;
+    pdfvar : pdf;
+    pagevar : page;
+    pdfvar = pdfvar.pagevar;
+    tuplevar : tuple(pdfvar,pagevar);
+
+    i = 0;
+    s = "Function Call Checked";
+    l += tuplevar;
+    ll += l;
+
+    func(i,s,ll);
+
+    renderpdf(pdfvar,"test-functioncall1.pdf");
+}
+
+func (i : int, s : string, l : list list tuple) : int{
+    linevar : line(s,"TIME_NEW_ROMAN",12,10,700,650);
+    l_ : list tuple;
+    l_ = l[i];
+    l_[0] = l_[0].linevar;
+    return 1;
+}
+

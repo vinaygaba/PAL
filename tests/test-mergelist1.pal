@@ -1,0 +1,33 @@
+main() {
+    l1 : list int;
+    l1 += 1;
+    l1 += 3;
+    l1 += 5;
+
+    l2 : list int;
+    l2 += 2;
+    l2 += 4;
+    l2 += 6;
+
+    mL : list int;
+
+    iter : int = 0;
+    result : string = "Result: ";
+
+    for (iter = 0; iter < 3; iter = iter + 1) {
+        mL += l1[iter];
+        mL += l2[iter];
+    }
+
+    for (iter = 0; iter < 6; iter = iter + 1) {
+        result = result + mL[iter];
+    }
+
+    pdfvar : pdf;
+    pagevar : page;
+    pdfvar = pdfvar.pagevar;
+    tuplevar : tuple(pdfvar,pagevar);
+    linevar : line(result, "TIME_NEW_ROMAN", 12, 10, 600, 650);
+    tuplevar = tuplevar.linevar;
+    renderpdf(pdfvar,"test-mergelist1.pdf");
+}
