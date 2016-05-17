@@ -1,0 +1,26 @@
+main() {
+    i : int;
+    l : list int;
+    ll : list list int;
+    lll : list list list int;
+
+    l[0] = 1;
+    l += 1;
+    l[0] = i;
+    l += i;
+    i = l[0];
+    ll[0] = l;
+    ll += l;
+    l = ll[0];
+    lll[0] = ll;
+    lll += ll;
+    ll = lll[0];
+
+    pdfvar : pdf;
+    pagevar : page;
+    pdfvar = pdfvar.pagevar;
+    tuplevar : tuple(pdfvar,pagevar);
+    linevar : line("List Hierarchy Checked", "TIME_NEW_ROMAN", 12, 10, 700, 650);
+    tuplevar = tuplevar.linevar;
+    renderpdf(pdfvar,"test-listhierarchy2.pdf");
+}

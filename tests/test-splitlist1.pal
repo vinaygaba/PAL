@@ -1,0 +1,40 @@
+main() {
+    l : list int;
+    l += 1;
+    l += 2;
+    l += 3;
+    l += 4;
+    l += 5;
+    l += 6;
+
+    l1 : list int;
+    l2 : list int;
+
+    iter : int = 0;
+
+    for (iter = 5; iter >= 0; iter = iter - 2) {
+        l1 += l[iter];
+        l -= [l[iter]];
+        l2 += l[iter-1];
+        l -= [l[iter-1]];
+    }
+
+    r1 : string = "Result1: ";
+    r2 : string = "Result2: ";
+
+    for (iter = 0; iter < 3; iter = iter + 1) {
+        r1 = r1 + l1[iter];
+        r2 = r2 + l2[iter];
+    }
+
+    pdfvar : pdf;
+    pagevar : page;
+    pdfvar = pdfvar.pagevar;
+    tuplevar : tuple(pdfvar,pagevar);
+    linevar1 : line(r1, "TIME_NEW_ROMAN", 12, 10, 600, 650);
+    linevar2 : line(r2, "TIME_NEW_ROMAN", 14, 10, 550, 650);
+    tuplevar = tuplevar.linevar1;
+    tuplevar = tuplevar.linevar2;
+    renderpdf(pdfvar,"test-splitlist1.pdf");
+}
+    

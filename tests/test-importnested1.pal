@@ -1,0 +1,17 @@
+import ("test-import1.pal");
+
+main() {
+    i : int;
+    s : string;
+    pdfvar : pdf;
+    pagevar : page;
+    pdfvar = pdfvar.pagevar;
+    t : tuple(pdfvar,pagevar);
+
+    i = 0;
+    s = "Import Nested Checked";
+
+    func(i,s,t);
+
+    renderpdf(pdfvar,"test-importnested1.pdf");
+}

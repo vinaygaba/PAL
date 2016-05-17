@@ -30,4 +30,12 @@ main() {
     mmmm : map int, list list list int;
     mmmm += l[0],lll;
     lll = mmmm:=l[0];
+
+    pdfvar: pdf;
+    pagevar : page;
+    pdfvar = pdfvar.pagevar;
+    tuplevar : tuple(pdfvar,pagevar);
+    linevar : line("List Map Hierarchy Checked", "TIME_NEW_ROMAN", 12, 10, 700, 650);
+    tuplevar = tuplevar.linevar;
+    renderpdf(pdfvar,"test-listmaphierarchy1.pdf");
 }
