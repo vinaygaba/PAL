@@ -1,7 +1,7 @@
 PAL : PDF Automation Language
 ==============================
 
-![PAL Mascot](images/pal.png)
+![PAL Mascot](images/pal_feature.png)
 
 PAL is a programming language that was developed to make the process of programmatically generating a PDF extremely simple.
 
